@@ -1,13 +1,15 @@
 import { createLazyFileRoute } from '@tanstack/react-router'
 
+import Game from '../components/Game'
+
 export const Route = createLazyFileRoute('/')({
-  component: Index,
+    component: Index,
 })
 
 function Index() {
-  return (
-    <div className="p-2">
-      <h3>Welcome Home!</h3>
-    </div>
-  )
+    return (
+        <main className="w-fit p-3 flex flex-col items-center">
+            <Game />
+        </main>
+    )
 }
