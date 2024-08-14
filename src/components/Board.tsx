@@ -20,14 +20,15 @@ import React from 'react'
 export type Cell = Omit<CellProps, 'gameOver'>
 
 export type BoardProps = {
-    rows: number
-    cols: number
+    height: number
+    width: number
     gameOver: boolean
-    cells: Cell[]
+    grid: number[]
     cellSizePx?: number
-    onCellClick?: (index: number) => unknown
-    onCellDown?: (index: number) => unknown
-    onCellUp?: (index: number) => unknown
+    onCellDown?: (x: number, y: number, state: number) => unknown
+    onCellUp?: (x: number, y: number, state: number) => unknown
+    onCellAux?: (x: number, y: number, state: number) => unknown
+    cellProps?: Omit<CellProps, 'state'>
     leftCounterValue: string
     rightCounterValue: string
     faceState: FaceState
@@ -35,37 +36,37 @@ export type BoardProps = {
 }
 
 export default function Board({
-    rows,
-    cols,
-    cells,
+    height,
+    width,
+    grid,
     cellSizePx = 24,
-    onCellClick,
+    cellProps,
+    onCellAux,
     onCellDown,
     onCellUp,
     leftCounterValue,
     rightCounterValue,
     faceState,
     onFaceClick,
-    gameOver,
 }: BoardProps) {
     const cssVariables = React.useMemo(() => {
-        const width = cellSizePx,
-            height = cellSizePx,
-            xLeftBorder = 0.75 * width,
-            xInner = cols * width,
-            xRightBorder = 0.5625 * width,
-            yTopBorder = 0.75 * height,
-            yMidBorder = 0.9375 * height,
-            yBottomBorder = 0.5625 * height,
-            yThin = 0.75 * height,
+        const widthPx = cellSizePx,
+            heightPx = cellSizePx,
+            xLeftBorder = 0.75 * widthPx,
+            xInner = width * widthPx,
+            xRightBorder = 0.5625 * widthPx,
+            yTopBorder = 0.75 * heightPx,
+            yMidBorder = 0.9375 * heightPx,
+            yBottomBorder = 0.5625 * heightPx,
+            yThin = 0.75 * heightPx,
             yPanel = 48,
-            yInner = rows * height,
+            yInner = height * heightPx,
             yFull = yThin * 3 + yPanel + yInner,
             cssVariables = {
-                '--width': width.toString() + 'px',
-                '--height': height.toString() + 'px',
-                '--rows': rows.toString() + 'px',
-                '--cols': cols.toString() + 'px',
+                '--width': widthPx.toString() + 'px',
+                '--height': heightPx.toString() + 'px',
+                '--rows': heightPx.toString() + 'px',
+                '--cols': widthPx.toString() + 'px',
                 '--x-left-border': xLeftBorder.toString() + 'px',
                 '--x-inner': xInner.toString() + 'px',
                 '--x-right-border': xRightBorder.toString() + 'px',
@@ -78,7 +79,7 @@ export default function Board({
                 '--y-full': yFull.toString() + 'px',
             } as React.CSSProperties
         return cssVariables
-    }, [cellSizePx, cols, rows])
+    }, [cellSizePx, width, height])
 
     return (
         <div
@@ -107,21 +108,33 @@ export default function Board({
             <MidRightBorder />
 
             <LeftBorder />
-            <div id="game-board" className="board-cells">
-                {cells.map(({ className, ...props }, i) => (
-                    <Cell
-                        key={`cell-${i}`}
-                        gameOver={gameOver}
-                        className={twMerge(className, 'float-left')}
-                        onClick={() => {
-                            console.log(`clicked cell ${i}`)
-                            onCellClick?.(i)
-                        }}
-                        onPointerDown={() => onCellDown?.(i)}
-                        onPointerUp={() => onCellUp?.(i)}
-                        {...props}
-                    />
-                ))}
+            <div id="game-board" className="board-cells bg-[silver]">
+                {grid.map((state, i) => {
+                    const x = i % width
+                    const y = Math.floor(i / width)
+                    return (
+                        <Cell
+                            state={state}
+                            key={`cell-${i}`}
+                            className="float-left"
+                            onPointerDown={(e) => {
+                                if (e.button !== 2) {
+                                    onCellDown?.(x, y, state)
+                                }
+                            }}
+                            onPointerUp={(e) => {
+                                if (e.button !== 2) {
+                                    onCellUp?.(x, y, state)
+                                }
+                            }}
+                            onContextMenu={(e) => {
+                                e.preventDefault()
+                                onCellAux?.(x, y, state)
+                            }}
+                            {...cellProps}
+                        />
+                    )
+                })}
             </div>
             <RightBorder />
 

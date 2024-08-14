@@ -11,6 +11,8 @@ export type FormProps = React.DetailedHTMLProps<
     HTMLFormElement
 >
 
+export type UlProps = React.HTMLAttributes<HTMLUListElement>
+
 type PrimitiveType = number | string | boolean
 
 /** Object types that should never be mapped */

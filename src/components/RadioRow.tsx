@@ -1,6 +1,5 @@
 import { twJoin, twMerge } from 'tailwind-merge'
-
-type UlProps = React.HTMLAttributes<HTMLUListElement>
+import { UlProps } from '../types'
 
 export type RadioItemProps<T> = {
     id: number | string
@@ -16,9 +15,10 @@ type RadioGroupProps<T> = Omit<UlProps, 'onChange'> & {
 
 export default function RadioGroup<T>({
     items,
-    activeId: activeId,
+    activeId,
     className,
     onChange,
+    ...props
 }: RadioGroupProps<T>) {
     const radioGroupId = [...items.map(({ label }) => label)].sort().join('')
 
@@ -28,6 +28,7 @@ export default function RadioGroup<T>({
                 'flex flex-wrap justify-center gap-x-2 gap-y-1',
                 className
             )}
+            {...props}
         >
             {items.map((item, i) => (
                 <li

@@ -1,26 +1,16 @@
 import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
-import {
-    NotFoundRoute,
-    RouterProvider,
-    createRouter,
-} from '@tanstack/react-router'
+import { RouterProvider, createRouter } from '@tanstack/react-router'
 
-import { Route as rootRoute } from './routes/__root'
 // Import the generated route tree
 import { routeTree } from './routeTree.gen'
 import './index.css'
-
-const notFoundRoute = new NotFoundRoute({
-    getParentRoute: () => rootRoute,
-    component: () => '404 Not Found',
-})
 
 // Create a new router instance
 const router = createRouter({
     basepath: '/minesweeper-app/',
     routeTree,
-    notFoundRoute,
+    defaultNotFoundComponent: () => '404 Not Found',
 })
 
 // Register the router instance for type safety

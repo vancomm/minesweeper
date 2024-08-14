@@ -1,45 +1,61 @@
 import { twMerge } from 'tailwind-merge'
 
-const MINE_COUNT_BGS: Record<string, string> = {
-    '1': 'bg-cell-1',
-    '2': 'bg-cell-2',
-    '3': 'bg-cell-3',
-    '4': 'bg-cell-4',
-    '5': 'bg-cell-5',
-    '6': 'bg-cell-6',
-    '7': 'bg-cell-7',
-    '8': 'bg-cell-8',
-}
+/*
+ * Each item in the `grid' array is one of the following values:
+ *
+ * 	- 0 to 8 mean the square is open and has a surrounding mine
+ * 	  count.
+ *
+ *  - -1 means the square is marked as a mine.
+ *
+ *  - -2 means the square is unknown.
+ *
+ * 	- -3 means the square is marked with a question mark
+ * 	  (FIXME: do we even want to bother with this?).
+ *
+ * 	- 64 means the square has had a mine revealed when the game
+ * 	  was lost.
+ *
+ * 	- 65 means the square had a mine revealed and this was the
+ * 	  one the player hits.
+ *
+ * 	- 66 means the square has a crossed-out mine because the
+ * 	  player had incorrectly marked it.
+ */
 
-const mineCountToBg = (mineCount: number): string =>
-    mineCount === 0
-        ? 'bg-cell-down'
-        : MINE_COUNT_BGS[(mineCount % 9).toString()]
-
-type CellState = {
-    mined: boolean
-    mineCount: number
-    opened: boolean
-    flagged: boolean
-    gameOver: boolean
-}
+const CELL_STATE_TO_BG: Map<number, string> = new Map([
+    [-3, ''], // TODO question mark -- not implemented yet
+    [-2, 'bg-cell-up'],
+    [-1, 'bg-cell-flag'],
+    [0, 'bg-cell-down'],
+    [1, 'bg-cell-1'],
+    [2, 'bg-cell-2'],
+    [3, 'bg-cell-3'],
+    [4, 'bg-cell-4'],
+    [5, 'bg-cell-5'],
+    [6, 'bg-cell-6'],
+    [7, 'bg-cell-7'],
+    [8, 'bg-cell-8'],
+    [64, 'bg-cell-mine'],
+    [65, 'bg-cell-blast'],
+    [66, 'bg-cell-false-mine'],
+])
 
 export type CellProps = React.DetailedHTMLProps<
     React.ButtonHTMLAttributes<HTMLButtonElement>,
     HTMLButtonElement
-> &
-    CellState
+> & {
+    state: number
+}
 
 export default function Cell({
-    mined,
-    mineCount,
-    opened,
-    flagged,
+    state,
     style,
     className,
-    gameOver,
+    disabled,
     ...props
 }: CellProps) {
+    const bg = CELL_STATE_TO_BG.get(state) ?? 'bg-cell-up'
     return (
         <button
             style={{
@@ -48,15 +64,14 @@ export default function Cell({
                 backgroundSize: '100%',
                 ...style,
             }}
-            disabled={opened}
+            disabled={state >= 64 || disabled}
             className={twMerge(
-                'block bg-cell-up',
-                !opened && 'active:bg-cell-down',
-                !opened && (flagged ? 'bg-cell-flag' : 'bg-cell-up'),
-                opened && (mined ? 'bg-cell-blast' : mineCountToBg(mineCount)),
-                gameOver && flagged && !mined && 'bg-cell-false-mine',
+                'block',
+                bg,
+                'active:data-[state=-2]:bg-cell-down',
                 className
             )}
+            data-state={state}
             {...props}
         />
     )
