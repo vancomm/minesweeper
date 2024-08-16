@@ -4,6 +4,6 @@ import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    base: '/minesweeper-app/',
+    base: '/minesweeper/',
     plugins: [react(), TanStackRouterVite()],
 })
