@@ -19,14 +19,19 @@ const compat = new FlatCompat({
 
 export default tseslint.config(
     {
+        ignores: ['**/*.js'],
+    },
+    {
         files: ['src/*.{ts,tsx}'],
         ...eslintjs.configs.recommended,
     },
-    ...tseslint.configs.recommendedTypeChecked.map((config) => ({
+    ...[
+        ...tseslint.configs.recommendedTypeChecked,
+        ...tseslint.configs.stylisticTypeChecked,
+    ].map((config) => ({
         ...{
             ...config,
             files: ['src/*.{ts,tsx}'],
-            // ignores: ['eslint.config.js'],
             languageOptions: {
                 ...config.languageOptions,
                 parserOptions: {
@@ -36,6 +41,7 @@ export default tseslint.config(
             },
         },
     })),
+    react.configs.flat.recommended,
     react.configs.flat['jsx-runtime'],
     prettier,
     {
@@ -54,6 +60,7 @@ export default tseslint.config(
         rules: {
             '@typescript-eslint/no-unused-vars': 'off',
             '@typescript-eslint/only-throw-error': 'off',
+            '@typescript-eslint/consistent-type-definitions': 'off',
         },
     }
 )
