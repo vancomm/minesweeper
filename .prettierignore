@@ -1,4 +1,6 @@
 /*
+!eslint.config.js
+!vite.config.ts
 !/src
 /src/**/*.gen.*
 /src/**/*.gen.*

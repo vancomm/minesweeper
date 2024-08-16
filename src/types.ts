@@ -1,6 +1,20 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+export type Success<Output> = {
+    success: true
+    data: Output
+    error?: never
+}
+
+export type Failure<Error> = {
+    success: false
+    error: Error
+    data?: never
+}
+
+export type Option<Output, Error> = Success<Output> | Failure<Error>
+
 export type DivProps = React.DetailedHTMLProps<
     React.HTMLAttributes<HTMLDivElement>,
     HTMLDivElement

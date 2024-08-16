@@ -16,16 +16,41 @@ import {
 } from '../api/game'
 import { ServerError } from '../api/common'
 import { DivProps } from '../types'
+import { useNavigate, UseNavigateResult } from '@tanstack/react-router'
 
 type GamePreset = GameParams & {
-    customizable?: boolean
+    customizable: boolean
 }
 
-const GAME_PRESETS: Record<string, GamePreset> = {
-    easy: { height: 9, width: 9, mine_count: 10, unique: true },
-    medium: { height: 16, width: 16, mine_count: 40, unique: true },
-    hard: { height: 16, width: 30, mine_count: 99, unique: true },
-    evil: { height: 20, width: 30, mine_count: 130, unique: true },
+const GAME_PRESETS = {
+    easy: {
+        height: 9,
+        width: 9,
+        mine_count: 10,
+        unique: true,
+        customizable: false,
+    },
+    medium: {
+        height: 16,
+        width: 16,
+        mine_count: 40,
+        unique: true,
+        customizable: false,
+    },
+    hard: {
+        height: 16,
+        width: 30,
+        mine_count: 99,
+        unique: true,
+        customizable: false,
+    },
+    evil: {
+        height: 20,
+        width: 30,
+        mine_count: 130,
+        unique: true,
+        customizable: false,
+    },
     custom: {
         height: 30,
         width: 30,
@@ -33,7 +58,7 @@ const GAME_PRESETS: Record<string, GamePreset> = {
         unique: true,
         customizable: true,
     },
-} as const
+} as const satisfies Record<string, GamePreset>
 
 type GamePresetName = keyof typeof GAME_PRESETS
 
@@ -47,7 +72,7 @@ const gamePresetRadioItems: RadioItemProps<GamePresetName>[] = Object.keys(
     value: name as GamePresetName,
 }))
 
-type GameSession = GameUpdate & {
+export type GameSession = GameUpdate & {
     api: GameApi
 }
 
@@ -57,6 +82,7 @@ type GameState = {
     gameParams: GameParams
     face: FaceState
     timer: number
+    timerInterval?: number
     showCustomControls: boolean
 }
 
@@ -71,17 +97,21 @@ const initialState: GameState = {
 type GameEvent =
     | { type: 'cellDown'; x: number; y: number }
     | { type: 'cellUp'; x: number; y: number }
-    | { type: 'gameStarted'; update: GameUpdate }
-    | { type: 'gameUpdated'; update: GameUpdate }
-    | { type: 'faceClicked' }
+    | {
+          type: 'gameUpdated'
+          update: GameUpdate
+          navigate?: UseNavigateResult<'/game/$session_id'>
+      }
     | { type: 'presetPicked'; presetName: GamePresetName }
     | {
-          type: 'paramsChanged'
-          gameParams: GameParams
-          presetName: GamePresetName
+          type: 'gameReset'
+          gameParams?: GameParams
+          presetName?: GamePresetName
+          navigate: UseNavigateResult<'/game/$session_id'>
       }
-    | { type: 'settingsUpdated'; update: GameParams }
+    | { type: 'timerStart'; interval: number; callback: () => unknown }
     | { type: 'timerTick' }
+    | { type: 'timerStop' }
     | { type: 'error'; error: ServerError }
 
 const handleGameEvent = (state: GameState, event: GameEvent): GameState => {
@@ -90,19 +120,16 @@ const handleGameEvent = (state: GameState, event: GameEvent): GameState => {
     }
 
     switch (event.type) {
-        case 'gameStarted': {
-            const { update } = event
-            const api = createGameApi(update.session_id)
-            return {
-                ...state,
-                session: { api, ...update },
-            }
-        }
         case 'gameUpdated': {
-            const { update } = event
-            if (!state.session) {
-                console.error('opened a cell before starting a session')
-                return state
+            const { update, navigate } = event
+            if (window.location.href.endsWith('/new') && navigate) {
+                navigate({
+                    to: '/game/$session_id',
+                    params: { session_id: update.session_id },
+                })
+            }
+            if (update.ended_at !== undefined) {
+                window.clearInterval(state.timerInterval)
             }
             const timer = update.ended_at
                 ? update.ended_at - update.started_at
@@ -114,32 +141,40 @@ const handleGameEvent = (state: GameState, event: GameEvent): GameState => {
                   : 'smile'
             return {
                 ...state,
-                face: face,
+                face,
                 timer,
                 session: {
                     ...state.session,
                     ...update,
+                    api: state.session?.api ?? createGameApi(update.session_id),
                 },
             }
         }
         case 'presetPicked': {
             const { presetName } = event
-            const updated = {
+            return {
                 ...state,
                 presetName,
             }
-            return updated
         }
-        case 'paramsChanged': {
-            const { type, ...update } = event
-            const updated = {
+        case 'gameReset': {
+            const { presetName, gameParams, navigate } = event
+            navigate({ to: '/game/$session_id', params: { session_id: 'new' } })
+            return {
                 ...initialState,
-                ...update,
+                presetName: presetName ?? state.presetName,
+                gameParams: gameParams ?? GAME_PRESETS[state.presetName],
             }
-            return updated
         }
-        case 'faceClicked': {
-            return { ...initialState, presetName: state.presetName }
+        case 'timerStart': {
+            if (state.timerInterval !== undefined) {
+                window.clearInterval(state.timerInterval)
+            }
+            const { callback, interval } = event
+            return {
+                ...state,
+                timerInterval: window.setInterval(callback, interval),
+            }
         }
         case 'timerTick': {
             if (!state.session) {
@@ -147,45 +182,68 @@ const handleGameEvent = (state: GameState, event: GameEvent): GameState => {
             }
             return {
                 ...state,
-                timer: Math.floor(Date.now() / 1000) - state.session.started_at,
+                timer:
+                    (state.session.ended_at ?? Math.floor(Date.now() / 1000)) -
+                    state.session.started_at,
+            }
+        }
+        case 'timerStop': {
+            return {
+                ...state,
+                timerInterval: void window.clearInterval(state.timerInterval),
             }
         }
     }
     return state
 }
 
-export default function Game({ className, ...props }: DivProps) {
-    const [state, dispatch] = React.useReducer(handleGameEvent, initialState)
+type GameProps = DivProps & {
+    initialUpdate?: GameUpdate
+}
 
-    const grid: number[] = React.useMemo(() => {
-        console.log('recalculating grid')
-        return (
-            state.session?.grid ??
-            Array.from(
-                {
-                    length: state.gameParams.height * state.gameParams.width,
-                },
-                () => -2
-            )
+export default function Game({
+    initialUpdate,
+    className,
+    ...props
+}: GameProps) {
+    const navigate = useNavigate({ from: '/game/$session_id' })
+
+    const [state, dispatch] = React.useReducer(
+        handleGameEvent,
+        initialState,
+        (state) => {
+            if (initialUpdate) {
+                state = handleGameEvent(state, {
+                    type: 'gameUpdated',
+                    update: initialUpdate,
+                })
+                state = handleGameEvent(state, { type: 'timerTick' })
+            }
+            return state
+        }
+    )
+
+    const grid: number[] =
+        state.session?.grid ??
+        Array.from(
+            {
+                length: state.gameParams.height * state.gameParams.width,
+            },
+            () => -2
         )
-    }, [state.gameParams, state.session])
-
-    const playing = !!state.session?.started_at && !state.session?.ended_at
-    const deadOrWon = !!(state.session?.dead || state.session?.won)
     const flags = state.session?.grid.filter((c) => c == -1).length ?? 0
 
-    const [timerInterval, setTimerInterval] = React.useState<number>()
-
     React.useEffect(() => {
-        if (!playing && timerInterval !== undefined) {
-            setTimerInterval(() => void window.clearInterval(timerInterval))
+        if (state.session && !state.session.ended_at) {
+            dispatch({ type: 'timerTick' })
+            dispatch({
+                type: 'timerStart',
+                callback: () => dispatch({ type: 'timerTick' }),
+                interval: 1000,
+            })
+            return () => dispatch({ type: 'timerStop' })
         }
-        if (playing && timerInterval === undefined) {
-            setTimerInterval(
-                window.setInterval(() => dispatch({ type: 'timerTick' }), 1000)
-            )
-        }
-    }, [playing, timerInterval])
+    }, [state.session])
 
     return (
         <div
@@ -204,9 +262,10 @@ export default function Game({ className, ...props }: DivProps) {
                             })
                         } else {
                             dispatch({
-                                type: 'paramsChanged',
+                                type: 'gameReset',
                                 presetName: value,
                                 gameParams: GAME_PRESETS[value],
+                                navigate,
                             })
                         }
                     }}
@@ -217,9 +276,10 @@ export default function Game({ className, ...props }: DivProps) {
                     gameParams={GAME_PRESETS[state.presetName]}
                     onSubmit={(update) =>
                         dispatch({
-                            type: 'paramsChanged',
+                            type: 'gameReset',
                             presetName: state.presetName,
                             gameParams: update,
+                            navigate,
                         })
                     }
                 />
@@ -227,11 +287,18 @@ export default function Game({ className, ...props }: DivProps) {
             <Board
                 height={state.gameParams.height}
                 width={state.gameParams.width}
-                gameOver={deadOrWon}
                 grid={grid}
-                cellProps={{ disabled: deadOrWon }}
-                onCellDown={(x, y) => dispatch({ type: 'cellDown', x, y })}
+                disabled={state.session?.ended_at !== undefined}
+                onCellDown={(x, y) => {
+                    if (state.session?.ended_at !== undefined) {
+                        return
+                    }
+                    dispatch({ type: 'cellDown', x, y })
+                }}
                 onCellUp={(x, y, prevState) => {
+                    if (state.session?.ended_at !== undefined) {
+                        return
+                    }
                     dispatch({ type: 'cellUp', x, y })
 
                     if (!state.session) {
@@ -242,8 +309,9 @@ export default function Game({ className, ...props }: DivProps) {
                         }).then((res) =>
                             res.success
                                 ? dispatch({
-                                      type: 'gameStarted',
+                                      type: 'gameUpdated',
                                       update: res.data,
+                                      navigate: navigate,
                                   })
                                 : dispatch({
                                       type: 'error',
@@ -266,16 +334,22 @@ export default function Game({ className, ...props }: DivProps) {
                             : dispatch({ type: 'error', error: res.error })
                     )
                 }}
-                onCellAux={(x, y) =>
-                    state.session?.api.flagCell({ x, y }).then((res) =>
-                        res.success
-                            ? dispatch({
-                                  type: 'gameUpdated',
-                                  update: res.data,
-                              })
-                            : dispatch({ type: 'error', error: res.error })
-                    )
-                }
+                onCellAux={(x, y) => {
+                    if (state.session?.ended_at !== undefined) {
+                        return
+                    }
+                    state.session?.api
+                        .flagCell({ x, y })
+                        .then((res) =>
+                            res.success
+                                ? dispatch({
+                                      type: 'gameUpdated',
+                                      update: res.data,
+                                  })
+                                : dispatch({ type: 'error', error: res.error })
+                        )
+                        .catch((e) => void e) // TODO
+                }}
                 rightCounterValue={Math.min(state.timer, 999)
                     .toString()
                     .padStart(3, '0')}
@@ -283,7 +357,7 @@ export default function Game({ className, ...props }: DivProps) {
                     .toString()
                     .padStart(3, '0')}
                 faceState={state.face}
-                onFaceClick={() => dispatch({ type: 'faceClicked' })}
+                onFaceClick={() => dispatch({ type: 'gameReset', navigate })}
             />
         </div>
     )

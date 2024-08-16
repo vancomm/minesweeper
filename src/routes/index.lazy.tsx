@@ -1,15 +1,10 @@
-import { createLazyFileRoute } from '@tanstack/react-router'
-
-import Game from '../components/Game'
+import { createLazyFileRoute, redirect } from '@tanstack/react-router'
 
 export const Route = createLazyFileRoute('/')({
-    component: Index,
+    loader: () => {
+        throw redirect({
+            to: '/game/$session_id',
+            params: { session_id: 'new' },
+        })
+    },
 })
-
-function Index() {
-    return (
-        <main className="w-fit p-3 flex flex-col items-center">
-            <Game />
-        </main>
-    )
-}

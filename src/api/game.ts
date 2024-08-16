@@ -2,7 +2,8 @@ import { z } from 'zod'
 import { createApiMethod } from './common'
 
 const ENDPOINT =
-    import.meta.env.REACT_APP_SERVICE_URL ?? 'http://localhost:8000/v1'
+    (import.meta.env.REACT_APP_SERVICE_URL as string) ??
+    'http://localhost:8000/v1'
 
 // type PosParams struct {
 // 	X int `schema:"x,required"`
@@ -69,6 +70,9 @@ export const createNewGame = createApiMethod<SquareParams & GameParams>(
 )(GameUpdate)
 
 export const createGameApi = (session_id: string) => {
+    const fetchGame = createApiMethod(`${ENDPOINT}/game/${session_id}`)(
+        GameUpdate
+    )
     const openCell = createApiMethod<SquareParams>(
         `${ENDPOINT}/game/${session_id}/open`,
         {
@@ -88,6 +92,7 @@ export const createGameApi = (session_id: string) => {
         }
     )(GameUpdate)
     return {
+        fetchGame,
         openCell,
         flagCell,
         chordCell,

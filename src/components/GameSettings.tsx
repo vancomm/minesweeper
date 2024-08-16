@@ -29,7 +29,7 @@ export default function GameSettings({
     return (
         <form
             className={twMerge(
-                'w-fit p-3 flex items-center gap-5 select-none',
+                'p-3 flex items-center gap-5 select-none',
                 className
             )}
             onSubmit={(e) => {

@@ -22,8 +22,8 @@ export type Cell = Omit<CellProps, 'gameOver'>
 export type BoardProps = {
     height: number
     width: number
-    gameOver: boolean
     grid: number[]
+    disabled?: boolean
     cellSizePx?: number
     onCellDown?: (x: number, y: number, state: number) => unknown
     onCellUp?: (x: number, y: number, state: number) => unknown
@@ -39,6 +39,7 @@ export default function Board({
     height,
     width,
     grid,
+    disabled,
     cellSizePx = 24,
     cellProps,
     onCellAux,
@@ -117,6 +118,7 @@ export default function Board({
                             state={state}
                             key={`cell-${i}`}
                             className="float-left"
+                            disabled={disabled}
                             onPointerDown={(e) => {
                                 if (e.button !== 2) {
                                     onCellDown?.(x, y, state)

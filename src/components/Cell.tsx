@@ -48,13 +48,7 @@ export type CellProps = React.DetailedHTMLProps<
     state: number
 }
 
-export default function Cell({
-    state,
-    style,
-    className,
-    disabled,
-    ...props
-}: CellProps) {
+export default function Cell({ state, style, className, ...props }: CellProps) {
     const bg = CELL_STATE_TO_BG.get(state) ?? 'bg-cell-up'
     return (
         <button
@@ -64,7 +58,6 @@ export default function Cell({
                 backgroundSize: '100%',
                 ...style,
             }}
-            disabled={state >= 64 || disabled}
             className={twMerge(
                 'block',
                 bg,
