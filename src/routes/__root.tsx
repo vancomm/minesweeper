@@ -34,4 +34,5 @@ export const Route = createRootRoute({
             </div>
         </>
     ),
+    notFoundComponent: () => <main className="p-32 text-3xl">Not found</main>,
 })

@@ -1,6 +1,6 @@
-import { createLazyFileRoute, redirect } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 
-export const Route = createLazyFileRoute('/')({
+export const Route = createFileRoute('/')({
     loader: () => {
         throw redirect({
             to: '/game/$session_id',
