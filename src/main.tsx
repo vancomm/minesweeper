@@ -8,7 +8,7 @@ import './index.css'
 
 // Create a new router instance
 const router = createRouter({
-    basepath: '/minesweeper-app/',
+    basepath: '/minesweeper/',
     routeTree,
     defaultNotFoundComponent: () => '404 Not Found',
 })

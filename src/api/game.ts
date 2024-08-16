@@ -57,17 +57,14 @@ export const GameUpdate = z.object({
 
 export type GameUpdate = z.infer<typeof GameUpdate>
 
-// export const createNewGame = createApiMethod<NewGameParams, typeof GameUpdate>(
-//     `${ENDPOINT}/game`,
-//     GameUpdate,
-//     { method: 'POST' }
-// )
 export const createNewGame = createApiMethod<SquareParams & GameParams>(
     `${ENDPOINT}/game`,
     {
         method: 'POST',
     }
 )(GameUpdate)
+
+export const checkGameApi = createApiMethod(`${ENDPOINT}/status`)(z.unknown())
 
 export const createGameApi = (session_id: string) => {
     const fetchGame = createApiMethod(`${ENDPOINT}/game/${session_id}`)(
