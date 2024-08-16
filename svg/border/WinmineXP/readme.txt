@@ -1,1 +1,0 @@
-The inner border of the top part should be 1 pixel (10 units) thinner. Please cover the extra pixel with the rectangle in #c0c0c0.
