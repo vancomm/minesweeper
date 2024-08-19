@@ -1,9 +1,11 @@
 import { z } from 'zod'
 import { createApiMethod } from './common'
 
-const ENDPOINT =
-    (import.meta.env.REACT_APP_SERVICE_URL as string) ??
-    'http://localhost:8000/v1'
+// const ENDPOINT =
+//     (import.meta.env.REACT_APP_SERVICE_URL as string) ??
+//     'http://localhost:8000/v1'
+
+const ENDPOINT = __API_URL__
 
 // type PosParams struct {
 // 	X int `schema:"x,required"`
