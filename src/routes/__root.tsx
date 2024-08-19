@@ -49,7 +49,7 @@ function Header({ ...props }: DivProps) {
 function Footer({ className, ...props }: DivProps) {
     return (
         <footer className={twMerge('m-auto p-2', className)} {...props}>
-            2024 &bull;{' '}
+            v{__APP_VERSION__} &bull; 2024 &bull;{' '}
             <a
                 className="cursor-pointer hover:underline"
                 href="https://github.com/vancomm/minesweeper"
