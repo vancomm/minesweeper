@@ -8,5 +8,8 @@
         "^[./]"
     ],
     "importOrderSeparation": true,
-    "importOrderSortSpecifiers": true
+    "importOrderSortSpecifiers": true,
+    "plugins": [
+        "prettier-plugin-tailwindcss"
+    ]
 }
