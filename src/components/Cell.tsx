@@ -36,9 +36,10 @@ const CELL_STATE_TO_BG: Map<number, string> = new Map([
     [6, 'bg-cell-6'],
     [7, 'bg-cell-7'],
     [8, 'bg-cell-8'],
-    [64, 'bg-cell-mine'],
+    [64, 'bg-cell-flag-mine'],
     [65, 'bg-cell-blast'],
     [66, 'bg-cell-false-mine'],
+    [67, 'bg-cell-mine'],
 ])
 
 export type CellProps = React.DetailedHTMLProps<

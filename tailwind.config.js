@@ -41,6 +41,7 @@ export default {
                 "cell-mine": "url('/svg/cells/cellmine.svg')",
                 "cell-false-mine": "url('/svg/cells/falsemine.svg')",
                 "cell-blast": "url('/svg/cells/blast.svg')",
+                "cell-flag-mine": "url('/svg/cells/flagmine.svg')",
                 "counter-dash": "url('/svg/counter/counter-.svg')",
                 "counter-0": "url('/svg/counter/counter0.svg')",
                 "counter-1": "url('/svg/counter/counter1.svg')",

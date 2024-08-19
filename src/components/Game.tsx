@@ -62,6 +62,9 @@ const GAME_PRESETS = {
 
 type GamePresetName = keyof typeof GAME_PRESETS
 
+const paramsToSeed = ({ width, height, mine_count, unique }: GameParams) =>
+    `${width}:${height}:${mine_count}:${unique ? '1' : '0'}`
+
 const DEFAULT_GAME_PRESET_NAME: GamePresetName = 'medium'
 
 const gamePresetRadioItems: RadioItemProps<GamePresetName>[] = Object.keys(
@@ -213,6 +216,14 @@ export default function Game({
         initialState,
         (state) => {
             if (initialUpdate) {
+                const seed = paramsToSeed(initialUpdate)
+                state.presetName = Object.entries(GAME_PRESETS).reduce(
+                    (acc, [name, params]) =>
+                        seed == paramsToSeed(params)
+                            ? (name as GamePresetName)
+                            : acc,
+                    'custom' as GamePresetName
+                )
                 state = handleGameEvent(state, {
                     type: 'gameUpdated',
                     update: initialUpdate,
@@ -223,6 +234,7 @@ export default function Game({
         }
     )
 
+    const { width, height, mine_count } = state.session ?? state.gameParams
     const grid: number[] =
         state.session?.grid ??
         Array.from(
@@ -231,7 +243,9 @@ export default function Game({
             },
             () => -2
         )
-    const flags = state.session?.grid.filter((c) => c == -1).length ?? 0
+    const flags =
+        state.session?.grid.filter((c) => c == -1 || c == 64 || c == 66)
+            .length ?? 0
 
     React.useEffect(() => {
         if (state.session && !state.session.ended_at) {
@@ -273,7 +287,7 @@ export default function Game({
             </div>
             <Collapse in={GAME_PRESETS[state.presetName].customizable}>
                 <GameSettings
-                    gameParams={GAME_PRESETS[state.presetName]}
+                    defaultParams={GAME_PRESETS[state.presetName]}
                     onSubmit={(update) =>
                         dispatch({
                             type: 'gameReset',
@@ -285,8 +299,8 @@ export default function Game({
                 />
             </Collapse>
             <Board
-                height={state.gameParams.height}
-                width={state.gameParams.width}
+                width={width}
+                height={height}
                 grid={grid}
                 disabled={state.session?.ended_at !== undefined}
                 onCellDown={(x, y) => {
@@ -353,7 +367,7 @@ export default function Game({
                 rightCounterValue={Math.min(state.timer, 999)
                     .toString()
                     .padStart(3, '0')}
-                leftCounterValue={(state.gameParams.mine_count - flags)
+                leftCounterValue={Math.min(mine_count - flags, 999)
                     .toString()
                     .padStart(3, '0')}
                 faceState={state.face}

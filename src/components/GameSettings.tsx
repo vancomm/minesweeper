@@ -16,12 +16,12 @@ const SettingsField = ({ className, ...props }: DivProps) => (
 )
 
 type GameSettingsProps = Omit<FormProps, 'onSubmit'> & {
-    gameParams: GameParams
+    defaultParams: GameParams
     onSubmit: (update: GameParams) => unknown
 }
 
 export default function GameSettings({
-    gameParams,
+    defaultParams,
     onSubmit,
     className,
     ...props
@@ -29,7 +29,7 @@ export default function GameSettings({
     return (
         <form
             className={twMerge(
-                'p-3 flex items-center gap-5 select-none',
+                'w-fit p-3 flex items-center gap-5 select-none',
                 className
             )}
             onSubmit={(e) => {
@@ -52,7 +52,8 @@ export default function GameSettings({
                     type="number"
                     name="rows"
                     id="rows"
-                    defaultValue={gameParams.height}
+                    defaultValue={defaultParams.height}
+                    key={`rows-${defaultParams.height}`} // defaultValue doesn't reload without key
                 />
             </SettingsField>
             <SettingsField>
@@ -64,7 +65,8 @@ export default function GameSettings({
                     type="number"
                     name="cols"
                     id="cols"
-                    defaultValue={gameParams.width}
+                    defaultValue={defaultParams.width}
+                    key={`cols-${defaultParams.width}`}
                 />
             </SettingsField>
             <SettingsField>
@@ -76,10 +78,11 @@ export default function GameSettings({
                     type="number"
                     name="mines"
                     id="mines"
-                    defaultValue={gameParams.mine_count}
+                    defaultValue={defaultParams.mine_count}
+                    key={`mines-${defaultParams.mine_count}`}
                 />
             </SettingsField>
-            <SettingsField>
+            <SettingsField className="pr-5 border-r border-neutral-300">
                 <label htmlFor="unique" className="cursor-pointer">
                     Unique
                 </label>
@@ -88,14 +91,11 @@ export default function GameSettings({
                     type="checkbox"
                     name="unique"
                     id="unique"
-                    defaultChecked={gameParams.unique}
+                    defaultChecked={defaultParams.unique}
+                    key={`unique-${defaultParams.unique}`}
                 />
             </SettingsField>
-            |
-            <Button
-                type="submit"
-                className="p-0 rounded-md underline transition-colors hover:text-violet-400"
-            >
+            <Button type="submit" className="p-0 rounded-md hover:underline">
                 Update
             </Button>
         </form>

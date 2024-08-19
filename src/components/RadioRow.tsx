@@ -36,9 +36,10 @@ export default function RadioGroup<T>({
                     className={twMerge(
                         'inline-block cursor-pointer rounded border-2 border-transparent',
                         'transition-colors duration-200',
-                        'hover:border-blue-500 dark:hover:border-violet-500',
+                        'hover:border-blue-500',
                         'has-[:checked]:border-blue-500 has-[:checked]:bg-blue-500 has-[:checked]:text-white',
-                        'has-[:checked]:dark:border-violet-500 has-[:checked]:dark:bg-violet-500 has-[:checked]:dark:text-black',
+                        'dark:hover:border-neutral-300',
+                        'has-[:checked]:dark:border-neutral-200 has-[:checked]:dark:bg-neutral-200 has-[:checked]:dark:text-black',
                         className
                     )}
                 >
