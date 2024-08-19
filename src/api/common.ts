@@ -5,31 +5,32 @@ export type ServerError = { statusCode: number; errorText: string }
 
 export type ApiResponse<Output> = Success<Output> | Failure<ServerError>
 
-type RequestParams = Record<string, string | number | boolean>
+type SearchParams = Record<string, string | number | boolean>
 
-const createSearchParams = (params: RequestParams): URLSearchParams =>
+const createSearchParams = (search: SearchParams): URLSearchParams =>
     new URLSearchParams(
-        Object.entries(params).reduce(
+        Object.entries(search).reduce(
             (acc, [k, v]) => ({ ...acc, [k]: v.toString() }),
             {}
         )
     )
 
 export const createApiMethod =
-    <P extends RequestParams | undefined = undefined>(
+    <S extends SearchParams | undefined = undefined>(
         methodUrl: string,
         init?: RequestInit
     ) =>
     <T extends z.ZodTypeAny>(responseSchema: T) =>
     async (
-        ...params: P extends undefined ? [] : [P]
+        // ...params: P extends undefined ? [R?] : [P, R?]
+        params: S extends undefined ? RequestInit : { search: S } & RequestInit
     ): Promise<ApiResponse<z.infer<T>>> => {
         let url = methodUrl
-        if (params.length) {
-            const query = createSearchParams(params[0]).toString()
+        if (params && 'search' in params) {
+            const query = createSearchParams(params.search).toString()
             url += '?' + query.toString()
         }
-        const res = await fetch(url, init)
+        const res = await fetch(url, { ...init, ...params })
         if (!res.ok) {
             const errorText = await res.text()
             return {

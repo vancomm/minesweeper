@@ -2,6 +2,7 @@ import React from 'react'
 import Collapse from '@mui/material/Collapse'
 import { capitalize } from '@mui/material'
 import { twMerge } from 'tailwind-merge'
+import _ from 'lodash'
 
 import Board from './Board'
 import { FaceState } from './Face'
@@ -79,6 +80,11 @@ export type GameSession = GameUpdate & {
     api: GameApi
 }
 
+type BatchedCommand =
+    | { command: 'f'; x: number; y: number }
+    | { command: 'o'; x: number; y: number }
+    | { command: 'c'; x: number; y: number }
+
 type GameState = {
     session?: GameSession
     presetName: GamePresetName
@@ -87,6 +93,7 @@ type GameState = {
     timer: number
     timerInterval?: number
     showCustomControls: boolean
+    batchedCommands?: BatchedCommand[]
 }
 
 const initialState: GameState = {
@@ -105,6 +112,7 @@ type GameEvent =
           update: GameUpdate
           navigate?: UseNavigateResult<'/game/$session_id'>
       }
+    | { type: 'commandBatched'; command: BatchedCommand }
     | { type: 'presetPicked'; presetName: GamePresetName }
     | {
           type: 'gameReset'
@@ -146,11 +154,19 @@ const handleGameEvent = (state: GameState, event: GameEvent): GameState => {
                 ...state,
                 face,
                 timer,
+                batchedCommands: undefined,
                 session: {
                     ...state.session,
                     ...update,
                     api: state.session?.api ?? createGameApi(update.session_id),
                 },
+            }
+        }
+        case 'commandBatched': {
+            const { command } = event
+            return {
+                ...state,
+                batchedCommands: (state.batchedCommands ?? []).concat(command),
             }
         }
         case 'presetPicked': {
@@ -236,13 +252,25 @@ export default function Game({
 
     const { width, height, mine_count } = state.session ?? state.gameParams
     const grid: number[] =
-        state.session?.grid ??
+        state.session?.grid.slice() ??
         Array.from(
             {
                 length: state.gameParams.height * state.gameParams.width,
             },
             () => -2
         )
+    if (state.session && state.batchedCommands?.length) {
+        const { width } = state.session
+        state.batchedCommands.forEach(({ command, ...args }) => {
+            switch (command) {
+                case 'f': {
+                    const { x, y } = args
+                    const i = y * width + x
+                    grid[i] = grid[i] == -2 ? -1 : -2
+                }
+            }
+        })
+    }
     const flags =
         state.session?.grid.filter((c) => c == -1 || c == 64 || c == 66)
             .length ?? 0
@@ -261,7 +289,7 @@ export default function Game({
 
     return (
         <div
-            className={twMerge('w-fit flex flex-col gap-y-1', className)}
+            className={twMerge('flex w-fit flex-col gap-y-1', className)}
             {...props}
         >
             <div className="w-fit select-none">
@@ -317,9 +345,7 @@ export default function Game({
 
                     if (!state.session) {
                         return createNewGame({
-                            x,
-                            y,
-                            ...state.gameParams,
+                            search: { x, y, ...state.gameParams },
                         }).then((res) =>
                             res.success
                                 ? dispatch({
@@ -334,27 +360,35 @@ export default function Game({
                         )
                     }
 
-                    const action =
-                        prevState === -2
-                            ? state.session.api.openCell
-                            : state.session.api.chordCell
+                    if (state.batchedCommands?.length) {
+                        const lastCommand: BatchedCommand = {
+                            command: prevState == -2 ? 'o' : 'c',
+                            x,
+                            y,
+                        }
+                        const payload = [...state.batchedCommands, lastCommand]
+                            .map((c) => Object.values(c).join(' '))
+                            .join('\n')
+                        return state.session.api
+                            .executeBatch({ body: payload })
+                            .then((res) =>
+                                res.success
+                                    ? dispatch({
+                                          type: 'gameUpdated',
+                                          update: res.data,
+                                      })
+                                    : dispatch({
+                                          type: 'error',
+                                          error: res.error,
+                                      })
+                            )
+                    } else {
+                        const action =
+                            prevState === -2
+                                ? state.session.api.openCell
+                                : state.session.api.chordCell
 
-                    return action({ x, y }).then((res) =>
-                        res.success
-                            ? dispatch({
-                                  type: 'gameUpdated',
-                                  update: res.data,
-                              })
-                            : dispatch({ type: 'error', error: res.error })
-                    )
-                }}
-                onCellAux={(x, y) => {
-                    if (state.session?.ended_at !== undefined) {
-                        return
-                    }
-                    state.session?.api
-                        .flagCell({ x, y })
-                        .then((res) =>
+                        return action({ search: { x, y } }).then((res) =>
                             res.success
                                 ? dispatch({
                                       type: 'gameUpdated',
@@ -362,7 +396,33 @@ export default function Game({
                                   })
                                 : dispatch({ type: 'error', error: res.error })
                         )
-                        .catch((e) => void e) // TODO
+                    }
+                }}
+                onCellAux={(x, y, prevState) => {
+                    if (
+                        !state.session ||
+                        state.session?.ended_at !== undefined
+                    ) {
+                        return
+                    }
+                    if (prevState !== -2 && prevState !== -1) {
+                        return
+                    }
+                    dispatch({
+                        type: 'commandBatched',
+                        command: { command: 'f', x, y },
+                    })
+                    // state.session.api
+                    //     .flagCell({ x, y })
+                    //     .then((res) =>
+                    //         res.success
+                    //             ? dispatch({
+                    //                   type: 'gameUpdated',
+                    //                   update: res.data,
+                    //               })
+                    //             : dispatch({ type: 'error', error: res.error })
+                    //     )
+                    //     .catch((e) => void e) // TODO
                 }}
                 rightCounterValue={Math.min(state.timer, 999)
                     .toString()

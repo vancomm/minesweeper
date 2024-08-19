@@ -90,11 +90,16 @@ export const createGameApi = (session_id: string) => {
             method: 'POST',
         }
     )(GameUpdate)
+    const executeBatch = createApiMethod(
+        `${ENDPOINT}/game/${session_id}/batch`,
+        { method: 'POST' }
+    )(GameUpdate)
     return {
         fetchGame,
         openCell,
         flagCell,
         chordCell,
+        executeBatch,
     }
 }
 
