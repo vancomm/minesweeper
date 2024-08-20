@@ -12,13 +12,13 @@ export const Route = createFileRoute('/game/$session_id')({
         params: { session_id },
     }): Promise<GameUpdate | undefined> =>
         session_id === 'new'
-            ? checkGameApi()
+            ? checkGameApi({})
                   .then(({ success }) =>
                       success ? undefined : raise(new Error('api unavailable'))
                   )
                   .catch(() => raise(new Error('api unavailable')))
             : createGameApi(session_id)
-                  .fetchGame()
+                  .fetchGame({})
                   .then(({ success, data }) => (success ? data : undefined)),
     pendingComponent: () => (
         <div className="grid h-64 w-64 place-items-center">
