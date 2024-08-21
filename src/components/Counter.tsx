@@ -22,28 +22,21 @@ type CounterDigitProps = {
 
 const CounterDigit = ({ value }: CounterDigitProps) => (
     <div
-        className={twMerge('counter-digit', DIGIT_TO_BG.get(value))}
+        className={twMerge(
+            'counter-digit h-[34.5px] w-[19.5px] bg-[size:100%_100%]',
+            DIGIT_TO_BG.get(value)
+        )}
         data-value={value}
-        style={{
-            width: 'calc(0.8125 * var(--width))',
-            height: 'calc(1.4375 * var(--height))',
-            backgroundSize: '100% 100%',
-        }}
     />
 )
 
 const CounterLeftBorder = () => (
-    <div
-        className="counter-left"
-        style={{
-            width: 'calc(0.0625 * var(--width))',
-            height: 'calc(1.5625 * var(--height))',
-            backgroundSize: '100% 100%',
-        }}
-    />
+    <div className="counter-left bg-border-counter-left h-[37.5px] w-[1.5px] bg-[size:100%_100%]" />
 )
 
-const CounterRightBorder = () => <div className="counter-right" />
+const CounterRightBorder = () => (
+    <div className="counter-right bg-border-counter-right h-[37.5px] w-[1.5px] bg-[size:100%_100%]" />
+)
 
 export type CounterProps = React.HTMLAttributes<HTMLDivElement> & {
     value: string
@@ -53,12 +46,9 @@ export default function Counter({ value, className }: CounterProps) {
     return (
         <div
             className={twMerge(
-                'flex items-center justify-center bg-border-bottom-counter-middle',
+                'flex items-center justify-center bg-border-bottom-counter-middle bg-[size:100%_100%]',
                 className
             )}
-            style={{
-                backgroundSize: '100% 100%',
-            }}
         >
             <CounterLeftBorder />
             {[...value].map((char, i) => (

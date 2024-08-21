@@ -13,13 +13,8 @@ export default function Face({ state, className, style, ...props }: FaceProps) {
         <div id="face-button" className="face-wrapper mx-auto">
             <button
                 id="face"
-                style={{
-                    width: 'calc(1.625 * var(--width))',
-                    height: 'calc(1.625 * var(--height))',
-                    ...style,
-                }}
                 className={twJoin(
-                    'mx-auto block bg-full',
+                    'mx-auto block h-[39px] w-[39px] bg-full',
                     'active:bg-face-smile-down',
                     state === 'smile' && 'bg-face-smile',
                     state === 'click' && 'bg-face-click',
@@ -27,8 +22,7 @@ export default function Face({ state, className, style, ...props }: FaceProps) {
                     state === 'lost' && 'bg-face-lost',
                     className
                 )}
-                data-state="smile"
-                data-down="false"
+                data-state={state}
                 {...props}
             />
         </div>

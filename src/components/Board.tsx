@@ -14,7 +14,7 @@ import {
     TopLeftBorder,
     TopRightBorder,
 } from './Borders'
-import Cell, { CellProps } from './Cell'
+import Cell, { CELL_SIZE_PX, CellProps } from './Cell'
 import React from 'react'
 
 export type Cell = Omit<CellProps, 'gameOver'>
@@ -24,7 +24,6 @@ export type BoardProps = {
     width: number
     grid: number[]
     disabled?: boolean
-    cellSizePx?: number
     onCellDown?: (x: number, y: number, state: number) => unknown
     onCellUp?: (x: number, y: number, state: number) => unknown
     onCellAux?: (x: number, y: number, state: number) => unknown
@@ -40,7 +39,6 @@ export default function Board({
     width,
     grid,
     disabled,
-    cellSizePx = 24,
     cellProps,
     onCellAux,
     onCellDown,
@@ -50,46 +48,23 @@ export default function Board({
     faceState,
     onFaceClick,
 }: BoardProps) {
-    const cssVariables = React.useMemo(() => {
-        const widthPx = cellSizePx,
-            heightPx = cellSizePx,
-            xLeftBorder = 0.75 * widthPx,
-            xInner = width * widthPx,
-            xRightBorder = 0.5625 * widthPx,
-            yTopBorder = 0.75 * heightPx,
-            yMidBorder = 0.9375 * heightPx,
-            yBottomBorder = 0.5625 * heightPx,
-            yThin = 0.75 * heightPx,
-            yPanel = 48,
-            yInner = height * heightPx,
-            yFull = yThin * 3 + yPanel + yInner,
-            cssVariables = {
-                '--width': widthPx.toString() + 'px',
-                '--height': heightPx.toString() + 'px',
-                '--rows': heightPx.toString() + 'px',
-                '--cols': widthPx.toString() + 'px',
-                '--x-left-border': xLeftBorder.toString() + 'px',
-                '--x-inner': xInner.toString() + 'px',
-                '--x-right-border': xRightBorder.toString() + 'px',
-                '--y-top-border': yTopBorder.toString() + 'px',
-                '--y-mid-border': yMidBorder.toString() + 'px',
-                '--y-bottom-border': yBottomBorder.toString() + 'px',
-                '--y-thin': yThin.toString() + 'px',
-                '--y-panel': yPanel.toString() + 'px',
-                '--y-inner': yInner.toString() + 'px',
-                '--y-full': yFull.toString() + 'px',
-            } as React.CSSProperties
-        return cssVariables
-    }, [cellSizePx, width, height])
+    const cssVariables = React.useMemo(
+        () =>
+            ({
+                '--grid-width': (width * CELL_SIZE_PX).toString() + 'px',
+                '--grid-height': (height * CELL_SIZE_PX).toString() + 'px',
+            }) as React.CSSProperties,
+        [width, height]
+    )
 
     return (
         <div
+            style={cssVariables}
             className={twMerge(
                 'grid',
-                'grid-cols-[var(--x-left-border)_var(--x-inner)_var(--x-right-border)]',
-                'grid-rows-[var(--y-top-border)_var(--y-panel)_var(--y-mid-border)_var(--y-inner)_var(--y-bottom-border)]'
+                'grid-cols-[18px_var(--grid-width)_13.5px]',
+                'grid-rows-[18px_48px_22.5px_var(--grid-height)_13.5px]'
             )}
-            style={cssVariables}
             id="game-container"
         >
             <TopLeftBorder />
@@ -97,7 +72,7 @@ export default function Board({
             <TopRightBorder />
 
             <LeftBorder />
-            <div className="p-[4.5px] bg-[silver]">
+            <div className="bg-[silver] p-[4.5px]">
                 <Counter value={leftCounterValue} className="float-left" />
                 <Counter value={rightCounterValue} className="float-right" />
                 <Face state={faceState} onClick={onFaceClick} />

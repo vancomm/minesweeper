@@ -2,7 +2,6 @@ import React from 'react'
 import Collapse from '@mui/material/Collapse'
 import { capitalize } from '@mui/material'
 import { twMerge } from 'tailwind-merge'
-import _ from 'lodash'
 
 import Board from './Board'
 import { FaceState } from './Face'
@@ -82,11 +81,6 @@ export type GameSession = GameUpdate & {
     api: GameApi
 }
 
-type BatchedCommand =
-    | { command: 'f'; x: number; y: number }
-    | { command: 'o'; x: number; y: number }
-    | { command: 'c'; x: number; y: number }
-
 type GameState = {
     session?: GameSession
     presetName: GamePresetName
@@ -95,7 +89,7 @@ type GameState = {
     timer: number
     timerInterval?: number
     showCustomControls: boolean
-    batchedCommands?: BatchedCommand[]
+    pressedSquares?: number[]
 }
 
 const initialState: GameState = {
@@ -107,14 +101,13 @@ const initialState: GameState = {
 }
 
 type GameEvent =
-    | { type: 'cellDown'; x: number; y: number }
-    | { type: 'cellUp'; x: number; y: number }
+    | { type: 'cellDown'; x: number; y: number; squareState: number }
+    | { type: 'cellUp'; x: number; y: number; squareState: number }
     | {
           type: 'gameUpdated'
           update: GameUpdate
           navigate?: UseNavigateResult<'/game/$session_id'>
       }
-    | { type: 'commandBatched'; command: BatchedCommand }
     | { type: 'presetPicked'; presetName: GamePresetName }
     | {
           type: 'gameReset'
@@ -133,6 +126,40 @@ const handleGameEvent = (state: GameState, event: GameEvent): GameState => {
     }
 
     switch (event.type) {
+        case 'cellDown': {
+            if (
+                state.session === undefined ||
+                state.session.ended_at !== undefined
+            ) {
+                return state
+            }
+            const { width, height, grid } = state.session
+            const { x, y, squareState } = event
+            if (squareState == -2) {
+                return {
+                    ...state,
+                    pressedSquares: [y * state.session.width + x],
+                }
+            } else if (0 <= squareState && squareState <= 8) {
+                const neighbors = [-1, 0, 1]
+                    .flatMap((dx) => [-1, 0, 1].map((dy) => [x + dx, y + dy]))
+                    .filter(
+                        ([xx, yy]) =>
+                            0 <= xx &&
+                            xx < width &&
+                            0 <= yy &&
+                            yy < height &&
+                            (xx != x || yy != y) &&
+                            grid[yy * width + xx] == -2
+                    )
+                    .map(([x, y]) => y * width + x)
+                return {
+                    ...state,
+                    pressedSquares: neighbors,
+                }
+            }
+            return state
+        }
         case 'gameUpdated': {
             const { update, navigate } = event
             if (window.location.href.endsWith('/new') && navigate) {
@@ -156,19 +183,12 @@ const handleGameEvent = (state: GameState, event: GameEvent): GameState => {
                 ...state,
                 face,
                 timer,
-                batchedCommands: undefined,
+                pressedSquares: undefined,
                 session: {
                     ...state.session,
                     ...update,
                     api: state.session?.api ?? createGameApi(update.session_id),
                 },
-            }
-        }
-        case 'commandBatched': {
-            const { command } = event
-            return {
-                ...state,
-                batchedCommands: (state.batchedCommands ?? []).concat(command),
             }
         }
         case 'presetPicked': {
@@ -229,8 +249,6 @@ export default function Game({
     className,
     ...props
 }: GameProps) {
-    const navigate = useNavigate({ from: '/game/$session_id' })
-
     const [state, dispatch] = React.useReducer(
         handleGameEvent,
         initialState,
@@ -254,22 +272,23 @@ export default function Game({
         }
     )
 
-    const { sendMessage, lastJsonMessage, readyState } = useWebSocket(
+    const navigate = useNavigate({ from: '/game/$session_id' })
+
+    const { sendMessage, lastJsonMessage } = useWebSocket(
         state.session ? sessionIdToWS(state.session.session_id) : placeholderWS,
-        undefined,
+        {},
         !!state.session
     )
 
     React.useEffect(() => {
         if (lastJsonMessage) {
-            console.log(lastJsonMessage, readyState)
             const update = GameUpdate.parse(lastJsonMessage)
             dispatch({ type: 'gameUpdated', update })
         }
     }, [lastJsonMessage])
 
     const { width, height, mine_count } = state.session ?? state.gameParams
-    const grid: number[] =
+    const renderedGrid: number[] =
         state.session?.grid.slice() ??
         Array.from(
             {
@@ -277,18 +296,10 @@ export default function Game({
             },
             () => -2
         )
-    if (state.session && state.batchedCommands?.length) {
-        const { width } = state.session
-        state.batchedCommands.forEach(({ command, ...args }) => {
-            switch (command) {
-                case 'f': {
-                    const { x, y } = args
-                    const i = y * width + x
-                    grid[i] = grid[i] == -2 ? -1 : -2
-                }
-            }
-        })
-    }
+    state.pressedSquares?.forEach((j) => {
+        renderedGrid[j] = 0
+    })
+
     const flags =
         state.session?.grid.filter((c) => c == -1 || c == 64 || c == 66)
             .length ?? 0
@@ -347,18 +358,18 @@ export default function Game({
             <Board
                 width={width}
                 height={height}
-                grid={grid}
+                grid={renderedGrid}
                 disabled={state.session?.ended_at !== undefined}
-                onCellDown={(x, y) => {
+                onCellDown={(x, y, squareState) => {
                     if (state.session?.ended_at === undefined) {
-                        dispatch({ type: 'cellDown', x, y })
+                        dispatch({ type: 'cellDown', x, y, squareState })
                     }
                 }}
-                onCellUp={(x, y, prevState) => {
+                onCellUp={(x, y, squareState) => {
                     if (state.session?.ended_at !== undefined) {
                         return
                     }
-                    dispatch({ type: 'cellUp', x, y })
+                    dispatch({ type: 'cellUp', x, y, squareState })
 
                     if (!state.session) {
                         return createNewGame({
@@ -378,46 +389,10 @@ export default function Game({
                     }
 
                     const message =
-                        (prevState === -2 ? 'o' : 'c') + ` ${x} ${y}`
+                        (state.session.grid[y * state.session.width + x] === -2
+                            ? 'o'
+                            : 'c') + ` ${x} ${y}`
                     sendMessage(message)
-
-                    // if (state.batchedCommands?.length) {
-                    //     const lastCommand: BatchedCommand = {
-                    //         command: prevState == -2 ? 'o' : 'c',
-                    //         x,
-                    //         y,
-                    //     }
-                    //     const payload = [...state.batchedCommands, lastCommand]
-                    //         .map((c) => Object.values(c).join(' '))
-                    //         .join('\n')
-                    //     return state.session.api
-                    //         .executeBatch({ body: payload })
-                    //         .then((res) =>
-                    //             res.success
-                    //                 ? dispatch({
-                    //                       type: 'gameUpdated',
-                    //                       update: res.data,
-                    //                   })
-                    //                 : dispatch({
-                    //                       type: 'error',
-                    //                       error: res.error,
-                    //                   })
-                    //         )
-                    // } else {
-                    //     const action =
-                    //         prevState === -2
-                    //             ? state.session.api.openCell
-                    //             : state.session.api.chordCell
-
-                    //     return action({ search: { x, y } }).then((res) =>
-                    //         res.success
-                    //             ? dispatch({
-                    //                   type: 'gameUpdated',
-                    //                   update: res.data,
-                    //               })
-                    //             : dispatch({ type: 'error', error: res.error })
-                    //     )
-                    // }
                 }}
                 onCellAux={(x, y, prevState) => {
                     if (
@@ -430,21 +405,6 @@ export default function Game({
                         return
                     }
                     sendMessage(`f ${x} ${y}`)
-                    // dispatch({
-                    //     type: 'commandBatched',
-                    //     command: { command: 'f', x, y },
-                    // })
-                    // state.session.api
-                    //     .flagCell({ x, y })
-                    //     .then((res) =>
-                    //         res.success
-                    //             ? dispatch({
-                    //                   type: 'gameUpdated',
-                    //                   update: res.data,
-                    //               })
-                    //             : dispatch({ type: 'error', error: res.error })
-                    //     )
-                    //     .catch((e) => void e) // TODO
                 }}
                 rightCounterValue={Math.min(state.timer, 999)
                     .toString()

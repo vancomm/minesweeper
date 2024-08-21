@@ -42,6 +42,8 @@ const CELL_STATE_TO_BG: Map<number, string> = new Map([
     [67, 'bg-cell-mine'],
 ])
 
+export const CELL_SIZE_PX = 24
+
 export type CellProps = React.DetailedHTMLProps<
     React.ButtonHTMLAttributes<HTMLButtonElement>,
     HTMLButtonElement
@@ -50,19 +52,12 @@ export type CellProps = React.DetailedHTMLProps<
 }
 
 export default function Cell({ state, style, className, ...props }: CellProps) {
-    const bg = CELL_STATE_TO_BG.get(state) ?? 'bg-cell-up'
     return (
         <button
-            style={{
-                width: 'var(--width)',
-                height: 'var(--height)',
-                backgroundSize: '100%',
-                ...style,
-            }}
             className={twMerge(
-                'block',
-                bg,
-                'active:data-[state=-2]:bg-cell-down',
+                'block h-[24px] w-[24px] bg-[size:100%]',
+                CELL_STATE_TO_BG.get(state) ?? 'bg-cell-up',
+                // 'active:data-[state=-2]:bg-cell-down',
                 className
             )}
             data-state={state}

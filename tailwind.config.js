@@ -27,6 +27,8 @@ export default {
                 "border-bottom": "url('/svg/border/bottom.svg')",
                 "border-bottom-right": "url('/svg/border/bottomright.svg')",
                 "border-bottom-counter-middle": "url('/svg/border/countermiddle.svg')",
+                "border-counter-left": "url('/svg/border/counterleft.svg')",
+                "border-counter-right": "url('/svg/border/counterright.svg')",
                 "cell-1": "url('/svg/cells/cell1.svg')",
                 "cell-2": "url('/svg/cells/cell2.svg')",
                 "cell-3": "url('/svg/cells/cell3.svg')",
