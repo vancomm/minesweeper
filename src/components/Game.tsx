@@ -19,6 +19,7 @@ import { ServerError } from '../api/common'
 import { DivProps } from '../types'
 import { useNavigate, UseNavigateResult } from '@tanstack/react-router'
 import useWebSocket from 'react-use-websocket'
+import { SquareState } from '../constants'
 
 type GamePreset = GameParams & {
     customizable: boolean
@@ -127,20 +128,23 @@ const handleGameEvent = (state: GameState, event: GameEvent): GameState => {
 
     switch (event.type) {
         case 'cellDown': {
+            const { x, y, squareState } = event
+            const { width, height } =
+                state.session ?? GAME_PRESETS[state.presetName]
+            if (squareState == SquareState.Up) {
+                return {
+                    ...state,
+                    pressedSquares: [y * width + x],
+                }
+            }
             if (
                 state.session === undefined ||
                 state.session.ended_at !== undefined
             ) {
                 return state
             }
-            const { width, height, grid } = state.session
-            const { x, y, squareState } = event
-            if (squareState == -2) {
-                return {
-                    ...state,
-                    pressedSquares: [y * state.session.width + x],
-                }
-            } else if (0 <= squareState && squareState <= 8) {
+            const { grid } = state.session
+            if (0 <= squareState && squareState <= 8) {
                 const neighbors = [-1, 0, 1]
                     .flatMap((dx) => [-1, 0, 1].map((dy) => [x + dx, y + dy]))
                     .filter(
@@ -150,7 +154,7 @@ const handleGameEvent = (state: GameState, event: GameEvent): GameState => {
                             0 <= yy &&
                             yy < height &&
                             (xx != x || yy != y) &&
-                            grid[yy * width + xx] == -2
+                            grid[yy * width + xx] == SquareState.Up
                     )
                     .map(([x, y]) => y * width + x)
                 return {
@@ -294,15 +298,19 @@ export default function Game({
             {
                 length: state.gameParams.height * state.gameParams.width,
             },
-            () => -2
+            () => SquareState.Up
         )
     state.pressedSquares?.forEach((j) => {
-        renderedGrid[j] = 0
+        renderedGrid[j] = SquareState.Down
     })
 
     const flags =
-        state.session?.grid.filter((c) => c == -1 || c == 64 || c == 66)
-            .length ?? 0
+        state.session?.grid.filter(
+            (c) =>
+                c == SquareState.Flag ||
+                c == SquareState.FlagMine ||
+                c == SquareState.FalseMine
+        ).length ?? 0
 
     React.useEffect(() => {
         if (state.session && !state.session.ended_at) {
@@ -360,12 +368,12 @@ export default function Game({
                 height={height}
                 grid={renderedGrid}
                 disabled={state.session?.ended_at !== undefined}
-                onCellDown={(x, y, squareState) => {
+                onSquareDown={(x, y, squareState) => {
                     if (state.session?.ended_at === undefined) {
                         dispatch({ type: 'cellDown', x, y, squareState })
                     }
                 }}
-                onCellUp={(x, y, squareState) => {
+                onSquareUp={(x, y, squareState) => {
                     if (state.session?.ended_at !== undefined) {
                         return
                     }
@@ -387,21 +395,24 @@ export default function Game({
                                   })
                         )
                     }
-
                     const message =
-                        (state.session.grid[y * state.session.width + x] === -2
+                        (state.session.grid[y * state.session.width + x] ===
+                        SquareState.Up
                             ? 'o'
                             : 'c') + ` ${x} ${y}`
                     sendMessage(message)
                 }}
-                onCellAux={(x, y, prevState) => {
+                onSquareAux={(x, y, prevState) => {
                     if (
                         !state.session ||
                         state.session?.ended_at !== undefined
                     ) {
                         return
                     }
-                    if (prevState !== -2 && prevState !== -1) {
+                    if (
+                        prevState !== SquareState.Up &&
+                        prevState !== SquareState.Flag
+                    ) {
                         return
                     }
                     sendMessage(`f ${x} ${y}`)

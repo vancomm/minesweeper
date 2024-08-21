@@ -14,20 +14,19 @@ import {
     TopLeftBorder,
     TopRightBorder,
 } from './Borders'
-import Cell, { CELL_SIZE_PX, CellProps } from './Cell'
+import Square, { SQUARE_SIZE_PX, SquareProps } from './Square'
 import React from 'react'
 
-export type Cell = Omit<CellProps, 'gameOver'>
+export type Cell = Omit<SquareProps, 'gameOver'>
 
 export type BoardProps = {
     height: number
     width: number
     grid: number[]
     disabled?: boolean
-    onCellDown?: (x: number, y: number, state: number) => unknown
-    onCellUp?: (x: number, y: number, state: number) => unknown
-    onCellAux?: (x: number, y: number, state: number) => unknown
-    cellProps?: Omit<CellProps, 'state'>
+    onSquareDown?: (x: number, y: number, state: number) => unknown
+    onSquareUp?: (x: number, y: number, state: number) => unknown
+    onSquareAux?: (x: number, y: number, state: number) => unknown
     leftCounterValue: string
     rightCounterValue: string
     faceState: FaceState
@@ -38,11 +37,9 @@ export default function Board({
     height,
     width,
     grid,
-    disabled,
-    cellProps,
-    onCellAux,
-    onCellDown,
-    onCellUp,
+    onSquareDown,
+    onSquareUp,
+    onSquareAux,
     leftCounterValue,
     rightCounterValue,
     faceState,
@@ -51,8 +48,8 @@ export default function Board({
     const cssVariables = React.useMemo(
         () =>
             ({
-                '--grid-width': (width * CELL_SIZE_PX).toString() + 'px',
-                '--grid-height': (height * CELL_SIZE_PX).toString() + 'px',
+                '--grid-width': (width * SQUARE_SIZE_PX).toString() + 'px',
+                '--grid-height': (height * SQUARE_SIZE_PX).toString() + 'px',
             }) as React.CSSProperties,
         [width, height]
     )
@@ -89,26 +86,24 @@ export default function Board({
                     const x = i % width
                     const y = Math.floor(i / width)
                     return (
-                        <Cell
+                        <Square
                             state={state}
-                            key={`cell-${i}`}
+                            key={`square-${i}`}
                             className="float-left"
-                            disabled={disabled}
                             onPointerDown={(e) => {
                                 if (e.button !== 2) {
-                                    onCellDown?.(x, y, state)
+                                    onSquareDown?.(x, y, state)
                                 }
                             }}
                             onPointerUp={(e) => {
                                 if (e.button !== 2) {
-                                    onCellUp?.(x, y, state)
+                                    onSquareUp?.(x, y, state)
                                 }
                             }}
                             onContextMenu={(e) => {
                                 e.preventDefault()
-                                onCellAux?.(x, y, state)
+                                onSquareAux?.(x, y, state)
                             }}
-                            {...cellProps}
                         />
                     )
                 })}

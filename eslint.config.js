@@ -9,6 +9,7 @@ import react from 'eslint-plugin-react'
 import prettier from 'eslint-config-prettier'
 import { FlatCompat } from '@eslint/eslintrc'
 import reactCompiler from 'eslint-plugin-react-compiler'
+import reactRefresh from 'eslint-plugin-react-refresh'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -47,7 +48,10 @@ export default tseslint.config(
     {
         files: ['src/*.{ts,tsx}'],
         ignores: ['eslint.config.js'],
-        plugins: { 'react-compiler': reactCompiler },
+        plugins: {
+            'react-compiler': reactCompiler,
+            'react-refresh': reactRefresh,
+        },
         languageOptions: {
             globals: globals.browser,
             parserOptions: {
@@ -61,6 +65,7 @@ export default tseslint.config(
             '@typescript-eslint/no-unused-vars': 'off',
             '@typescript-eslint/only-throw-error': 'off',
             '@typescript-eslint/consistent-type-definitions': 'off',
+            'react-refresh/only-export-components': 'warn',
         },
     }
 )
