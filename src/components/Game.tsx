@@ -14,10 +14,12 @@ import {
     GameApi,
     GameUpdate,
     GameParams,
+    sessionIdToWS,
 } from '../api/game'
 import { ServerError } from '../api/common'
 import { DivProps } from '../types'
 import { useNavigate, UseNavigateResult } from '@tanstack/react-router'
+import useWebSocket from 'react-use-websocket'
 
 type GamePreset = GameParams & {
     customizable: boolean
@@ -220,6 +222,8 @@ type GameProps = DivProps & {
     initialUpdate?: GameUpdate
 }
 
+const placeholderWS = 'ws://echo.websocket.org'
+
 export default function Game({
     initialUpdate,
     className,
@@ -249,6 +253,20 @@ export default function Game({
             return state
         }
     )
+
+    const { sendMessage, lastJsonMessage, readyState } = useWebSocket(
+        state.session ? sessionIdToWS(state.session.session_id) : placeholderWS,
+        undefined,
+        !!state.session
+    )
+
+    React.useEffect(() => {
+        if (lastJsonMessage) {
+            console.log(lastJsonMessage, readyState)
+            const update = GameUpdate.parse(lastJsonMessage)
+            dispatch({ type: 'gameUpdated', update })
+        }
+    }, [lastJsonMessage])
 
     const { width, height, mine_count } = state.session ?? state.gameParams
     const grid: number[] =
@@ -332,10 +350,9 @@ export default function Game({
                 grid={grid}
                 disabled={state.session?.ended_at !== undefined}
                 onCellDown={(x, y) => {
-                    if (state.session?.ended_at !== undefined) {
-                        return
+                    if (state.session?.ended_at === undefined) {
+                        dispatch({ type: 'cellDown', x, y })
                     }
-                    dispatch({ type: 'cellDown', x, y })
                 }}
                 onCellUp={(x, y, prevState) => {
                     if (state.session?.ended_at !== undefined) {
@@ -360,43 +377,47 @@ export default function Game({
                         )
                     }
 
-                    if (state.batchedCommands?.length) {
-                        const lastCommand: BatchedCommand = {
-                            command: prevState == -2 ? 'o' : 'c',
-                            x,
-                            y,
-                        }
-                        const payload = [...state.batchedCommands, lastCommand]
-                            .map((c) => Object.values(c).join(' '))
-                            .join('\n')
-                        return state.session.api
-                            .executeBatch({ body: payload })
-                            .then((res) =>
-                                res.success
-                                    ? dispatch({
-                                          type: 'gameUpdated',
-                                          update: res.data,
-                                      })
-                                    : dispatch({
-                                          type: 'error',
-                                          error: res.error,
-                                      })
-                            )
-                    } else {
-                        const action =
-                            prevState === -2
-                                ? state.session.api.openCell
-                                : state.session.api.chordCell
+                    const message =
+                        (prevState === -2 ? 'o' : 'c') + ` ${x} ${y}`
+                    sendMessage(message)
 
-                        return action({ search: { x, y } }).then((res) =>
-                            res.success
-                                ? dispatch({
-                                      type: 'gameUpdated',
-                                      update: res.data,
-                                  })
-                                : dispatch({ type: 'error', error: res.error })
-                        )
-                    }
+                    // if (state.batchedCommands?.length) {
+                    //     const lastCommand: BatchedCommand = {
+                    //         command: prevState == -2 ? 'o' : 'c',
+                    //         x,
+                    //         y,
+                    //     }
+                    //     const payload = [...state.batchedCommands, lastCommand]
+                    //         .map((c) => Object.values(c).join(' '))
+                    //         .join('\n')
+                    //     return state.session.api
+                    //         .executeBatch({ body: payload })
+                    //         .then((res) =>
+                    //             res.success
+                    //                 ? dispatch({
+                    //                       type: 'gameUpdated',
+                    //                       update: res.data,
+                    //                   })
+                    //                 : dispatch({
+                    //                       type: 'error',
+                    //                       error: res.error,
+                    //                   })
+                    //         )
+                    // } else {
+                    //     const action =
+                    //         prevState === -2
+                    //             ? state.session.api.openCell
+                    //             : state.session.api.chordCell
+
+                    //     return action({ search: { x, y } }).then((res) =>
+                    //         res.success
+                    //             ? dispatch({
+                    //                   type: 'gameUpdated',
+                    //                   update: res.data,
+                    //               })
+                    //             : dispatch({ type: 'error', error: res.error })
+                    //     )
+                    // }
                 }}
                 onCellAux={(x, y, prevState) => {
                     if (
@@ -408,10 +429,11 @@ export default function Game({
                     if (prevState !== -2 && prevState !== -1) {
                         return
                     }
-                    dispatch({
-                        type: 'commandBatched',
-                        command: { command: 'f', x, y },
-                    })
+                    sendMessage(`f ${x} ${y}`)
+                    // dispatch({
+                    //     type: 'commandBatched',
+                    //     command: { command: 'f', x, y },
+                    // })
                     // state.session.api
                     //     .flagCell({ x, y })
                     //     .then((res) =>

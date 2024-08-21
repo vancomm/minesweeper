@@ -11,6 +11,7 @@ export default defineConfig(({ mode }) => {
 
     const env = loadEnv(mode, process.cwd(), '')
     const api_url = env.API_URL || 'http://localhost:8000/v1'
+    const ws_url = env.WS_URL || 'ws://localhost:8000/v1'
     return {
         base: '/minesweeper/',
         build: {
@@ -24,6 +25,7 @@ export default defineConfig(({ mode }) => {
         plugins: [react(), TanStackRouterVite()],
         define: {
             __API_URL__: JSON.stringify(api_url),
+            __WS_URL__: JSON.stringify(ws_url),
             __APP_VERSION__: JSON.stringify(pkg.version),
         },
     }

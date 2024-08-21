@@ -6,6 +6,10 @@ import { createApiMethod } from './common'
 //     'http://localhost:8000/v1'
 
 const ENDPOINT = __API_URL__
+const WS_ENDPOINT = __WS_URL__
+
+export const sessionIdToWS = (session_id: string) =>
+    `${WS_ENDPOINT}/game/${session_id}/connect`
 
 // type PosParams struct {
 // 	X int `schema:"x,required"`

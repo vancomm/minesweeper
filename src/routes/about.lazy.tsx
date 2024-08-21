@@ -19,7 +19,7 @@ const H2 = ({ className, ...props }: HeadingProps) => (
 
 function About() {
     return (
-        <div className="max-w-lg p-2 pr-32">
+        <div className="max-w-lg p-2 md:pr-32">
             <div>
                 <P>Yet another implementation of a classic game.</P>
                 <H2>How to play</H2>
