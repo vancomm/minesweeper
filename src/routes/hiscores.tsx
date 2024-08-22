@@ -30,8 +30,8 @@ type HiScoreTableProps = {
     records: GameRecord[]
 }
 
-const HiScoreTable = ({ title, records }: HiScoreTableProps) => (
-    <table className="border-separate border-spacing-0.5">
+const HiScoreSection = ({ title, records }: HiScoreTableProps) => (
+    <>
         <tr className="border-b border-neutral-500">
             <td colSpan={2}>
                 <H3>{title}</H3>
@@ -39,13 +39,14 @@ const HiScoreTable = ({ title, records }: HiScoreTableProps) => (
         </tr>
         {records.map(({ playtime }, i) => (
             <tr key={`${title}-${i}`}>
+                <td className="pr-1 text-end">{i + 1}.</td>
                 <td className="pr-8">
-                    {i + 1}. <i>Anonymous</i>
+                    <i>Anonymous</i>
                 </td>
                 <td>{playtime.toFixed(3)}</td>
             </tr>
         ))}
-    </table>
+    </>
 )
 
 function HiScores() {
@@ -67,11 +68,11 @@ function HiScores() {
     })
 
     return (
-        <div>
+        <table className="border-separate border-spacing-0.5">
             {Object.entries(categories).map(
                 ([key, records]) =>
                     records.length > 0 && (
-                        <HiScoreTable
+                        <HiScoreSection
                             key={key}
                             title={capitalize(key)}
                             records={records
@@ -83,6 +84,6 @@ function HiScores() {
                         />
                     )
             )}
-        </div>
+        </table>
     )
 }

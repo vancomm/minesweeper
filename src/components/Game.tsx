@@ -94,7 +94,8 @@ export default function Game({
             switch (event.type) {
                 case 'cellDown': {
                     const { x, y, squareState } = event
-                    const { width } = state.session ?? presets[state.presetName]
+                    const { width, height } =
+                        state.session ?? presets[state.presetName]
                     const index = y * width + x
                     if (squareState == SquareState.Up) {
                         return { ...state, pressedSquares: [index] }
@@ -111,17 +112,18 @@ export default function Game({
                             ...state,
                             pressedSquares: [x - 1, x, x + 1]
                                 .flatMap((xx) =>
-                                    [y - 1, y, y + 1].map(
-                                        (yy) => yy * width + xx
-                                    )
+                                    [y - 1, y, y + 1].map((yy) => [xx, yy])
                                 )
                                 .filter(
-                                    (j) =>
-                                        0 <= j &&
-                                        j < grid.length &&
-                                        j !== index &&
-                                        grid[j] === SquareState.Up
-                                ),
+                                    ([xx, yy]) =>
+                                        0 <= xx &&
+                                        xx < width &&
+                                        0 <= yy &&
+                                        yy < height &&
+                                        yy * width + xx !== index &&
+                                        grid[yy * width + xx] === SquareState.Up
+                                )
+                                .map(([xx, yy]) => yy * width + xx),
                         }
                     }
                     return state
