@@ -1,6 +1,9 @@
 import { createLazyFileRoute } from '@tanstack/react-router'
 import { HeadingProps, ParagraphProps } from '../types'
 import { twMerge } from 'tailwind-merge'
+import Square from '../components/Square'
+import { SquareState } from '../constants'
+import React from 'react'
 
 export const Route = createLazyFileRoute('/about')({
     component: About,
@@ -16,6 +19,109 @@ const H2 = ({ className, ...props }: HeadingProps) => (
         {...props}
     />
 )
+
+const DemoSquare = ({ trueState }: { trueState: number }) => {
+    const [pressed, setPressed] = React.useState(false)
+    const [opened, setOpened] = React.useState(false)
+    const [flagged, setFlagged] = React.useState(false)
+
+    return (
+        <Square
+            state={
+                pressed
+                    ? SquareState.Down
+                    : opened
+                      ? trueState
+                      : flagged
+                        ? SquareState.Flag
+                        : SquareState.Up
+            }
+            onPointerDown={(e) => {
+                if (e.button !== 2 && !opened && !flagged) {
+                    setPressed(true)
+                }
+            }}
+            onPointerUp={(e) => {
+                if (e.button !== 2 && !flagged) {
+                    setPressed(false)
+                    setOpened((o) => !o)
+                }
+            }}
+            onContextMenu={(e) => {
+                e.preventDefault()
+                if (!opened) {
+                    setFlagged((f) => !f)
+                }
+            }}
+        />
+    )
+}
+
+const ChordDemo = () => {
+    const [pressed, setPressed] = React.useState(false)
+    const [opened, setOpened] = React.useState(false)
+
+    return (
+        <div className="h-[72px] w-[72px]">
+            <Square
+                state={SquareState.Flag}
+                className="float-left cursor-not-allowed"
+                onContextMenu={(e) => e.preventDefault()}
+            />
+            <Square
+                state={SquareState.Flag}
+                className="float-left cursor-not-allowed"
+                onContextMenu={(e) => e.preventDefault()}
+            />
+            <Square
+                state={pressed ? SquareState.Down : opened ? 1 : SquareState.Up}
+                className="float-left cursor-not-allowed"
+                onContextMenu={(e) => e.preventDefault()}
+            />
+            <Square
+                state={pressed ? SquareState.Down : opened ? 2 : SquareState.Up}
+                className="float-left cursor-not-allowed"
+                onContextMenu={(e) => e.preventDefault()}
+            />
+            <Square
+                state={3}
+                className="float-left"
+                onPointerDown={(e) => {
+                    if (e.button !== 2 && !opened) {
+                        setPressed(true)
+                    }
+                }}
+                onPointerUp={(e) => {
+                    if (e.button !== 2) {
+                        setPressed(false)
+                        setOpened((o) => !o)
+                    }
+                }}
+                onContextMenu={(e) => e.preventDefault()}
+            />
+            <Square
+                state={pressed ? SquareState.Down : opened ? 2 : SquareState.Up}
+                className="float-left cursor-not-allowed"
+                onContextMenu={(e) => e.preventDefault()}
+            />
+            <Square
+                state={pressed ? SquareState.Down : opened ? 0 : SquareState.Up}
+                className="float-left cursor-not-allowed"
+                onContextMenu={(e) => e.preventDefault()}
+            />
+            <Square
+                state={pressed ? SquareState.Down : opened ? 1 : SquareState.Up}
+                className="float-left cursor-not-allowed"
+                onContextMenu={(e) => e.preventDefault()}
+            />
+            <Square
+                state={SquareState.Flag}
+                className="float-left cursor-not-allowed"
+                onContextMenu={(e) => e.preventDefault()}
+            />
+        </div>
+    )
+}
 
 function About() {
     return (
@@ -36,9 +142,11 @@ function About() {
                 <P>
                     Use left click to <b>open</b> a closed square.
                 </P>
+                <DemoSquare trueState={1} />
                 <P>
                     Use right click to place a <b>flag</b> on a closed square.
                 </P>
+                <DemoSquare trueState={SquareState.Blast} />
                 <P>
                     If the number of flags near an opened square equals the
                     number inside the square, you can open all neighboring
@@ -48,6 +156,14 @@ function About() {
                         <i>chord</i>
                     </b>
                     ).
+                </P>
+                <ChordDemo />
+                <H2>Custom game settings</H2>
+                <P>
+                    In addition to the predefined game modes, you may provide
+                    your own width, height and mine count for the game grid. The
+                    "unique" game setting determines if the generated grid
+                    allows for only one possible solution.
                 </P>
             </div>
         </div>

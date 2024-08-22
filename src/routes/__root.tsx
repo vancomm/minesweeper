@@ -3,6 +3,8 @@ import { TanStackRouterDevtools } from '../components/Devtools'
 import { Suspense } from 'react'
 import { DivProps } from '../types'
 import { twMerge } from 'tailwind-merge'
+import Square from '../components/Square'
+import { SquareState } from '../constants'
 
 export const Route = createRootRoute({
     component: () => (
@@ -46,12 +48,32 @@ function Header({ ...props }: DivProps) {
     )
 }
 
+const TwentyTwentyFour = () => (
+    <div className="flex items-center" aria-valuetext="2024">
+        {[2, SquareState.Mine, 2, 4].map((state, i) => (
+            <Square
+                key={i}
+                state={state}
+                className="inline-block h-[18px] w-[18px] cursor-default"
+            />
+        ))}
+    </div>
+)
+
 function Footer({ className, ...props }: DivProps) {
     return (
-        <footer className={twMerge('m-auto p-2', className)} {...props}>
-            v{__APP_VERSION__} &bull; 2024 &bull;{' '}
+        <footer
+            className={twMerge('m-auto flex items-center gap-2 p-2', className)}
+            {...props}
+        >
+            <div className="pb-1 text-center leading-none">
+                v{__APP_VERSION__}
+            </div>
+            <div className="pb-1 text-center leading-none">&bull;</div>
+            <TwentyTwentyFour />
+            <div className="pb-1 text-center leading-none">&bull;</div>
             <a
-                className="cursor-pointer hover:underline"
+                className="cursor-pointer pb-1 text-center leading-none hover:underline"
                 href="https://github.com/vancomm/minesweeper"
             >
                 source

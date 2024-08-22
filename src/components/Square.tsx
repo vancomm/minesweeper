@@ -26,11 +26,11 @@ export type SquareProps = React.DetailedHTMLProps<
     React.ButtonHTMLAttributes<HTMLButtonElement>,
     HTMLButtonElement
 > & {
-    state: number
+    state?: number
 }
 
 export default function Square({
-    state,
+    state = SquareState.Up,
     style,
     className,
     ...props
