@@ -20,6 +20,9 @@ export const Route = createRootRoute({
                         >
                             New Game
                         </Link>
+                        <Link to="/hiscores" className="[&.active]:font-bold">
+                            Hi Scores
+                        </Link>
                         <Link to="/about" className="[&.active]:font-bold">
                             About
                         </Link>

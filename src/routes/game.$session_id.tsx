@@ -2,10 +2,8 @@ import { createFileRoute, ErrorComponent } from '@tanstack/react-router'
 import { checkGameApi, createGameApi, GameUpdate } from '../api/game'
 import Game from '../components/Game'
 import CircularProgress from '@mui/material/CircularProgress'
-
-const raise = (error: unknown): never => {
-    throw error
-}
+import { raise } from '../utils'
+import { GAME_PRESETS } from '../constants'
 
 export const Route = createFileRoute('/game/$session_id')({
     loader: async ({
@@ -31,5 +29,11 @@ export const Route = createFileRoute('/game/$session_id')({
 
 function RestoredGame() {
     const update = Route.useLoaderData()
-    return <Game initialUpdate={update} />
+    return (
+        <Game
+            presets={GAME_PRESETS}
+            defaultPresetName={'medium'}
+            initialUpdate={update}
+        />
+    )
 }

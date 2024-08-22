@@ -70,6 +70,20 @@ export const createNewGame = createApiMethod<SquareParams & GameParams>(
     }
 )(GameUpdate)
 
+export const GameRecord = z.object({
+    width: z.number(),
+    height: z.number(),
+    mine_count: z.number(),
+    unique: z.boolean(),
+    playtime: z.number(),
+})
+
+export type GameRecord = z.infer<typeof GameRecord>
+
+export const getRecords = createApiMethod(`${ENDPOINT}/records`)(
+    GameRecord.array()
+)
+
 export const checkGameApi = createApiMethod(`${ENDPOINT}/status`)(z.unknown())
 
 export const createGameApi = (session_id: string) => {

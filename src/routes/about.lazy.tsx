@@ -130,13 +130,16 @@ function About() {
                 <P>Yet another implementation of a classic game.</P>
                 <H2>How to play</H2>
                 <P>
-                    Open all squares without mines. Clicking on a mine ends the
-                    game.
+                    Mines are scattered throughout the game board. Open all
+                    squares without mines. Clicking on a square that conceals a
+                    mine ends the game.
                 </P>
                 <P>
                     Each opened square displays a number that reflects how many
                     mines there are in 8 squares around it (its <i>neighbors</i>
-                    ). Squares with no mined neighbors display no number.
+                    ). Squares with no mined neighbors display no number. First
+                    square you click is guaranteed to be safe, and so are its
+                    neighbors.
                 </P>
                 <H2>Controls</H2>
                 <P>
@@ -145,15 +148,17 @@ function About() {
                 <DemoSquare trueState={1} />
                 <P>
                     Use right click to place a <b>flag</b> on a closed square.
+                    Flags help you mark the squares you believe to contain
+                    mines.
                 </P>
                 <DemoSquare trueState={SquareState.Blast} />
                 <P>
                     If the number of flags near an opened square equals the
                     number inside the square, you can open all neighboring
                     squares at once by clicking on the opened square (this is
-                    called a{' '}
+                    called{' '}
                     <b>
-                        <i>chord</i>
+                        <i>chording</i>
                     </b>
                     ).
                 </P>
@@ -163,7 +168,8 @@ function About() {
                     In addition to the predefined game modes, you may provide
                     your own width, height and mine count for the game grid. The
                     "unique" game setting determines if the generated grid
-                    allows for only one possible solution.
+                    allows for only one possible solution. All predefined game
+                    modes offer only "unique" games.
                 </P>
             </div>
         </div>

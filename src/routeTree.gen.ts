@@ -13,6 +13,7 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as HiscoresImport } from './routes/hiscores'
 import { Route as IndexImport } from './routes/index'
 import { Route as GameSessionidImport } from './routes/game.$session_id'
 
@@ -26,6 +27,11 @@ const AboutLazyRoute = AboutLazyImport.update({
   path: '/about',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/about.lazy').then((d) => d.Route))
+
+const HiscoresRoute = HiscoresImport.update({
+  path: '/hiscores',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const IndexRoute = IndexImport.update({
   path: '/',
@@ -46,6 +52,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/hiscores': {
+      id: '/hiscores'
+      path: '/hiscores'
+      fullPath: '/hiscores'
+      preLoaderRoute: typeof HiscoresImport
       parentRoute: typeof rootRoute
     }
     '/about': {
@@ -69,6 +82,7 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren({
   IndexRoute,
+  HiscoresRoute,
   AboutLazyRoute,
   GameSessionidRoute,
 })
@@ -82,12 +96,16 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/hiscores",
         "/about",
         "/game/$session_id"
       ]
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/hiscores": {
+      "filePath": "hiscores.tsx"
     },
     "/about": {
       "filePath": "about.lazy.tsx"

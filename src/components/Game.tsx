@@ -19,66 +19,14 @@ import { ServerError } from '../api/common'
 import { DivProps } from '../types'
 import { useNavigate, UseNavigateResult } from '@tanstack/react-router'
 import useWebSocket from 'react-use-websocket'
-import { SquareState } from '../constants'
+import {
+    GamePreset,
+    GamePresetName,
+    paramsToSeed,
+    SquareState,
+} from '../constants'
 
-type GamePreset = GameParams & {
-    customizable: boolean
-}
-
-const GAME_PRESETS = {
-    easy: {
-        height: 9,
-        width: 9,
-        mine_count: 10,
-        unique: true,
-        customizable: false,
-    },
-    medium: {
-        height: 16,
-        width: 16,
-        mine_count: 40,
-        unique: true,
-        customizable: false,
-    },
-    hard: {
-        height: 16,
-        width: 30,
-        mine_count: 99,
-        unique: true,
-        customizable: false,
-    },
-    evil: {
-        height: 20,
-        width: 30,
-        mine_count: 130,
-        unique: true,
-        customizable: false,
-    },
-    custom: {
-        height: 30,
-        width: 30,
-        mine_count: 150,
-        unique: true,
-        customizable: true,
-    },
-} as const satisfies Record<string, GamePreset>
-
-type GamePresetName = keyof typeof GAME_PRESETS
-
-const paramsToSeed = ({ width, height, mine_count, unique }: GameParams) =>
-    `${width}:${height}:${mine_count}:${unique ? '1' : '0'}`
-
-const DEFAULT_GAME_PRESET_NAME: GamePresetName = 'medium'
-
-const gamePresetRadioItems: RadioItemProps<GamePresetName>[] = Object.keys(
-    GAME_PRESETS
-).map((name) => ({
-    id: name,
-    label: capitalize(name),
-    value: name as GamePresetName,
-}))
-
-export type GameSession = GameUpdate & {
+type GameSession = GameUpdate & {
     api: GameApi
 }
 
@@ -91,14 +39,6 @@ type GameState = {
     timerInterval?: number
     showCustomControls: boolean
     pressedSquares?: number[]
-}
-
-const initialState: GameState = {
-    presetName: DEFAULT_GAME_PRESET_NAME,
-    gameParams: GAME_PRESETS[DEFAULT_GAME_PRESET_NAME],
-    face: 'smile',
-    timer: 0,
-    showCustomControls: false,
 }
 
 type GameEvent =
@@ -121,145 +61,166 @@ type GameEvent =
     | { type: 'timerStop' }
     | { type: 'error'; error: ServerError }
 
-const handleGameEvent = (state: GameState, event: GameEvent): GameState => {
-    if (event.type !== 'timerTick') {
-        console.debug(event)
-    }
-
-    switch (event.type) {
-        case 'cellDown': {
-            const { x, y, squareState } = event
-            const { width, height } =
-                state.session ?? GAME_PRESETS[state.presetName]
-            if (squareState == SquareState.Up) {
-                return {
-                    ...state,
-                    pressedSquares: [y * width + x],
-                }
-            }
-            if (
-                state.session === undefined ||
-                state.session.ended_at !== undefined
-            ) {
-                return state
-            }
-            const { grid } = state.session
-            if (0 <= squareState && squareState <= 8) {
-                const neighbors = [-1, 0, 1]
-                    .flatMap((dx) => [-1, 0, 1].map((dy) => [x + dx, y + dy]))
-                    .filter(
-                        ([xx, yy]) =>
-                            0 <= xx &&
-                            xx < width &&
-                            0 <= yy &&
-                            yy < height &&
-                            (xx != x || yy != y) &&
-                            grid[yy * width + xx] == SquareState.Up
-                    )
-                    .map(([x, y]) => y * width + x)
-                return {
-                    ...state,
-                    pressedSquares: neighbors,
-                }
-            }
-            return state
-        }
-        case 'gameUpdated': {
-            const { update, navigate } = event
-            if (window.location.href.endsWith('/new') && navigate) {
-                navigate({
-                    to: '/game/$session_id',
-                    params: { session_id: update.session_id },
-                })
-            }
-            if (update.ended_at !== undefined) {
-                window.clearInterval(state.timerInterval)
-            }
-            const timer = update.ended_at
-                ? update.ended_at - update.started_at
-                : state.timer
-            const face: FaceState = update.dead
-                ? 'lost'
-                : update.won
-                  ? 'win'
-                  : 'smile'
-            return {
-                ...state,
-                face,
-                timer,
-                pressedSquares: undefined,
-                session: {
-                    ...state.session,
-                    ...update,
-                    api: state.session?.api ?? createGameApi(update.session_id),
-                },
-            }
-        }
-        case 'presetPicked': {
-            const { presetName } = event
-            return {
-                ...state,
-                presetName,
-            }
-        }
-        case 'gameReset': {
-            const { presetName, gameParams, navigate } = event
-            navigate({ to: '/game/$session_id', params: { session_id: 'new' } })
-            return {
-                ...initialState,
-                presetName: presetName ?? state.presetName,
-                gameParams: gameParams ?? GAME_PRESETS[state.presetName],
-            }
-        }
-        case 'timerStart': {
-            if (state.timerInterval !== undefined) {
-                window.clearInterval(state.timerInterval)
-            }
-            const { callback, interval } = event
-            return {
-                ...state,
-                timerInterval: window.setInterval(callback, interval),
-            }
-        }
-        case 'timerTick': {
-            if (!state.session) {
-                return state
-            }
-            return {
-                ...state,
-                timer:
-                    (state.session.ended_at ?? Math.floor(Date.now() / 1000)) -
-                    state.session.started_at,
-            }
-        }
-        case 'timerStop': {
-            return {
-                ...state,
-                timerInterval: void window.clearInterval(state.timerInterval),
-            }
-        }
-    }
-    return state
-}
-
 type GameProps = DivProps & {
+    presets: Record<string, GamePreset>
+    defaultPresetName: GamePresetName
     initialUpdate?: GameUpdate
 }
 
-const placeholderWS = 'ws://echo.websocket.org'
-
 export default function Game({
+    presets,
+    defaultPresetName,
     initialUpdate,
     className,
     ...props
 }: GameProps) {
+    const initialState: GameState = React.useMemo(
+        () => ({
+            presetName: defaultPresetName,
+            gameParams: presets[defaultPresetName],
+            face: 'smile',
+            timer: 0,
+            showCustomControls: false,
+        }),
+        [defaultPresetName, presets]
+    )
+
+    const handleGameEvent = React.useCallback(
+        (state: GameState, event: GameEvent): GameState => {
+            if (event.type !== 'timerTick') {
+                console.debug(event)
+            }
+
+            switch (event.type) {
+                case 'cellDown': {
+                    const { x, y, squareState } = event
+                    const { width } = state.session ?? presets[state.presetName]
+                    const index = y * width + x
+                    if (squareState == SquareState.Up) {
+                        return { ...state, pressedSquares: [index] }
+                    }
+                    if (
+                        state.session === undefined ||
+                        state.session.ended_at !== undefined
+                    ) {
+                        return state
+                    }
+                    const { grid } = state.session
+                    if (0 <= squareState && squareState <= 8) {
+                        return {
+                            ...state,
+                            pressedSquares: [x - 1, x, x + 1]
+                                .flatMap((xx) =>
+                                    [y - 1, y, y + 1].map(
+                                        (yy) => yy * width + xx
+                                    )
+                                )
+                                .filter(
+                                    (j) =>
+                                        0 <= j &&
+                                        j < grid.length &&
+                                        j !== index &&
+                                        grid[j] === SquareState.Up
+                                ),
+                        }
+                    }
+                    return state
+                }
+                case 'gameUpdated': {
+                    const { update, navigate } = event
+                    if (window.location.href.endsWith('/new') && navigate) {
+                        navigate({
+                            to: '/game/$session_id',
+                            params: { session_id: update.session_id },
+                        })
+                    }
+                    if (update.ended_at !== undefined) {
+                        window.clearInterval(state.timerInterval)
+                    }
+                    const timer = update.ended_at
+                        ? update.ended_at - update.started_at
+                        : state.timer
+                    const face: FaceState = update.dead
+                        ? 'lost'
+                        : update.won
+                          ? 'win'
+                          : 'smile'
+                    return {
+                        ...state,
+                        face,
+                        timer,
+                        pressedSquares: undefined,
+                        session: {
+                            ...state.session,
+                            ...update,
+                            api:
+                                state.session?.api ??
+                                createGameApi(update.session_id),
+                        },
+                    }
+                }
+                case 'presetPicked': {
+                    const { presetName } = event
+                    return {
+                        ...state,
+                        presetName,
+                    }
+                }
+                case 'gameReset': {
+                    const { presetName, gameParams, navigate } = event
+                    navigate({
+                        to: '/game/$session_id',
+                        params: { session_id: 'new' },
+                    })
+                    return {
+                        ...initialState,
+                        presetName: presetName ?? state.presetName,
+                        gameParams: gameParams ?? presets[state.presetName],
+                    }
+                }
+                case 'timerStart': {
+                    if (state.timerInterval !== undefined) {
+                        window.clearInterval(state.timerInterval)
+                    }
+                    const { callback, interval } = event
+                    return {
+                        ...state,
+                        timerInterval: window.setInterval(callback, interval),
+                    }
+                }
+                case 'timerTick': {
+                    if (!state.session) {
+                        return state
+                    }
+                    return {
+                        ...state,
+                        timer:
+                            (state.session.ended_at ??
+                                Math.floor(Date.now() / 1000)) -
+                            state.session.started_at,
+                    }
+                }
+                case 'timerStop': {
+                    return {
+                        ...state,
+                        timerInterval: void window.clearInterval(
+                            state.timerInterval
+                        ),
+                    }
+                }
+            }
+            return state
+        },
+        [presets, initialState]
+    )
+
     const [state, dispatch] = React.useReducer(
         handleGameEvent,
         initialState,
         (state) => {
             if (initialUpdate) {
                 const seed = paramsToSeed(initialUpdate)
-                state.presetName = Object.entries(GAME_PRESETS).reduce(
+                state.presetName = Object.entries(presets).reduce(
                     (acc, [name, params]) =>
                         seed == paramsToSeed(params)
                             ? (name as GamePresetName)
@@ -279,7 +240,7 @@ export default function Game({
     const navigate = useNavigate({ from: '/game/$session_id' })
 
     const { sendMessage, lastJsonMessage } = useWebSocket(
-        state.session ? sessionIdToWS(state.session.session_id) : placeholderWS,
+        state.session ? sessionIdToWS(state.session.session_id) : '',
         {},
         !!state.session
     )
@@ -294,12 +255,7 @@ export default function Game({
     const { width, height, mine_count } = state.session ?? state.gameParams
     const renderedGrid: number[] =
         state.session?.grid.slice() ??
-        Array.from(
-            {
-                length: state.gameParams.height * state.gameParams.width,
-            },
-            () => SquareState.Up
-        )
+        Array.from({ length: width * height }, () => SquareState.Up)
     state.pressedSquares?.forEach((j) => {
         renderedGrid[j] = SquareState.Down
     })
@@ -324,6 +280,17 @@ export default function Game({
         }
     }, [state.session])
 
+    const gamePresetRadioItems: RadioItemProps<GamePresetName>[] =
+        React.useMemo(
+            () =>
+                Object.keys(presets).map((name) => ({
+                    id: name,
+                    label: capitalize(name),
+                    value: name as GamePresetName,
+                })),
+            [presets]
+        )
+
     return (
         <div
             className={twMerge('flex w-fit flex-col gap-y-1', className)}
@@ -334,7 +301,7 @@ export default function Game({
                     items={gamePresetRadioItems}
                     activeId={state.presetName}
                     onChange={({ value }) => {
-                        if (GAME_PRESETS[value].customizable) {
+                        if (presets[value].customizable) {
                             dispatch({
                                 type: 'presetPicked',
                                 presetName: value,
@@ -343,16 +310,16 @@ export default function Game({
                             dispatch({
                                 type: 'gameReset',
                                 presetName: value,
-                                gameParams: GAME_PRESETS[value],
+                                gameParams: presets[value],
                                 navigate,
                             })
                         }
                     }}
                 />
             </div>
-            <Collapse in={GAME_PRESETS[state.presetName].customizable}>
+            <Collapse in={presets[state.presetName].customizable}>
                 <GameSettings
-                    defaultParams={GAME_PRESETS[state.presetName]}
+                    defaultParams={presets[state.presetName]}
                     onSubmit={(update) =>
                         dispatch({
                             type: 'gameReset',

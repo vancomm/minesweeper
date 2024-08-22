@@ -1,25 +1,55 @@
-/*
- * Each item in the `grid' array is one of the following values:
- *
- * 	- 0 to 8 mean the square is open and has a surrounding mine
- * 	  count.
- *
- *  - -1 means the square is marked as a mine.
- *
- *  - -2 means the square is unknown.
- *
- * 	- -3 means the square is marked with a question mark
- * 	  (FIXME: do we even want to bother with this?).
- *
- * 	- 64 means the square has had a mine revealed when the game
- * 	  was lost.
- *
- * 	- 65 means the square had a mine revealed and this was the
- * 	  one the player hits.
- *
- * 	- 66 means the square has a crossed-out mine because the
- * 	  player had incorrectly marked it.
- */
+import { GameParams } from './api/game'
+
+export type GamePreset = GameParams & {
+    customizable: boolean
+}
+
+export const GAME_PRESETS = {
+    easy: {
+        height: 9,
+        width: 9,
+        mine_count: 10,
+        unique: true,
+        customizable: false,
+    },
+    medium: {
+        height: 16,
+        width: 16,
+        mine_count: 40,
+        unique: true,
+        customizable: false,
+    },
+    hard: {
+        height: 16,
+        width: 30,
+        mine_count: 99,
+        unique: true,
+        customizable: false,
+    },
+    evil: {
+        height: 20,
+        width: 30,
+        mine_count: 130,
+        unique: true,
+        customizable: false,
+    },
+    custom: {
+        height: 30,
+        width: 30,
+        mine_count: 150,
+        unique: true,
+        customizable: true,
+    },
+} as const satisfies Record<string, GamePreset>
+
+export type GamePresetName = keyof typeof GAME_PRESETS
+
+export const paramsToSeed = ({
+    width,
+    height,
+    mine_count,
+    unique,
+}: GameParams) => `${width}:${height}:${mine_count}:${unique ? '1' : '0'}`
 
 export const SquareState = {
     Question: -3,

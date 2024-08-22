@@ -1,0 +1,88 @@
+import { createFileRoute } from '@tanstack/react-router'
+import { twMerge } from 'tailwind-merge'
+import { capitalize } from '@mui/material'
+import CircularProgress from '@mui/material/CircularProgress'
+
+import { GameRecord, getRecords } from '../api/game'
+import { GAME_PRESETS, paramsToSeed } from '../constants'
+import { HeadingProps } from '../types'
+import { raise } from '../utils'
+
+const H3 = ({ className, ...props }: HeadingProps) => (
+    <h3 className={twMerge('font-bold', className)} {...props} />
+)
+
+export const Route = createFileRoute('/hiscores')({
+    loader: async () =>
+        getRecords({}).then(({ success, data }) =>
+            success ? data : raise(new Error('api unavailable'))
+        ),
+    component: HiScores,
+    pendingComponent: () => (
+        <div className="grid h-64 w-64 place-items-center">
+            <CircularProgress color="inherit" />
+        </div>
+    ),
+})
+
+type HiScoreTableProps = {
+    title: string
+    records: GameRecord[]
+}
+
+const HiScoreTable = ({ title, records }: HiScoreTableProps) => (
+    <table className="border-separate border-spacing-0.5">
+        <tr className="border-b border-neutral-500">
+            <td colSpan={2}>
+                <H3>{title}</H3>
+            </td>
+        </tr>
+        {records.map(({ playtime }, i) => (
+            <tr key={`${title}-${i}`}>
+                <td className="pr-8">
+                    {i + 1}. <i>Anonymous</i>
+                </td>
+                <td>{playtime.toFixed(3)}</td>
+            </tr>
+        ))}
+    </table>
+)
+
+function HiScores() {
+    const records = Route.useLoaderData()
+
+    const categories = Object.entries(GAME_PRESETS).reduce(
+        (acc, [k, v]) => (v.customizable ? acc : { ...acc, [k]: [] }),
+        {} as Record<string, GameRecord[]>
+    )
+    const seedToCategory = Object.entries(GAME_PRESETS).reduce(
+        (acc, [k, v]) => ({ ...acc, [paramsToSeed(v)]: k }),
+        {} as Record<string, string>
+    )
+    records.forEach((record) => {
+        const seed = paramsToSeed(record)
+        if (seed in seedToCategory) {
+            categories[seedToCategory[seed]].push(record)
+        }
+    })
+
+    return (
+        <div>
+            {Object.entries(categories).map(
+                ([key, records]) =>
+                    records.length > 0 && (
+                        <HiScoreTable
+                            key={key}
+                            title={capitalize(key)}
+                            records={records
+                                .slice()
+                                .sort(
+                                    ({ playtime: a }, { playtime: b }) => a - b
+                                )
+                                .slice(0, 10)}
+                        />
+                    )
+            )}
+        </div>
+    )
+}
