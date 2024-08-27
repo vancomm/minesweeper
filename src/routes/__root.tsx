@@ -1,16 +1,93 @@
+import React from 'react'
 import { createRootRoute, Link, Outlet } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '../components/Devtools'
-import { Suspense } from 'react'
-import { DivProps } from '../types'
 import { twMerge } from 'tailwind-merge'
+import Dialog from '@mui/material/Dialog'
+import Login from '@mui/icons-material/Login'
+import Create from '@mui/icons-material/Create'
+
+import { TanStackRouterDevtools } from '../components/Devtools'
+import { DivProps } from '../types'
 import Square from '../components/Square'
 import { SquareState } from '../constants'
+import { AuthParams } from '../api/auth'
+import { useAuth } from '../contexts/AuthContext'
+import AuthDialog from '../components/AuthDialog'
+import UserMenu from '../components/UserMenu'
 
 export const Route = createRootRoute({
-    component: () => (
+    component: RootComponent,
+    notFoundComponent: () => <main className="p-32 text-3xl">Not found</main>,
+})
+
+function RootComponent() {
+    const { player, register, login, logout } = useAuth()
+
+    const [signupOpen, setSignupOpen] = React.useState(false)
+    const [signupError, setSignupError] = React.useState<string | undefined>()
+
+    const [loginOpen, setLoginOpen] = React.useState(false)
+    const [loginError, setLoginError] = React.useState<string | undefined>()
+
+    const handleSignupSubmit = async (data: AuthParams) => {
+        const { success, error } = await register(data)
+        if (!success) {
+            const { statusCode, errorText } = error
+            setSignupError(errorText || `unknown error ${statusCode}`)
+        } else {
+            setSignupOpen(false)
+        }
+    }
+
+    const handleLoginSubmit = async (data: AuthParams) => {
+        const { success, error } = await login(data)
+        if (!success) {
+            const { statusCode, errorText } = error
+            setLoginError(errorText || `unknown error ${statusCode}`)
+        } else {
+            setLoginOpen(false)
+        }
+    }
+
+    const handleLogout = async () => {
+        await logout()
+    }
+
+    return (
         <>
-            <Header />
-            <div className="flex-auto flex-shrink-0 px-8">
+            <div>
+                <div className="mb-4 flex items-center justify-between bg-neutral-200 px-8 py-3 md:pr-12 lg:pr-32 dark:bg-neutral-800">
+                    <Link to="/" className="text-3xl">
+                        Minesweeper
+                    </Link>
+                    <div className="flex items-center gap-3">
+                        {!player && (
+                            <>
+                                <button
+                                    className="text-md flex cursor-pointer items-center gap-1 hover:underline"
+                                    onClick={() => setSignupOpen(true)}
+                                >
+                                    <Create sx={{ fontSize: '18px' }} />
+                                    <div className="pb-1">Sign up</div>
+                                </button>
+                                <button
+                                    className="text-md flex cursor-pointer items-center gap-1 hover:underline"
+                                    onClick={() => setLoginOpen(true)}
+                                >
+                                    <Login sx={{ fontSize: '20px' }} />
+                                    <div className="pb-1">Log in</div>
+                                </button>
+                            </>
+                        )}
+                        {player && (
+                            <UserMenu
+                                username={player.username}
+                                onLogout={handleLogout}
+                            />
+                        )}
+                    </div>
+                </div>
+            </div>
+            <div className="flex-auto flex-shrink-0 overflow-x-scroll px-8">
                 <div className="flex w-fit gap-4 border border-neutral-300 p-3">
                     <nav className="flex w-28 flex-shrink-0 flex-col items-center gap-2 border-r border-neutral-500 p-2 pr-4">
                         <Link
@@ -23,31 +100,50 @@ export const Route = createRootRoute({
                         <Link to="/hiscores" className="[&.active]:font-bold">
                             Hi Scores
                         </Link>
+                        {player && (
+                            <Link
+                                to="/myscores"
+                                className="[&.active]:font-bold"
+                            >
+                                My Scores
+                            </Link>
+                        )}
                         <Link to="/about" className="[&.active]:font-bold">
                             About
                         </Link>
                     </nav>
-                    <main>
+                    <main className="overflow-x-scroll">
                         <Outlet />
                     </main>
                 </div>
             </div>
             <Footer className="flex-shrink-0" />
-            <Suspense>
+            <Dialog
+                open={signupOpen}
+                onClose={() => setSignupOpen(false)}
+                PaperComponent={() => (
+                    <AuthDialog
+                        title={'Sign up'}
+                        onSubmit={handleSignupSubmit}
+                        errorText={signupError}
+                    />
+                )}
+            />
+            <Dialog
+                open={loginOpen}
+                onClose={() => setLoginOpen(false)}
+                PaperComponent={() => (
+                    <AuthDialog
+                        title={'Log in'}
+                        onSubmit={handleLoginSubmit}
+                        errorText={loginError}
+                    />
+                )}
+            />
+            <React.Suspense>
                 <TanStackRouterDevtools />
-            </Suspense>
+            </React.Suspense>
         </>
-    ),
-    notFoundComponent: () => <main className="p-32 text-3xl">Not found</main>,
-})
-
-function Header({ ...props }: DivProps) {
-    return (
-        <header {...props}>
-            <div className="mb-4 bg-neutral-200 px-8 py-3 text-3xl dark:bg-neutral-800">
-                <Link to="/">Minesweeper</Link>
-            </div>
-        </header>
     )
 }
 

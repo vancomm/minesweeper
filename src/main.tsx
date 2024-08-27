@@ -5,10 +5,11 @@ import { RouterProvider, createRouter } from '@tanstack/react-router'
 // Import the generated route tree
 import { routeTree } from './routeTree.gen'
 import './index.css'
+import AuthProvider from './contexts/AuthProvider'
 
 // Create a new router instance
 const router = createRouter({
-    basepath: '/minesweeper/',
+    basepath: __BASE_URL__,
     routeTree,
     defaultNotFoundComponent: () => '404 Not Found',
 })
@@ -26,7 +27,9 @@ if (!rootElement.innerHTML) {
     const root = ReactDOM.createRoot(rootElement)
     root.render(
         <StrictMode>
-            <RouterProvider router={router} />
+            <AuthProvider>
+                <RouterProvider router={router} />
+            </AuthProvider>
         </StrictMode>
     )
 }

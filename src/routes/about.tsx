@@ -1,11 +1,11 @@
-import { createLazyFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { HeadingProps, ParagraphProps } from '../types'
 import { twMerge } from 'tailwind-merge'
 import Square from '../components/Square'
 import { SquareState } from '../constants'
 import React from 'react'
 
-export const Route = createLazyFileRoute('/about')({
+export const Route = createFileRoute('/about')({
     component: About,
 })
 
@@ -167,9 +167,9 @@ function About() {
                 <P>
                     In addition to the predefined game modes, you may provide
                     your own width, height and mine count for the game grid. The
-                    "unique" game setting determines if the generated grid
-                    allows for only one possible solution. All predefined game
-                    modes offer only "unique" games.
+                    &quot;unique&quot; game setting determines if the generated
+                    grid allows for only one possible solution. All predefined
+                    game modes offer only &quot;unique&quot; games.
                 </P>
             </div>
         </div>

@@ -1,15 +1,5 @@
 import { z } from 'zod'
-import { createApiMethod } from './common'
-
-// const ENDPOINT =
-//     (import.meta.env.REACT_APP_SERVICE_URL as string) ??
-//     'http://localhost:8000/v1'
-
-const ENDPOINT = __API_URL__
-const WS_ENDPOINT = __WS_URL__
-
-export const sessionIdToWS = (session_id: string) =>
-    `${WS_ENDPOINT}/game/${session_id}/connect`
+import { createApiMethod, ENDPOINT } from './common'
 
 // type PosParams struct {
 // 	X int `schema:"x,required"`
@@ -71,6 +61,7 @@ export const createNewGame = createApiMethod<SquareParams & GameParams>(
 )(GameUpdate)
 
 export const GameRecord = z.object({
+    username: z.string().nullable(),
     width: z.number(),
     height: z.number(),
     mine_count: z.number(),
@@ -84,7 +75,9 @@ export const getRecords = createApiMethod(`${ENDPOINT}/records`)(
     GameRecord.array()
 )
 
-export const checkGameApi = createApiMethod(`${ENDPOINT}/status`)(z.unknown())
+export const getMyRecords = createApiMethod(`${ENDPOINT}/myrecords`)(
+    GameRecord.array()
+)
 
 export const createGameApi = (session_id: string) => {
     const fetchGame = createApiMethod(`${ENDPOINT}/game/${session_id}`)(

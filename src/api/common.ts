@@ -1,6 +1,12 @@
 import { z } from 'zod'
 import { Failure, Success } from '../types'
 
+export const ENDPOINT = __API_URL__
+export const WS_ENDPOINT = __WS_URL__
+
+export const sessionIdToWS = (session_id: string) =>
+    `${WS_ENDPOINT}/game/${session_id}/connect`
+
 export type ServerError = { statusCode: number; errorText: string }
 
 export type ApiResponse<Output> = Success<Output> | Failure<ServerError>
@@ -20,17 +26,23 @@ export const createApiMethod =
         methodUrl: string,
         init?: RequestInit
     ) =>
-    <T extends z.ZodTypeAny>(responseSchema: T) =>
+    <I, O, TValidator extends z.ZodType<O, z.ZodTypeDef, I>>(
+        responseSchema: TValidator
+    ) =>
     async (
         // ...params: P extends undefined ? [R?] : [P, R?]
         params: S extends undefined ? RequestInit : { search: S } & RequestInit
-    ): Promise<ApiResponse<z.infer<T>>> => {
+    ): Promise<ApiResponse<z.infer<TValidator>>> => {
         let url = methodUrl
         if (params && 'search' in params) {
             const query = createSearchParams(params.search).toString()
             url += '?' + query.toString()
         }
-        const res = await fetch(url, { ...init, ...params })
+        const res = await fetch(url, {
+            ...init,
+            ...params,
+            credentials: 'include',
+        })
         if (!res.ok) {
             const errorText = await res.text()
             return {
@@ -38,7 +50,6 @@ export const createApiMethod =
                 error: { errorText, statusCode: res.status },
             }
         }
-        const rawBody = await res.json()
-        const data = responseSchema.parse(rawBody)
-        return { success: true, data: data as z.infer<T> }
+        const data = responseSchema.parse(await res.json())
+        return { success: true, data: data as z.infer<TValidator> }
     }

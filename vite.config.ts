@@ -5,16 +5,36 @@ import { readFileSync } from 'fs'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
-    const pkg = JSON.parse(
+    const pkg: unknown = JSON.parse(
         readFileSync(new URL('package.json', import.meta.url), 'utf-8')
     )
+    if (
+        !(
+            typeof pkg === 'object' &&
+            pkg !== null &&
+            'version' in pkg &&
+            typeof pkg.version === 'string'
+        )
+    ) {
+        throw new Error('package.json does not provide version')
+    }
+    const version =
+        mode === 'production' ? pkg.version : pkg.version + '-' + mode
 
+    // create a .env.{mode}.local file for each mode you want to use
     const env = loadEnv(mode, process.cwd(), '')
-    const api_url = env.API_URL || 'http://localhost:8000/v1'
-    const ws_url = env.WS_URL || 'ws://localhost:8000/v1'
+    const baseUrl = env.BASE_URL || '/'
+    const apiUrl = env.API_URL || 'http://localhost:8000/v1'
+    const wsUrl = env.WS_URL || 'ws://localhost:8000/v1'
+    const outDir = env.OUT_DIR || 'dist'
+
+    console.log(`building version ${version} to be mounted at ${baseUrl}`)
+
     return {
-        base: '/minesweeper/',
+        base: baseUrl,
         build: {
+            outDir: outDir,
+            emptyOutDir: true,
             rollupOptions: {
                 input: {
                     index: 'index.html',
@@ -24,9 +44,10 @@ export default defineConfig(({ mode }) => {
         },
         plugins: [react(), TanStackRouterVite()],
         define: {
-            __API_URL__: JSON.stringify(api_url),
-            __WS_URL__: JSON.stringify(ws_url),
-            __APP_VERSION__: JSON.stringify(pkg.version),
+            __BASE_URL__: JSON.stringify(baseUrl),
+            __API_URL__: JSON.stringify(apiUrl),
+            __WS_URL__: JSON.stringify(wsUrl),
+            __APP_VERSION__: JSON.stringify(version),
         },
     }
 })

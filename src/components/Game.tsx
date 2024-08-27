@@ -13,9 +13,8 @@ import {
     GameApi,
     GameUpdate,
     GameParams,
-    sessionIdToWS,
 } from '../api/game'
-import { ServerError } from '../api/common'
+import { ServerError, sessionIdToWS } from '../api/common'
 import { DivProps } from '../types'
 import { useNavigate, UseNavigateResult } from '@tanstack/react-router'
 import useWebSocket from 'react-use-websocket'
@@ -131,7 +130,7 @@ export default function Game({
                 case 'gameUpdated': {
                     const { update, navigate } = event
                     if (window.location.href.endsWith('/new') && navigate) {
-                        navigate({
+                        void navigate({
                             to: '/game/$session_id',
                             params: { session_id: update.session_id },
                         })
@@ -170,7 +169,7 @@ export default function Game({
                 }
                 case 'gameReset': {
                     const { presetName, gameParams, navigate } = event
-                    navigate({
+                    void navigate({
                         to: '/game/$session_id',
                         params: { session_id: 'new' },
                     })
@@ -294,10 +293,7 @@ export default function Game({
         )
 
     return (
-        <div
-            className={twMerge('flex w-fit flex-col gap-y-1', className)}
-            {...props}
-        >
+        <div className={twMerge('flex flex-col gap-y-1', className)} {...props}>
             <div className="w-fit select-none">
                 <RadioGroup
                     items={gamePresetRadioItems}

@@ -1,71 +1,42 @@
-// @ts-check
-import path from 'path'
-import { fileURLToPath } from 'url'
-
+import js from '@eslint/js'
 import globals from 'globals'
-import eslintjs from '@eslint/js'
-import tseslint from 'typescript-eslint'
-import react from 'eslint-plugin-react'
-import prettier from 'eslint-config-prettier'
-import { FlatCompat } from '@eslint/eslintrc'
-import reactCompiler from 'eslint-plugin-react-compiler'
+import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-
-const compat = new FlatCompat({
-    baseDirectory: __dirname,
-})
+import tseslint from 'typescript-eslint'
+import eslintConfigPrettier from 'eslint-config-prettier'
+import react from 'eslint-plugin-react'
 
 export default tseslint.config(
+    { ignores: ['dist'] },
     {
-        ignores: ['**/*.js'],
-    },
-    {
-        files: ['src/*.{ts,tsx}'],
-        ...eslintjs.configs.recommended,
-    },
-    ...[
-        ...tseslint.configs.recommendedTypeChecked,
-        ...tseslint.configs.stylisticTypeChecked,
-    ].map((config) => ({
-        ...{
-            ...config,
-            files: ['src/*.{ts,tsx}'],
-            languageOptions: {
-                ...config.languageOptions,
-                parserOptions: {
-                    ...config.languageOptions?.parserOptions,
-                    project: ['./tsconfig.json', './tsconfig.node.json'],
-                },
-            },
-        },
-    })),
-    react.configs.flat.recommended,
-    react.configs.flat['jsx-runtime'],
-    prettier,
-    {
-        files: ['src/*.{ts,tsx}'],
-        ignores: ['eslint.config.js'],
-        plugins: {
-            'react-compiler': reactCompiler,
-            'react-refresh': reactRefresh,
-        },
+        settings: { react: { version: '18.3' } },
+        extends: [
+            js.configs.recommended,
+            ...tseslint.configs.recommendedTypeChecked,
+        ],
+        files: ['**/*.{ts,tsx}'],
         languageOptions: {
+            ecmaVersion: 2020,
             globals: globals.browser,
             parserOptions: {
-                project: ['./tsconfig.json', './tsconfig.node.json'],
-                ecmaFeatures: {
-                    jsx: true,
-                },
+                project: ['./tsconfig.node.json', './tsconfig.app.json'],
+                tsconfigRootDir: import.meta.dirname,
             },
         },
-        rules: {
-            '@typescript-eslint/no-unused-vars': 'off',
-            '@typescript-eslint/only-throw-error': 'off',
-            '@typescript-eslint/consistent-type-definitions': 'off',
-            'react-refresh/only-export-components': 'warn',
+        plugins: {
+            react,
+            'react-hooks': reactHooks,
+            'react-refresh': reactRefresh,
         },
-    }
+        rules: {
+            ...reactHooks.configs.recommended.rules,
+            'react-refresh/only-export-components': [
+                'warn',
+                { allowConstantExport: true },
+            ],
+            ...react.configs.recommended.rules,
+            ...react.configs['jsx-runtime'].rules,
+        },
+    },
+    eslintConfigPrettier
 )

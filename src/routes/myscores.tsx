@@ -1,29 +1,28 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { twMerge } from 'tailwind-merge'
-import { capitalize } from '@mui/material'
-import CircularProgress from '@mui/material/CircularProgress'
-
-import { GameRecord, getRecords } from '../api/game'
-import { GAME_PRESETS, paramsToSeed } from '../constants'
-import { HeadingProps } from '../types'
+import { GameRecord, getMyRecords } from '../api/game'
 import { raise } from '../utils'
+import CircularProgress from '@mui/material/CircularProgress'
+import { GAME_PRESETS, paramsToSeed } from '../constants'
+import { capitalize } from '@mui/material'
+import { HeadingProps } from '../types'
+import { twMerge } from 'tailwind-merge'
 
-const H3 = ({ className, ...props }: HeadingProps) => (
-    <h3 className={twMerge('font-bold', className)} {...props} />
-)
-
-export const Route = createFileRoute('/hiscores')({
+export const Route = createFileRoute('/myscores')({
     loader: async () =>
-        getRecords({}).then(({ success, data }) =>
+        getMyRecords({}).then(({ success, data }) =>
             success ? data : raise(new Error('api unavailable'))
         ),
-    component: HiScores,
+    component: MyScores,
     pendingComponent: () => (
         <div className="grid h-64 w-64 place-items-center">
             <CircularProgress color="inherit" />
         </div>
     ),
 })
+
+const H3 = ({ className, ...props }: HeadingProps) => (
+    <h3 className={twMerge('font-bold', className)} {...props} />
+)
 
 type HiScoreSectionProps = {
     title: string
@@ -37,21 +36,16 @@ const HiScoreSection = ({ title, records }: HiScoreSectionProps) => (
                 <H3>{title}</H3>
             </td>
         </tr>
-        {records.map(({ username, playtime }, i) => (
+        {records.map(({ playtime }, i) => (
             <tr key={`${title}-${i}`}>
                 <td className="pr-1 text-end">{i + 1}.</td>
-                <td className="pr-8">
-                    {username ?? (
-                        <div className="italic opacity-50">Anonymous</div>
-                    )}
-                </td>
                 <td>{playtime.toFixed(3)}</td>
             </tr>
         ))}
     </>
 )
 
-function HiScores() {
+function MyScores() {
     const records = Route.useLoaderData()
 
     const categories = Object.entries(GAME_PRESETS).reduce(

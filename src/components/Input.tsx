@@ -10,8 +10,7 @@ export default function Input({ className, ...props }: InputProps) {
     return (
         <input
             className={twMerge(
-                'rounded bg-white p-1 shadow-inner',
-                'dark:bg-neutral-700',
+                'border border-black p-1 py-0.5 dark:border-white',
                 className
             )}
             {...props}

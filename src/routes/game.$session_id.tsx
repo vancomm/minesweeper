@@ -1,23 +1,31 @@
 import { createFileRoute, ErrorComponent } from '@tanstack/react-router'
-import { checkGameApi, createGameApi, GameUpdate } from '../api/game'
+import { createGameApi, GameUpdate } from '../api/game'
 import Game from '../components/Game'
 import CircularProgress from '@mui/material/CircularProgress'
-import { raise } from '../utils'
 import { GAME_PRESETS } from '../constants'
+import { status } from '../api/auth'
 
 export const Route = createFileRoute('/game/$session_id')({
     loader: async ({
         params: { session_id },
-    }): Promise<GameUpdate | undefined> =>
-        session_id === 'new'
-            ? checkGameApi({})
-                  .then(({ success }) =>
-                      success ? undefined : raise(new Error('api unavailable'))
-                  )
-                  .catch(() => raise(new Error('api unavailable')))
-            : createGameApi(session_id)
-                  .fetchGame({})
-                  .then(({ success, data }) => (success ? data : undefined)),
+    }): Promise<GameUpdate | undefined> => {
+        if (session_id === 'new') {
+            const ok = await status()
+            if (!ok) {
+                throw new Error('api unavailable')
+            }
+            return undefined
+        } else {
+            const { success, data, error } = await createGameApi(
+                session_id
+            ).fetchGame({})
+            if (!success) {
+                console.error(error)
+                throw new Error('api unavailable')
+            }
+            return data
+        }
+    },
     pendingComponent: () => (
         <div className="grid h-64 w-64 place-items-center">
             <CircularProgress color="inherit" />

@@ -2,22 +2,46 @@
 @tailwind components;
 @tailwind utilities;
 
-html,
-body,
-#root {
-    min-height: 100vh;
-}
-
 html {
-    box-sizing: border-box;
+    @apply box-border;
 }
 
 *,
-*:before,
-*:after {
+*::after,
+*::before {
     box-sizing: inherit;
+}
+
+#root {
+    @apply flex min-h-dvh flex-col dark:bg-neutral-900;
+}
+
+:root {
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+
+    color-scheme: light dark;
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 td {
     padding-inline: 0;
 }
+
+/* Remove input[number] arrows */
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type='number'] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+/* End remove input[number] arrows */

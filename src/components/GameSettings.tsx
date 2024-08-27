@@ -8,7 +8,7 @@ import Button from './Button'
 const SettingsField = ({ className, ...props }: DivProps) => (
     <div
         className={twMerge(
-            'w-full flex items-center justify-between gap-x-4',
+            'flex w-full items-center justify-between gap-x-4',
             className
         )}
         {...props}
@@ -29,7 +29,7 @@ export default function GameSettings({
     return (
         <form
             className={twMerge(
-                'w-fit p-3 flex items-center gap-5 select-none',
+                'flex w-fit select-none items-center gap-5 p-3',
                 className
             )}
             onSubmit={(e) => {
@@ -48,7 +48,7 @@ export default function GameSettings({
                     Rows
                 </label>
                 <Input
-                    className="w-16"
+                    className="w-12"
                     type="number"
                     name="rows"
                     id="rows"
@@ -61,7 +61,7 @@ export default function GameSettings({
                     Cols
                 </label>
                 <Input
-                    className="w-16"
+                    className="w-12"
                     type="number"
                     name="cols"
                     id="cols"
@@ -74,7 +74,7 @@ export default function GameSettings({
                     Mines
                 </label>
                 <Input
-                    className="w-16"
+                    className="w-12"
                     type="number"
                     name="mines"
                     id="mines"
@@ -82,7 +82,7 @@ export default function GameSettings({
                     key={`mines-${defaultParams.mine_count}`}
                 />
             </SettingsField>
-            <SettingsField className="pr-5 border-r border-neutral-300">
+            <div className="flex items-center gap-2 border-r border-neutral-300 pr-5">
                 <label htmlFor="unique" className="cursor-pointer">
                     Unique
                 </label>
@@ -94,8 +94,8 @@ export default function GameSettings({
                     defaultChecked={defaultParams.unique}
                     key={`unique-${defaultParams.unique}`}
                 />
-            </SettingsField>
-            <Button type="submit" className="p-0 rounded-md hover:underline">
+            </div>
+            <Button type="submit" className="rounded-md p-0 hover:underline">
                 Update
             </Button>
         </form>
