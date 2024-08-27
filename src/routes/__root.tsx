@@ -5,6 +5,12 @@ import Dialog from '@mui/material/Dialog'
 import Login from '@mui/icons-material/Login'
 import Create from '@mui/icons-material/Create'
 import Collapse from '@mui/material/Collapse'
+import { Menu } from '@mui/base/Menu'
+import { Dropdown } from '@mui/base/Dropdown'
+import { MenuButton } from '@mui/base/MenuButton'
+import { MenuItem } from '@mui/base/MenuItem'
+import Logout from '@mui/icons-material/Logout'
+import Person from '@mui/icons-material/Person'
 
 import { TanStackRouterDevtools } from '../components/Devtools'
 import { DivProps } from '../types'
@@ -13,7 +19,6 @@ import { SquareState } from '../constants'
 import { AuthParams } from '../api/auth'
 import { useAuth } from '../contexts/AuthContext'
 import AuthDialog from '../components/AuthDialog'
-import UserMenu from '../components/UserMenu'
 import { useBreakpoint } from '../hooks/useBreakpoint'
 
 export const Route = createRootRoute({
@@ -21,10 +26,50 @@ export const Route = createRootRoute({
     notFoundComponent: () => <main className="p-32 text-3xl">Not found</main>,
 })
 
-function RootComponent() {
-    const { player, register, login, logout } = useAuth()
+type NavBarProps = {
+    children?: React.ReactNode
+}
+
+const NavBar = ({ children }: NavBarProps) => {
     const { isMd } = useBreakpoint('md')
-    const [navbarListOpened, setNavbarListOpened] = React.useState(false)
+    const [expanded, setExpanded] = React.useState(false)
+
+    return (
+        <div className="flex flex-wrap items-center justify-between bg-neutral-200 p-4 dark:bg-neutral-800">
+            <div className="mr-6 flex flex-shrink-0 items-center">
+                <Link to="/" className="text-3xl font-semibold tracking-tight">
+                    Minesweeper
+                </Link>
+            </div>
+            <div className="block md:hidden">
+                <button
+                    className="flex items-center rounded border border-neutral-500 p-2 dark:border-neutral-600 dark:text-neutral-200 dark:hover:border-white dark:hover:text-white"
+                    onClick={() => setExpanded((o) => !o)}
+                >
+                    <svg
+                        className="h-3 w-3 fill-current"
+                        viewBox="0 0 20 20"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <title>Menu</title>
+                        <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
+                    </svg>
+                </button>
+            </div>
+            <Collapse
+                in={expanded || isMd}
+                className="block w-full flex-grow md:flex md:w-auto"
+            >
+                {children}
+            </Collapse>
+        </div>
+    )
+}
+
+function RootComponent() {
+    const { isMd } = useBreakpoint('md')
+
+    const { player, register, login, logout } = useAuth()
 
     const [signupOpen, setSignupOpen] = React.useState(false)
     const [signupError, setSignupError] = React.useState<string | undefined>()
@@ -58,64 +103,87 @@ function RootComponent() {
 
     return (
         <>
-            <div className="flex flex-wrap items-center justify-between bg-neutral-200 px-8 py-3 md:pr-12 lg:pr-32 dark:bg-neutral-800">
-                <div className="flex flex-shrink-0 items-center md:mr-6">
-                    <Link to="/" className="text-3xl">
-                        Minesweeper
-                    </Link>
-                </div>
-                <div className="block md:hidden">
-                    <button
-                        className="flex items-center rounded border border-neutral-400 p-2 text-neutral-200 hover:border-white hover:text-white"
-                        onClick={() => setNavbarListOpened((o) => !o)}
-                    >
-                        <svg
-                            className="h-3 w-3 fill-current"
-                            viewBox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <title>Menu</title>
-                            <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
-                        </svg>
-                    </button>
-                </div>
-                <Collapse
-                    in={navbarListOpened || isMd}
-                    className="block w-full flex-grow md:flex md:w-auto"
-                >
-                    <div className="block w-full flex-grow md:flex md:w-auto md:items-center md:justify-center">
-                        <div className="my-2 flex flex-col gap-y-2 md:my-0 md:mt-0 md:flex-grow md:flex-row md:gap-x-4">
-                            {!player && (
-                                <>
-                                    <button
-                                        className="text-md flex cursor-pointer items-center gap-1 hover:underline"
-                                        onClick={() => setSignupOpen(true)}
-                                    >
-                                        <Create sx={{ fontSize: '18px' }} />
-                                        <div className="pb-1">Sign up</div>
-                                    </button>
-                                    <button
-                                        className="text-md flex cursor-pointer items-center gap-1 hover:underline"
-                                        onClick={() => setLoginOpen(true)}
-                                    >
-                                        <Login sx={{ fontSize: '20px' }} />
-                                        <div className="pb-1">Log in</div>
-                                    </button>
-                                </>
-                            )}
-                            {player && (
-                                <UserMenu
-                                    username={player.username}
-                                    onLogout={handleLogout}
+            <NavBar>
+                <div className="mt-2 flex flex-col gap-x-4 gap-y-2 md:m-0 md:flex-row">
+                    {!player && (
+                        <>
+                            <button
+                                className="text-md flex cursor-pointer items-center gap-0.5 hover:underline"
+                                onClick={() => setSignupOpen(true)}
+                            >
+                                <Create
+                                    sx={{
+                                        translate: '0 .1rem',
+                                        fontSize: '18px',
+                                    }}
                                 />
-                            )}
-                        </div>
-                    </div>
-                </Collapse>
-            </div>
+                                <div>Sign up</div>
+                            </button>
+                            <button
+                                className="text-md flex cursor-pointer items-center gap-0.5 hover:underline"
+                                onClick={() => setLoginOpen(true)}
+                            >
+                                <Login
+                                    sx={{
+                                        translate: '-.1rem .1rem',
+                                        fontSize: '20px',
+                                    }}
+                                />
+                                <div>Log in</div>
+                            </button>
+                        </>
+                    )}
+                    {player &&
+                        (isMd ? (
+                            <Dropdown>
+                                <MenuButton className="flex items-center gap-1 font-bold hover:underline">
+                                    <Person
+                                        sx={{
+                                            translate: '0 .1rem',
+                                            fontSize: '22px',
+                                        }}
+                                    />
+                                    <div>{player.username}</div>
+                                </MenuButton>
+                                <Menu className="border border-neutral-500 bg-neutral-200 p-1 dark:bg-neutral-600">
+                                    <MenuItem
+                                        className="text-md flex cursor-pointer items-center gap-1 p-1 hover:bg-white dark:hover:bg-neutral-500"
+                                        onClick={() => void handleLogout()}
+                                    >
+                                        <Logout sx={{ fontSize: '20px' }} />
+                                        <div className="pb-1">Sign out</div>
+                                    </MenuItem>
+                                </Menu>
+                            </Dropdown>
+                        ) : (
+                            <>
+                                <div>
+                                    <div className="mr-1.5 inline-block italic opacity-50">
+                                        Signed in as
+                                    </div>
+                                    <div className="inline-block">
+                                        {player.username}
+                                    </div>
+                                </div>
+                                <button
+                                    className="text-md flex cursor-pointer items-center gap-0.5 hover:underline"
+                                    onClick={() => void handleLogout()}
+                                >
+                                    <Logout
+                                        sx={{
+                                            translate: '0 .1rem',
+                                            fontSize: '20px',
+                                        }}
+                                    />
+                                    <div>Sign out</div>
+                                </button>
+                            </>
+                        ))}
+                </div>
+            </NavBar>
             <div className="flex-auto flex-shrink-0 overflow-x-scroll p-4">
-                <div className="flex w-fit gap-4 border border-neutral-300 p-3">
-                    <nav className="flex w-28 flex-shrink-0 flex-col items-center gap-2 border-r border-neutral-500 p-2 pr-4">
+                <div className="flex w-fit flex-col gap-2 border border-neutral-300 p-3 md:flex-row">
+                    <div className="flex flex-shrink-0 items-center gap-x-4 gap-y-2 border-b border-neutral-500 p-2 pr-4 pt-0 md:w-28 md:flex-col md:border-b-0 md:border-r">
                         <Link
                             to="/game/$session_id"
                             params={{ session_id: 'new' }}
@@ -137,8 +205,8 @@ function RootComponent() {
                         <Link to="/about" className="[&.active]:font-bold">
                             About
                         </Link>
-                    </nav>
-                    <main className="overflow-x-scroll">
+                    </div>
+                    <main>
                         <Outlet />
                     </main>
                 </div>

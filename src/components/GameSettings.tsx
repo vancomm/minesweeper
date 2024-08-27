@@ -1,9 +1,7 @@
 import { twMerge } from 'tailwind-merge'
 
-import Input from './Input'
 import { GameParams } from '../api/game'
 import { DivProps, FormProps } from '../types'
-import Button from './Button'
 
 const SettingsField = ({ className, ...props }: DivProps) => (
     <div
@@ -29,7 +27,7 @@ export default function GameSettings({
     return (
         <form
             className={twMerge(
-                'flex w-fit select-none items-center gap-5 p-3',
+                'grid w-fit select-none grid-cols-2 gap-5 gap-y-3 border border-neutral-500 p-2 md:flex md:items-center md:border-0',
                 className
             )}
             onSubmit={(e) => {
@@ -47,7 +45,7 @@ export default function GameSettings({
                 <label htmlFor="rows" className="cursor-pointer">
                     Rows
                 </label>
-                <Input
+                <input
                     className="w-12"
                     type="number"
                     name="rows"
@@ -60,7 +58,7 @@ export default function GameSettings({
                 <label htmlFor="cols" className="cursor-pointer">
                     Cols
                 </label>
-                <Input
+                <input
                     className="w-12"
                     type="number"
                     name="cols"
@@ -69,11 +67,12 @@ export default function GameSettings({
                     key={`cols-${defaultParams.width}`}
                 />
             </SettingsField>
+
             <SettingsField>
                 <label htmlFor="mines" className="cursor-pointer">
                     Mines
                 </label>
-                <Input
+                <input
                     className="w-12"
                     type="number"
                     name="mines"
@@ -82,22 +81,21 @@ export default function GameSettings({
                     key={`mines-${defaultParams.mine_count}`}
                 />
             </SettingsField>
-            <div className="flex items-center gap-2 border-r border-neutral-300 pr-5">
+            <div className="min-w-fit md:border-r md:border-neutral-300 md:pr-5">
                 <label htmlFor="unique" className="cursor-pointer">
-                    Unique
+                    <div className="mr-2 inline">Unique</div>
+                    <input
+                        type="checkbox"
+                        name="unique"
+                        id="unique"
+                        defaultChecked={defaultParams.unique}
+                        key={`unique-${defaultParams.unique}`}
+                    />
                 </label>
-                <Input
-                    // className="w-16"
-                    type="checkbox"
-                    name="unique"
-                    id="unique"
-                    defaultChecked={defaultParams.unique}
-                    key={`unique-${defaultParams.unique}`}
-                />
             </div>
-            <Button type="submit" className="rounded-md p-0 hover:underline">
+            <button type="submit" className="col-span-2 underline">
                 Update
-            </Button>
+            </button>
         </form>
     )
 }

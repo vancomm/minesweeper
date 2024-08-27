@@ -88,7 +88,7 @@ function MyScores() {
                 </tbody>
             </table>
             {Object.values(categories).every((c) => !c.length) && (
-                <div className="flex h-full w-64 items-center justify-center">
+                <div className="flex h-full items-center justify-center p-4 md:w-64">
                     <div className="italic">No records yet!</div>
                 </div>
             )}

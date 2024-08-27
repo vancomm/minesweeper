@@ -7,6 +7,28 @@ export default {
     ],
     theme: {
         extend: {
+            keyframes: {
+                'halfspinto': {
+                    '0%': {
+                        transform: 'rotate(0deg)',
+                    },
+                    '100%': {
+                        transform: 'rotate(-180deg)',
+                    },
+                },
+                'halfspinfrom': {
+                    '0%': {
+                        transform: 'rotate(-180deg)',
+                    },
+                    '100%': {
+                        transform: 'rotate(0deg)',
+                    },
+                },
+            },
+            animation: {
+                'half-spin-to': 'halfspinto 200ms linear both',
+                'half-spin-from': 'halfspinfrom 200ms linear both',
+            },
             backgroundSize: {
                 'full': '100% 100%',
             },

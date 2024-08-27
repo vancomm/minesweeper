@@ -25,7 +25,7 @@ export default function RadioGroup<T>({
     return (
         <ul
             className={twJoin(
-                'flex flex-wrap justify-center gap-x-2 gap-y-1',
+                'flex flex-wrap justify-center gap-x-4 gap-y-2 px-2',
                 className
             )}
             {...props}
@@ -34,18 +34,13 @@ export default function RadioGroup<T>({
                 <li
                     key={`${radioGroupId}-${item.id}`}
                     className={twMerge(
-                        'inline-block cursor-pointer rounded border-2 border-transparent',
-                        'transition-colors duration-200',
-                        'hover:border-blue-500',
-                        'has-[:checked]:border-blue-500 has-[:checked]:bg-blue-500 has-[:checked]:text-white',
-                        'dark:hover:border-neutral-300',
-                        'has-[:checked]:dark:border-neutral-200 has-[:checked]:dark:bg-neutral-200 has-[:checked]:dark:text-black',
+                        'inline-block cursor-pointer has-[:checked]:font-bold',
                         className
                     )}
                 >
                     <label
                         htmlFor={`${radioGroupId}-${i}`}
-                        className={'inline-block cursor-pointer px-3 py-[1px]'}
+                        className={'inline-block cursor-pointer py-[1px]'}
                     >
                         {item.label}
                     </label>

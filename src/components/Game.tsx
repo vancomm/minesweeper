@@ -1,7 +1,10 @@
 import React from 'react'
-import Collapse from '@mui/material/Collapse'
-import { capitalize } from '@mui/material'
+import { useNavigate, UseNavigateResult } from '@tanstack/react-router'
+import useWebSocket from 'react-use-websocket'
 import { twMerge } from 'tailwind-merge'
+import { capitalize } from '@mui/material'
+import Collapse from '@mui/material/Collapse'
+// import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 
 import Board from './Board'
 import { FaceState } from './Face'
@@ -16,8 +19,6 @@ import {
 } from '../api/game'
 import { ServerError, sessionIdToWS } from '../api/common'
 import { DivProps } from '../types'
-import { useNavigate, UseNavigateResult } from '@tanstack/react-router'
-import useWebSocket from 'react-use-websocket'
 import {
     GamePreset,
     GamePresetName,
@@ -292,9 +293,11 @@ export default function Game({
             [presets]
         )
 
+    // const [settingsExpanded, setSettingsExpanded] = React.useState(false)
+
     return (
-        <div className={twMerge('flex flex-col gap-y-1', className)} {...props}>
-            <div className="w-fit select-none">
+        <div className={twMerge('flex flex-col', className)} {...props}>
+            <div className="mb-2 w-fit select-none">
                 <RadioGroup
                     items={gamePresetRadioItems}
                     activeId={state.presetName}
@@ -314,9 +317,24 @@ export default function Game({
                         }
                     }}
                 />
+                {/* TODO */}
+                {/* <button onClick={() => setSettingsExpanded((e) => !e)}>
+                    <div className="inline">Custom</div>
+                    <ExpandMoreIcon
+                        className={twMerge(
+                            'rotate-0 transition-transform',
+                            settingsExpanded && 'rotate-[-180deg]'
+                            // settingsExpanded
+                            //     ? 'animate-half-spin-to'
+                            //     : 'animate-half-spin-from'
+                        )}
+                    />
+                </button> */}
             </div>
+            {/* <Collapse in={settingsExpanded}> */}
             <Collapse in={presets[state.presetName].customizable}>
                 <GameSettings
+                    className="mb-2"
                     defaultParams={presets[state.presetName]}
                     onSubmit={(update) =>
                         dispatch({

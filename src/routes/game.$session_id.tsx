@@ -38,10 +38,12 @@ export const Route = createFileRoute('/game/$session_id')({
 function RestoredGame() {
     const update = Route.useLoaderData()
     return (
-        <Game
-            presets={GAME_PRESETS}
-            defaultPresetName={'medium'}
-            initialUpdate={update}
-        />
+        <div className="overflow-x-scroll">
+            <Game
+                presets={GAME_PRESETS}
+                defaultPresetName={'medium'}
+                initialUpdate={update}
+            />
+        </div>
     )
 }
