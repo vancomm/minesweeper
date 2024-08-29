@@ -4,17 +4,21 @@ type AuthDialogProps = {
     title: string
     onSubmit: (data: AuthParams) => unknown
     errorText?: string
+    disabled?: boolean
+    submitText?: string
 }
 
 export default function AuthDialog({
     title,
     errorText,
     onSubmit,
+    disabled = false,
+    submitText = 'Submit',
 }: AuthDialogProps) {
     return (
         <form
             className={
-                'flex w-64 flex-col items-center gap-2 bg-white p-2 shadow-[.5rem_.5rem_0_black] dark:border dark:border-white dark:bg-neutral-900'
+                'w-64 bg-white p-2 shadow-[.5rem_.5rem_0_black] dark:border dark:border-white dark:bg-neutral-900'
             }
             onSubmit={(e) => {
                 e.preventDefault()
@@ -27,29 +31,39 @@ export default function AuthDialog({
                 form.reset()
             }}
         >
-            <h2 className="font-bold">{title}</h2>
-            <div>
-                <input
-                    type="text"
-                    name="username"
-                    id="username"
-                    placeholder="Username"
-                    required
-                />
-            </div>
-            <div>
-                <input
-                    type="password"
-                    name="password"
-                    id="password"
-                    placeholder="Password"
-                    required
-                />
-            </div>
-            {errorText && <div className="text-center">{errorText}</div>}
-            <button className="underline" type="submit">
-                Submit
-            </button>
+            <fieldset
+                className="flex flex-col items-center gap-2"
+                disabled={disabled}
+            >
+                <h2 className="font-bold">{title}</h2>
+                <div>
+                    <input
+                        className="bg-zinc-200 placeholder-neutral-600 disabled:cursor-not-allowed dark:bg-zinc-800 dark:placeholder-neutral-400"
+                        type="text"
+                        name="username"
+                        id="username"
+                        placeholder="Username"
+                        required
+                    />
+                </div>
+                <div>
+                    <input
+                        className="bg-zinc-200 placeholder-neutral-600 disabled:cursor-not-allowed dark:bg-zinc-800 dark:placeholder-neutral-400"
+                        type="password"
+                        name="password"
+                        id="password"
+                        placeholder="Password"
+                        required
+                    />
+                </div>
+                {errorText && <div className="text-center">{errorText}</div>}
+                <button
+                    className="underline disabled:cursor-not-allowed disabled:opacity-50"
+                    type="submit"
+                >
+                    {submitText}
+                </button>
+            </fieldset>
         </form>
     )
 }

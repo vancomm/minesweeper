@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import { GameRecord, getMyRecords } from '../api/game'
 import { raise } from '../utils'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -8,6 +8,11 @@ import { HeadingProps } from '../types'
 import { twMerge } from 'tailwind-merge'
 
 export const Route = createFileRoute('/myscores')({
+    beforeLoad: ({ context }) => {
+        if (!context.auth.player) {
+            throw redirect({ to: '/' })
+        }
+    },
     loader: async () =>
         getMyRecords({}).then(({ success, data }) =>
             success ? data : raise(new Error('api unavailable'))

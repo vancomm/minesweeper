@@ -34,6 +34,8 @@ export default tseslint.config(
                 'warn',
                 { allowConstantExport: true },
             ],
+            '@typescript-eslint/only-throw-error': 'off',
+            '@typescript-eslint/no-unused-vars': 'warn',
             ...react.configs.recommended.rules,
             ...react.configs['jsx-runtime'].rules,
         },

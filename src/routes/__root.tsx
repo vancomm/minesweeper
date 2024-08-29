@@ -1,5 +1,11 @@
 import React from 'react'
-import { createRootRoute, Link, Outlet } from '@tanstack/react-router'
+import {
+    createRootRouteWithContext,
+    Link,
+    Outlet,
+    useRouter,
+    useRouterState,
+} from '@tanstack/react-router'
 import { twMerge } from 'tailwind-merge'
 import Dialog from '@mui/material/Dialog'
 import Login from '@mui/icons-material/Login'
@@ -17,11 +23,15 @@ import { DivProps } from '../types'
 import Square from '../components/Square'
 import { SquareState } from '../constants'
 import { AuthParams } from '../api/auth'
-import { useAuth } from '../contexts/AuthContext'
+import { AuthContext, useAuth } from '../contexts/AuthContext'
 import AuthDialog from '../components/AuthDialog'
 import { useBreakpoint } from '../hooks/useBreakpoint'
 
-export const Route = createRootRoute({
+interface RouterContext {
+    auth: AuthContext
+}
+
+export const Route = createRootRouteWithContext<RouterContext>()({
     component: RootComponent,
     notFoundComponent: () => <main className="p-32 text-3xl">Not found</main>,
 })
@@ -69,7 +79,11 @@ const NavBar = ({ children }: NavBarProps) => {
 function RootComponent() {
     const { isMd } = useBreakpoint('md')
 
-    const { player, register, login, logout } = useAuth()
+    const router = useRouter()
+    const { player, ...auth } = useAuth()
+
+    const isLoading = useRouterState({ select: (s) => s.isLoading })
+    const [isSubmitting, setIsSubmitting] = React.useState(false)
 
     const [signupOpen, setSignupOpen] = React.useState(false)
     const [signupError, setSignupError] = React.useState<string | undefined>()
@@ -78,28 +92,45 @@ function RootComponent() {
     const [loginError, setLoginError] = React.useState<string | undefined>()
 
     const handleSignupSubmit = async (data: AuthParams) => {
-        const { success, error } = await register(data)
-        if (!success) {
-            const { statusCode, errorText } = error
-            setSignupError(errorText || `unknown error ${statusCode}`)
-        } else {
-            setSignupOpen(false)
+        setIsSubmitting(true)
+        try {
+            const { success, error } = await auth.register(data)
+            if (!success) {
+                const { statusCode, errorText } = error
+                setSignupError(errorText || `unknown error ${statusCode}`)
+            } else {
+                setSignupOpen(false)
+            }
+        } catch (e) {
+            console.error(e)
+        } finally {
+            setIsSubmitting(false)
         }
     }
 
     const handleLoginSubmit = async (data: AuthParams) => {
-        const { success, error } = await login(data)
-        if (!success) {
-            const { statusCode, errorText } = error
-            setLoginError(errorText || `unknown error ${statusCode}`)
-        } else {
-            setLoginOpen(false)
+        setIsSubmitting(true)
+        try {
+            const { success, error } = await auth.login(data)
+            if (!success) {
+                const { statusCode, errorText } = error
+                setLoginError(errorText || `unknown error ${statusCode}`)
+            } else {
+                setLoginOpen(false)
+            }
+        } catch (e) {
+            console.error(e)
+        } finally {
+            setIsSubmitting(false)
         }
     }
 
     const handleLogout = async () => {
-        await logout()
+        await auth.logout()
+        await router.invalidate()
     }
+
+    const isLoggingIn = isLoading || isSubmitting
 
     return (
         <>
@@ -183,30 +214,36 @@ function RootComponent() {
             </NavBar>
             <div className="flex-auto flex-shrink-0 overflow-x-scroll p-4">
                 <div className="flex w-fit flex-col gap-2 border border-neutral-300 p-3 md:flex-row">
-                    <div className="flex flex-shrink-0 items-center gap-x-4 gap-y-2 border-b border-neutral-500 p-2 pr-4 pt-0 md:w-28 md:flex-col md:border-b-0 md:border-r">
+                    <div className="flex flex-shrink-0 items-center gap-x-4 gap-y-2 border-b border-neutral-500 px-1 py-2 pt-0 md:w-28 md:flex-col md:border-b-0 md:border-r md:pr-4">
                         <Link
                             to="/game/$session_id"
                             params={{ session_id: 'new' }}
-                            className="[&.active]:font-bold"
+                            className="min-w-fit [&.active]:font-bold"
                         >
                             New Game
                         </Link>
-                        <Link to="/hiscores" className="[&.active]:font-bold">
+                        <Link
+                            to="/hiscores"
+                            className="min-w-fit [&.active]:font-bold"
+                        >
                             Hi Scores
                         </Link>
                         {player && (
                             <Link
                                 to="/myscores"
-                                className="[&.active]:font-bold"
+                                className="min-w-fit [&.active]:font-bold"
                             >
                                 My Scores
                             </Link>
                         )}
-                        <Link to="/about" className="[&.active]:font-bold">
+                        <Link
+                            to="/about"
+                            className="min-w-fit [&.active]:font-bold"
+                        >
                             About
                         </Link>
                     </div>
-                    <main>
+                    <main className="md:pl-2">
                         <Outlet />
                     </main>
                 </div>
@@ -220,6 +257,8 @@ function RootComponent() {
                         title={'Sign up'}
                         onSubmit={handleSignupSubmit}
                         errorText={signupError}
+                        disabled={isLoggingIn}
+                        submitText={isLoggingIn ? 'Loading...' : 'Submit'}
                     />
                 )}
             />
@@ -231,6 +270,8 @@ function RootComponent() {
                         title={'Log in'}
                         onSubmit={handleLoginSubmit}
                         errorText={loginError}
+                        disabled={isLoggingIn}
+                        submitText={isLoggingIn ? 'Loading...' : 'Submit'}
                     />
                 )}
             />

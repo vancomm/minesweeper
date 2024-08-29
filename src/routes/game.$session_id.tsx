@@ -1,8 +1,5 @@
-import { createFileRoute, ErrorComponent } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { createGameApi, GameUpdate } from '../api/game'
-import Game from '../components/Game'
-import CircularProgress from '@mui/material/CircularProgress'
-import { GAME_PRESETS } from '../constants'
 import { status } from '../api/auth'
 
 export const Route = createFileRoute('/game/$session_id')({
@@ -26,24 +23,4 @@ export const Route = createFileRoute('/game/$session_id')({
             return data
         }
     },
-    pendingComponent: () => (
-        <div className="grid h-64 w-64 place-items-center">
-            <CircularProgress color="inherit" />
-        </div>
-    ),
-    component: RestoredGame,
-    errorComponent: ErrorComponent,
 })
-
-function RestoredGame() {
-    const update = Route.useLoaderData()
-    return (
-        <div className="overflow-x-scroll">
-            <Game
-                presets={GAME_PRESETS}
-                defaultPresetName={'medium'}
-                initialUpdate={update}
-            />
-        </div>
-    )
-}

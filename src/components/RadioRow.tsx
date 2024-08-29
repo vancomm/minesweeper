@@ -40,7 +40,7 @@ export default function RadioGroup<T>({
                 >
                     <label
                         htmlFor={`${radioGroupId}-${i}`}
-                        className={'inline-block cursor-pointer py-[1px]'}
+                        className={'inline-block cursor-pointer'}
                     >
                         {item.label}
                     </label>
