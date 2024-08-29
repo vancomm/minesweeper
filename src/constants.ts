@@ -1,46 +1,31 @@
 import { GameParams } from 'api/game'
 
-export type GamePreset = GameParams & {
-    customizable: boolean
-}
-
 export const GAME_PRESETS = {
     easy: {
         height: 9,
         width: 9,
         mine_count: 10,
         unique: true,
-        customizable: false,
     },
     medium: {
         height: 16,
         width: 16,
         mine_count: 40,
         unique: true,
-        customizable: false,
     },
     hard: {
         height: 16,
         width: 30,
         mine_count: 99,
         unique: true,
-        customizable: false,
     },
     evil: {
         height: 20,
         width: 30,
         mine_count: 130,
         unique: true,
-        customizable: false,
     },
-    custom: {
-        height: 30,
-        width: 30,
-        mine_count: 150,
-        unique: true,
-        customizable: true,
-    },
-} as const satisfies Record<string, GamePreset>
+} as const satisfies Record<string, GameParams>
 
 export type GamePresetName = keyof typeof GAME_PRESETS
 

@@ -1,10 +1,11 @@
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Collapse, capitalize } from '@mui/material'
 import CircularProgress from '@mui/material/CircularProgress'
 import { ErrorComponent, createLazyFileRoute } from '@tanstack/react-router'
 import { UseNavigateResult, useNavigate } from '@tanstack/react-router'
 import React from 'react'
 import useWebSocket from 'react-use-websocket'
-import { twMerge } from 'tailwind-merge'
+import { twJoin } from 'tailwind-merge'
 
 import Board from 'components/Board'
 import { FaceState } from 'components/Face'
@@ -21,14 +22,11 @@ import {
 
 import {
     GAME_PRESETS,
-    GamePreset,
     GamePresetName,
     SquareState,
     paramsToSeed,
 } from '@/constants'
 import { DivProps } from '@/types'
-
-// import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 
 export const Route = createLazyFileRoute('/game/$session_id')({
     pendingComponent: () => (
@@ -59,12 +57,11 @@ type GameSession = GameUpdate & {
 
 type GameState = {
     session?: GameSession
-    presetName: GamePresetName
+    presetName: string
     gameParams: GameParams
     face: FaceState
     timer: number
     timerInterval?: number
-    // showCustomControls: boolean
     pressedSquares?: number[]
 }
 
@@ -77,11 +74,11 @@ type GameEvent =
           update: GameUpdate
           navigate?: UseNavigateResult<'/game/$session_id'>
       }
-    | { type: 'presetPicked'; presetName: GamePresetName }
+    | { type: 'presetPicked'; presetName: string }
     | {
           type: 'gameReset'
           gameParams?: GameParams
-          presetName?: GamePresetName
+          presetName?: string
           navigate: UseNavigateResult<'/game/$session_id'>
       }
     | { type: 'timerStart'; interval: number; callback: () => unknown }
@@ -90,18 +87,12 @@ type GameEvent =
     | { type: 'error'; error: ServerError }
 
 type GameProps = DivProps & {
-    presets: Record<GamePresetName, GamePreset>
+    presets: Record<string, GameParams>
     defaultPresetName: GamePresetName
     initialUpdate?: GameUpdate
 }
 
-function Game({
-    presets,
-    defaultPresetName,
-    initialUpdate,
-    className,
-    ...props
-}: GameProps) {
+function Game({ presets, defaultPresetName, initialUpdate }: GameProps) {
     const initialState: GameState = React.useMemo(
         () => ({
             presetName: defaultPresetName,
@@ -122,8 +113,7 @@ function Game({
             switch (event.type) {
                 case 'cellDown': {
                     const { x, y, squareState } = event
-                    const { width, height } =
-                        state.session ?? presets[state.presetName]
+                    const { width, height } = state.session ?? state.gameParams
                     const index = y * width + x
                     if (squareState == SquareState.Up) {
                         return { ...state, pressedSquares: [index] }
@@ -204,14 +194,23 @@ function Game({
                 }
                 case 'gameReset': {
                     const { presetName, gameParams, navigate } = event
-                    void navigate({
-                        to: '/game/$session_id',
-                        params: { session_id: 'new' },
-                    })
+                    if (!window.location.href.endsWith('/new')) {
+                        void navigate({
+                            to: '/game/$session_id',
+                            params: { session_id: 'new' },
+                        })
+                    }
                     return {
                         ...initialState,
                         presetName: presetName ?? state.presetName,
-                        gameParams: gameParams ?? presets[state.presetName],
+                        gameParams:
+                            gameParams ??
+                            state.session ??
+                            presets[
+                                state.presetName in presets
+                                    ? state.presetName
+                                    : defaultPresetName
+                            ],
                     }
                 }
                 case 'timerStart': {
@@ -247,7 +246,7 @@ function Game({
             }
             return state
         },
-        [presets, initialState]
+        [presets, initialState, defaultPresetName]
     )
 
     const [state, dispatch] = React.useReducer(
@@ -316,10 +315,10 @@ function Game({
         }
     }, [state.session])
 
-    // const [settingsExpanded, setSettingsExpanded] = React.useState(false)
+    const [settingsExpanded, setSettingsExpanded] = React.useState(false)
 
     return (
-        <div className={twMerge('flex flex-col', className)} {...props}>
+        <div className="flex flex-col">
             <div className="mb-2 w-fit select-none">
                 <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 px-2">
                     {Object.entries(presets).map(([name, preset]) => (
@@ -339,49 +338,45 @@ function Game({
                                 id={`preset-${name}`}
                                 name={name}
                                 checked={name === state.presetName}
-                                onChange={() => {
-                                    if (preset.customizable) {
-                                        dispatch({
-                                            type: 'presetPicked',
-                                            presetName: name as GamePresetName,
-                                        })
-                                    } else {
-                                        dispatch({
-                                            type: 'gameReset',
-                                            presetName: name as GamePresetName,
-                                            gameParams: preset,
-                                            navigate,
-                                        })
-                                    }
-                                }}
+                                onChange={() =>
+                                    dispatch({
+                                        type: 'gameReset',
+                                        presetName: name as GamePresetName,
+                                        gameParams: preset,
+                                        navigate,
+                                    })
+                                }
                             />
                         </div>
                     ))}
-                </div>
-                {/* TODO */}
-                {/* <button onClick={() => setSettingsExpanded((e) => !e)}>
-                    <div className="inline">Custom</div>
-                    <ExpandMoreIcon
-                        className={twMerge(
-                            'rotate-0 transition-transform',
-                            settingsExpanded && 'rotate-[-180deg]'
-                            // settingsExpanded
-                            //     ? 'animate-half-spin-to'
-                            //     : 'animate-half-spin-from'
+                    <button
+                        onClick={() => setSettingsExpanded((e) => !e)}
+                        className={twJoin(
+                            state.presetName === 'custom' && 'font-bold'
                         )}
-                    />
-                </button> */}
+                    >
+                        <div className="inline">Custom</div>
+                        <ExpandMoreIcon
+                            sx={{
+                                translate: '0 -.1rem',
+                                transition: 'transform 300ms',
+                            }}
+                            className={twJoin(
+                                settingsExpanded && 'rotate-[180deg]'
+                            )}
+                        />
+                    </button>
+                </div>
             </div>
-            {/* <Collapse in={settingsExpanded}> */}
-            <Collapse in={presets[state.presetName].customizable}>
+            <Collapse in={settingsExpanded}>
                 <GameSettings
                     className="mb-2"
-                    defaultParams={presets[state.presetName]}
-                    onSubmit={(update) =>
+                    defaultParams={state.session ?? state.gameParams}
+                    onSubmit={(params) =>
                         dispatch({
                             type: 'gameReset',
-                            presetName: state.presetName,
-                            gameParams: update,
+                            presetName: 'custom',
+                            gameParams: params,
                             navigate,
                         })
                     }
@@ -442,7 +437,9 @@ function Game({
                     sendMessage(`f ${x} ${y}`)
                 }}
                 onSquareLeave={() => {
-                    dispatch({ type: 'cellLeave' })
+                    if (state.pressedSquares?.length) {
+                        dispatch({ type: 'cellLeave' })
+                    }
                 }}
                 rightCounterValue={Math.min(state.timer, 999)
                     .toString()

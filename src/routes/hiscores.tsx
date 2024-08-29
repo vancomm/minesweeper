@@ -55,8 +55,8 @@ const HiScoreSection = ({ title, records }: HiScoreSectionProps) => (
 function HiScores() {
     const records = Route.useLoaderData()
 
-    const categories = Object.entries(GAME_PRESETS).reduce(
-        (acc, [k, v]) => (v.customizable ? acc : { ...acc, [k]: [] }),
+    const categories = Object.keys(GAME_PRESETS).reduce(
+        (acc, k) => ({ ...acc, [k]: [] }),
         {} as Record<string, GameRecord[]>
     )
     const seedToCategory = Object.entries(GAME_PRESETS).reduce(
