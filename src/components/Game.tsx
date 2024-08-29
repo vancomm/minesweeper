@@ -37,13 +37,14 @@ type GameState = {
     face: FaceState
     timer: number
     timerInterval?: number
-    showCustomControls: boolean
+    // showCustomControls: boolean
     pressedSquares?: number[]
 }
 
 type GameEvent =
     | { type: 'cellDown'; x: number; y: number; squareState: number }
     | { type: 'cellUp'; x: number; y: number; squareState: number }
+    | { type: 'cellLeave' }
     | {
           type: 'gameUpdated'
           update: GameUpdate
@@ -127,6 +128,12 @@ export default function Game({
                         }
                     }
                     return state
+                }
+                case 'cellLeave': {
+                    return {
+                        ...state,
+                        pressedSquares: undefined,
+                    }
                 }
                 case 'gameUpdated': {
                     const { update, navigate } = event
@@ -399,6 +406,9 @@ export default function Game({
                         return
                     }
                     sendMessage(`f ${x} ${y}`)
+                }}
+                onSquareLeave={() => {
+                    dispatch({ type: 'cellLeave' })
                 }}
                 rightCounterValue={Math.min(state.timer, 999)
                     .toString()

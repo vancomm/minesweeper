@@ -27,6 +27,7 @@ export type BoardProps = {
     onSquareDown?: (x: number, y: number, state: number) => unknown
     onSquareUp?: (x: number, y: number, state: number) => unknown
     onSquareAux?: (x: number, y: number, state: number) => unknown
+    onSquareLeave?: (x: number, y: number, state: number) => unknown
     leftCounterValue: string
     rightCounterValue: string
     faceState: FaceState
@@ -40,6 +41,7 @@ export default function Board({
     onSquareDown,
     onSquareUp,
     onSquareAux,
+    onSquareLeave,
     leftCounterValue,
     rightCounterValue,
     faceState,
@@ -99,6 +101,9 @@ export default function Board({
                                 if (e.button !== 2) {
                                     onSquareUp?.(x, y, state)
                                 }
+                            }}
+                            onPointerLeave={() => {
+                                onSquareLeave?.(x, y, state)
                             }}
                             onContextMenu={(e) => {
                                 e.preventDefault()
