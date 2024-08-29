@@ -1,9 +1,11 @@
 import { createLazyFileRoute } from '@tanstack/react-router'
-import { HeadingProps, ParagraphProps } from '../types'
-import { twMerge } from 'tailwind-merge'
-import Square from '../components/Square'
-import { SquareState } from '../constants'
 import React from 'react'
+import { twMerge } from 'tailwind-merge'
+
+import Square from 'components/Square'
+
+import { SquareState } from '@/constants'
+import { HeadingProps, ParagraphProps } from '@/types'
 
 export const Route = createLazyFileRoute('/about')({
     component: About,

@@ -1,11 +1,13 @@
-import { createFileRoute, redirect } from '@tanstack/react-router'
-import { GameRecord, getMyRecords } from '../api/game'
-import { raise } from '../utils'
-import CircularProgress from '@mui/material/CircularProgress'
-import { GAME_PRESETS, paramsToSeed } from '../constants'
 import { capitalize } from '@mui/material'
-import { HeadingProps } from '../types'
+import CircularProgress from '@mui/material/CircularProgress'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import { twMerge } from 'tailwind-merge'
+
+import { GameRecord, getMyRecords } from 'api/game'
+
+import { GAME_PRESETS, paramsToSeed } from '@/constants'
+import { HeadingProps } from '@/types'
+import { raise } from '@/utils'
 
 export const Route = createFileRoute('/myscores')({
     beforeLoad: ({ context }) => {

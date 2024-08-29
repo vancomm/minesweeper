@@ -1,31 +1,33 @@
-import React from 'react'
+import { Dropdown } from '@mui/base/Dropdown'
+import { Menu } from '@mui/base/Menu'
+import { MenuButton } from '@mui/base/MenuButton'
+import { MenuItem } from '@mui/base/MenuItem'
+import Create from '@mui/icons-material/Create'
+import Login from '@mui/icons-material/Login'
+import Logout from '@mui/icons-material/Logout'
+import Person from '@mui/icons-material/Person'
+import Collapse from '@mui/material/Collapse'
+import Dialog from '@mui/material/Dialog'
 import {
-    createRootRouteWithContext,
     Link,
     Outlet,
+    createRootRouteWithContext,
     useRouter,
     useRouterState,
 } from '@tanstack/react-router'
+import React from 'react'
 import { twMerge } from 'tailwind-merge'
-import Dialog from '@mui/material/Dialog'
-import Login from '@mui/icons-material/Login'
-import Create from '@mui/icons-material/Create'
-import Collapse from '@mui/material/Collapse'
-import { Menu } from '@mui/base/Menu'
-import { Dropdown } from '@mui/base/Dropdown'
-import { MenuButton } from '@mui/base/MenuButton'
-import { MenuItem } from '@mui/base/MenuItem'
-import Logout from '@mui/icons-material/Logout'
-import Person from '@mui/icons-material/Person'
 
-import { TanStackRouterDevtools } from '../components/Devtools'
-import { DivProps } from '../types'
-import Square from '../components/Square'
-import { SquareState } from '../constants'
-import { AuthParams } from '../api/auth'
-import { AuthContext, useAuth } from '../contexts/AuthContext'
-import AuthDialog from '../components/AuthDialog'
-import { useBreakpoint } from '../hooks/useBreakpoint'
+import AuthDialog from 'components/AuthDialog'
+import { TanStackRouterDevtools } from 'components/Devtools'
+import Square from 'components/Square'
+
+import { AuthParams } from 'api/auth'
+
+import { SquareState } from '@/constants'
+import { AuthContext, useAuth } from '@/contexts/AuthContext'
+import { useBreakpoint } from '@/hooks/useBreakpoint'
+import { DivProps } from '@/types'
 
 interface RouterContext {
     auth: AuthContext

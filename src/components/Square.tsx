@@ -1,5 +1,6 @@
 import { twMerge } from 'tailwind-merge'
-import { SquareState } from '../constants'
+
+import { SquareState } from '@/constants'
 
 const SQUARE_STATE_TO_BG: Map<number, string> = new Map([
     [SquareState.Question, ''], // TODO

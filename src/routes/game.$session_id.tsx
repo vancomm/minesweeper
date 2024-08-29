@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { createGameApi, GameUpdate } from '../api/game'
-import { status } from '../api/auth'
+
+import { status } from 'api/auth'
+import { GameUpdate, createGameApi } from 'api/game'
 
 export const Route = createFileRoute('/game/$session_id')({
     loader: async ({

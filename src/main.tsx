@@ -1,14 +1,12 @@
+import { RouterProvider, createRouter } from '@tanstack/react-router'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { RouterProvider, createRouter } from '@tanstack/react-router'
 
-// Import the generated route tree
-import { routeTree } from './routeTree.gen'
-import './index.css'
-import AuthProvider from './contexts/AuthProvider'
-import { useAuth } from './contexts/AuthContext'
+import { useAuth } from '@/contexts/AuthContext'
+import AuthProvider from '@/contexts/AuthProvider'
+import '@/index.css'
+import { routeTree } from '@/routeTree.gen'
 
-// Create a new router instance
 const router = createRouter({
     basepath: __BASE_URL__,
     defaultNotFoundComponent: () => '404 Not Found',
@@ -18,7 +16,6 @@ const router = createRouter({
     },
 })
 
-// Register the router instance for type safety
 declare module '@tanstack/react-router' {
     interface Register {
         router: typeof router
@@ -40,7 +37,6 @@ function App() {
     )
 }
 
-// Render the app
 const rootElement = document.getElementById('root')!
 if (!rootElement.innerHTML) {
     const root = ReactDOM.createRoot(rootElement)

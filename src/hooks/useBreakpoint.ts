@@ -1,6 +1,7 @@
 import { useMediaQuery } from '@mui/material'
 import resolveConfig from 'tailwindcss/resolveConfig'
-import config from '../../tailwind.config' // Your tailwind config
+
+import config from '@/../tailwind.config'
 
 const breakpoints = resolveConfig(config).theme.screens
 

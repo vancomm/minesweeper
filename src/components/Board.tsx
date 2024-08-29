@@ -1,6 +1,6 @@
+import React from 'react'
 import { twMerge } from 'tailwind-merge'
-import Counter from './Counter'
-import Face, { FaceState } from './Face'
+
 import {
     BottomBorder,
     BottomLeftBorder,
@@ -13,9 +13,10 @@ import {
     TopBorder,
     TopLeftBorder,
     TopRightBorder,
-} from './Borders'
-import Square, { SQUARE_SIZE_PX, SquareProps } from './Square'
-import React from 'react'
+} from 'components/Borders'
+import Counter from 'components/Counter'
+import Face, { FaceState } from 'components/Face'
+import Square, { SQUARE_SIZE_PX, SquareProps } from 'components/Square'
 
 export type Cell = Omit<SquareProps, 'gameOver'>
 

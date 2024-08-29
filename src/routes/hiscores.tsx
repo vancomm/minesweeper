@@ -1,12 +1,13 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { twMerge } from 'tailwind-merge'
 import { capitalize } from '@mui/material'
 import CircularProgress from '@mui/material/CircularProgress'
+import { createFileRoute } from '@tanstack/react-router'
+import { twMerge } from 'tailwind-merge'
 
-import { GameRecord, getRecords } from '../api/game'
-import { GAME_PRESETS, paramsToSeed } from '../constants'
-import { HeadingProps } from '../types'
-import { raise } from '../utils'
+import { GameRecord, getRecords } from 'api/game'
+
+import { GAME_PRESETS, paramsToSeed } from '@/constants'
+import { HeadingProps } from '@/types'
+import { raise } from '@/utils'
 
 const H3 = ({ className, ...props }: HeadingProps) => (
     <h3 className={twMerge('font-bold', className)} {...props} />

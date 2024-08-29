@@ -1,6 +1,8 @@
 import React from 'react'
-import { AuthError, AuthParams, PlayerInfo } from '../api/auth'
-import { Option } from '../types'
+
+import { AuthError, AuthParams, PlayerInfo } from 'api/auth'
+
+import { Option } from '@/types'
 
 export type AuthContext = {
     player: PlayerInfo | undefined

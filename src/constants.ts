@@ -1,4 +1,4 @@
-import { GameParams } from './api/game'
+import { GameParams } from 'api/game'
 
 export type GamePreset = GameParams & {
     customizable: boolean

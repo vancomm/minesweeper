@@ -1,7 +1,8 @@
 import { twMerge } from 'tailwind-merge'
 
-import { GameParams } from '../api/game'
-import { DivProps, FormProps } from '../types'
+import { GameParams } from 'api/game'
+
+import { DivProps, FormProps } from '@/types'
 
 const SettingsField = ({ className, ...props }: DivProps) => (
     <div

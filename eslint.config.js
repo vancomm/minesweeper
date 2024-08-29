@@ -1,15 +1,22 @@
 import js from '@eslint/js'
-import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import tseslint from 'typescript-eslint'
 import eslintConfigPrettier from 'eslint-config-prettier'
 import react from 'eslint-plugin-react'
+import reactHooks from 'eslint-plugin-react-hooks'
+import reactRefresh from 'eslint-plugin-react-refresh'
+import globals from 'globals'
+import tseslint from 'typescript-eslint'
 
 export default tseslint.config(
     { ignores: ['dist'] },
     {
-        settings: { react: { version: '18.3' } },
+        settings: {
+            react: { version: '18.3' },
+            'import/resolver': {
+                alias: {
+                    map: ['components', './src/components'],
+                },
+            },
+        },
         extends: [
             js.configs.recommended,
             ...tseslint.configs.recommendedTypeChecked,
