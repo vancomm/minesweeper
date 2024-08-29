@@ -273,7 +273,7 @@ function Game({
         }
     )
 
-    const navigate = useNavigate({ from: '/game/$session_id' })
+    const navigate = useNavigate()
 
     const { sendMessage, lastJsonMessage } = useWebSocket(
         state.session ? sessionIdToWS(state.session.session_id) : '',

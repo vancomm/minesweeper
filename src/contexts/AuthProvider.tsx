@@ -1,6 +1,13 @@
 import React from 'react'
 
-import { AuthParams, PlayerInfo, login, logout, register } from 'api/auth'
+import {
+    AuthParams,
+    PlayerInfo,
+    login,
+    logout,
+    register,
+    status,
+} from 'api/auth'
 
 import { AuthContext } from '@/contexts/AuthContext'
 import { getJWTClaims } from '@/security/jwt'
@@ -14,8 +21,9 @@ export default function AuthProvider({ children }: AuthProviderProps) {
         getJWTClaims()
     )
 
-    const update = React.useCallback(() => {
+    const update = React.useCallback(async () => {
         console.log('update')
+        await status()
         setPlayer(getJWTClaims())
     }, [setPlayer])
 
@@ -24,17 +32,17 @@ export default function AuthProvider({ children }: AuthProviderProps) {
             player,
             register: async (data: AuthParams) => {
                 const res = await register(data)
-                update()
+                await update()
                 return res
             },
             login: async (data: AuthParams) => {
                 const res = await login(data)
-                update()
+                await update()
                 return res
             },
             logout: async () => {
                 await logout()
-                update()
+                await update()
             },
             update,
         }),
@@ -42,7 +50,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     )
 
     React.useEffect(() => {
-        update()
+        update().catch(console.error)
     }, [update])
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

@@ -9,7 +9,7 @@ export type AuthContext = {
     register: (data: AuthParams) => Promise<Option<null, AuthError>>
     login: (data: AuthParams) => Promise<Option<null, AuthError>>
     logout: () => Promise<void>
-    update: () => void
+    update: () => Promise<void>
 }
 
 export const AuthContext = React.createContext<AuthContext>(null!)
