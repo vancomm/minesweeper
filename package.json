@@ -12,9 +12,9 @@
         "format": "prettier --write src/**/*.{js,jsx,ts,tsx}",
         "preview": "vite preview",
         "preview:b": "tsc && vite build && vite preview",
-        "deploy": "rsync -avz dist/ mskbox:/var/www/minesweeper/",
-        "deploy:stage": "rsync -avz dist-test/ mskbox:/var/www/minesweeper-test/",
-        "deploy:pages": "gh-pages -d dist"
+        "deploy": "scripts/deploy.sh",
+        "deploy:stage": "scripts/deploy-staging.sh",
+        "deploy:ghpages": "gh-pages -d ghpages"
     },
     "dependencies": {
         "@emotion/react": "^11.13.0",
