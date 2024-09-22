@@ -26,11 +26,13 @@ import { AuthParams } from 'api/auth'
 
 import { SquareState } from '@/constants'
 import { AuthContext, useAuth } from '@/contexts/AuthContext'
+import { GameContext } from '@/contexts/GameContext'
 import { useBreakpoint } from '@/hooks/useBreakpoint'
 import { DivProps } from '@/types'
 
 interface RouterContext {
     auth: AuthContext
+    game: GameContext
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({

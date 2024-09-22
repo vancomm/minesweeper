@@ -4,8 +4,11 @@ import ReactDOM from 'react-dom/client'
 
 import { useAuth } from '@/contexts/AuthContext'
 import AuthProvider from '@/contexts/AuthProvider'
+import GameProvider from '@/contexts/GameProvider'
 import '@/index.css'
 import { routeTree } from '@/routeTree.gen'
+
+import { useGame } from './contexts/GameContext'
 
 const router = createRouter({
     basepath: __BASE_URL__,
@@ -13,6 +16,7 @@ const router = createRouter({
     routeTree,
     context: {
         auth: undefined!,
+        game: undefined!,
     },
 })
 
@@ -25,14 +29,17 @@ declare module '@tanstack/react-router' {
 // eslint-disable-next-line react-refresh/only-export-components
 function InnerApp() {
     const auth = useAuth()
-    return <RouterProvider router={router} context={{ auth }} />
+    const game = useGame()
+    return <RouterProvider router={router} context={{ auth, game }} />
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
 function App() {
     return (
         <AuthProvider>
-            <InnerApp />
+            <GameProvider>
+                <InnerApp />
+            </GameProvider>
         </AuthProvider>
     )
 }
