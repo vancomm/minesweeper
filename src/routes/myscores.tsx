@@ -1,13 +1,13 @@
 import { capitalize } from '@mui/material'
 import CircularProgress from '@mui/material/CircularProgress'
 import { createFileRoute, redirect } from '@tanstack/react-router'
-import { twMerge } from 'tailwind-merge'
 
-import { GameRecord, getMyRecords } from 'api/game'
+import { GameRecord } from 'api/entities'
+import * as api from 'api/game'
 
-import { GAME_PRESETS, paramsToSeed } from '@/constants'
-import { HeadingProps } from '@/types'
-import { raise } from '@/utils'
+import HiScoreCategoryRows from '@/components/Leaderboard'
+import { paramsToPresetName } from '@/constants'
+import { throwIfError } from '@/monad'
 
 export const Route = createFileRoute('/myscores')({
     beforeLoad: ({ context }) => {
@@ -15,10 +15,10 @@ export const Route = createFileRoute('/myscores')({
             throw redirect({ to: '/' })
         }
     },
-    loader: async () =>
-        getMyRecords({}).then(({ success, data }) =>
-            success ? data : raise(new Error('api unavailable'))
-        ),
+    loader: async ({ context }) =>
+        api
+            .getRecords({ username: context.auth.player!.username })
+            .then(throwIfError),
     component: MyScores,
     pendingComponent: () => (
         <div className="grid h-64 w-64 place-items-center">
@@ -27,74 +27,47 @@ export const Route = createFileRoute('/myscores')({
     ),
 })
 
-const H3 = ({ className, ...props }: HeadingProps) => (
-    <h3 className={twMerge('font-bold', className)} {...props} />
-)
-
-type HiScoreSectionProps = {
-    title: string
-    records: GameRecord[]
-}
-
-const HiScoreSection = ({ title, records }: HiScoreSectionProps) => (
-    <>
-        <tr className="border-b border-neutral-500">
-            <td colSpan={2}>
-                <H3>{title}</H3>
-            </td>
-        </tr>
-        {records.map(({ playtime }, i) => (
-            <tr key={`${title}-${i}`}>
-                <td className="pr-1 text-end">{i + 1}.</td>
-                <td>{playtime.toFixed(3)}</td>
-            </tr>
-        ))}
-    </>
-)
-
 function MyScores() {
     const records = Route.useLoaderData()
 
-    const categories = Object.keys(GAME_PRESETS).reduce(
-        (acc, k) => ({ ...acc, [k]: [] }),
-        {} as Record<string, GameRecord[]>
-    )
-    const seedToCategory = Object.entries(GAME_PRESETS).reduce(
-        (acc, [k, v]) => ({ ...acc, [paramsToSeed(v)]: k }),
-        {} as Record<string, string>
-    )
-    records.forEach((record) => {
-        const seed = paramsToSeed(record)
-        if (seed in seedToCategory) {
-            categories[seedToCategory[seed]].push(record)
-        }
-    })
+    const recordsPerPreset = records
+        .map((r) => [r, paramsToPresetName(r)] as const)
+        .reduce(
+            (acc, [r, presetName]) =>
+                presetName
+                    ? {
+                          ...acc,
+                          [presetName]:
+                              presetName in acc ? [...acc[presetName], r] : [r],
+                      }
+                    : acc,
+            {} as Record<string, GameRecord[]>
+        )
 
     return (
         <>
             <table className="border-separate border-spacing-0.5">
                 <tbody>
-                    {Object.entries(categories).map(
-                        ([key, records]) =>
+                    {Object.entries(recordsPerPreset).map(
+                        ([presetName, records]) =>
                             records.length > 0 && (
-                                <HiScoreSection
-                                    key={key}
-                                    title={capitalize(key)}
-                                    records={records
-                                        .slice()
-                                        .sort(
-                                            (
-                                                { playtime: a },
-                                                { playtime: b }
-                                            ) => a - b
-                                        )
-                                        .slice(0, 10)}
-                                />
+                                <>
+                                    <tr className="border-b border-neutral-500">
+                                        <td colSpan={4} className="font-bold">
+                                            {capitalize(presetName)}
+                                        </td>
+                                    </tr>
+                                    <HiScoreCategoryRows
+                                        key={presetName}
+                                        title={presetName}
+                                        records={records}
+                                    />
+                                </>
                             )
                     )}
                 </tbody>
             </table>
-            {Object.values(categories).every((c) => !c.length) && (
+            {!records && (
                 <div className="flex h-full items-center justify-center p-4 md:w-64">
                     <div className="italic">No records yet!</div>
                 </div>

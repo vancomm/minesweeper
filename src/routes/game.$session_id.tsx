@@ -1,15 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router'
 
 import { status } from 'api/auth'
-import { createGameApi } from 'api/game'
+
+import { newGameApi } from '@/api/game'
 
 export const Route = createFileRoute('/game/$session_id')({
-    loader: async ({
-        params: { session_id },
-        context: {
-            game: { dispatch },
-        },
-    }) => {
+    loader: async ({ params: { session_id }, context: { game } }) => {
         if (session_id === 'new') {
             const ok = await status()
             if (!ok) {
@@ -22,13 +18,13 @@ export const Route = createFileRoute('/game/$session_id')({
             success,
             data: update,
             error,
-        } = await createGameApi(session_id).fetchGame({})
+        } = await newGameApi(session_id).fetchGame()
 
         if (!success) {
             console.error(error)
             throw new Error('api unavailable')
         }
 
-        dispatch({ type: 'gameInit', update })
+        game.init(update)
     },
 })

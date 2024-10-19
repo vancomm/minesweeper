@@ -1,6 +1,10 @@
 import { z } from 'zod'
-import { Option } from '../types'
-import { ENDPOINT } from './common'
+
+import { ENDPOINT } from 'api/constants'
+
+import { Result } from '@/monad'
+
+import { validateFetcher } from './common'
 
 export type AuthError = {
     statusCode: number
@@ -31,14 +35,13 @@ export type Status = z.infer<typeof Status>
 
 export type PlayerInfo = z.infer<typeof PlayerInfo>
 
-export const status = async (): Promise<Status> =>
+export const status = validateFetcher(Status, () =>
     fetch(ENDPOINT + '/status', { credentials: 'include' })
-        .then((res) => res.json())
-        .then((data) => Status.parse(data))
+)
 
 export const register = async (
     data: AuthParams
-): Promise<Option<null, AuthError>> => {
+): Promise<Result<null, AuthError>> => {
     const res = await fetch(ENDPOINT + '/register', {
         method: 'POST',
         headers: {
@@ -62,7 +65,7 @@ export const register = async (
 
 export const login = async (
     data: AuthParams
-): Promise<Option<null, AuthError>> => {
+): Promise<Result<null, AuthError>> => {
     const res = await fetch(ENDPOINT + '/login', {
         method: 'POST',
         headers: {

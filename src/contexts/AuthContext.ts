@@ -2,12 +2,12 @@ import React from 'react'
 
 import { AuthError, AuthParams, PlayerInfo } from 'api/auth'
 
-import { Option } from '@/types'
+import { Result } from '@/monad'
 
 export type AuthContext = {
     player: PlayerInfo | undefined
-    register: (data: AuthParams) => Promise<Option<null, AuthError>>
-    login: (data: AuthParams) => Promise<Option<null, AuthError>>
+    register: (data: AuthParams) => Promise<Result<null, AuthError>>
+    login: (data: AuthParams) => Promise<Result<null, AuthError>>
     logout: () => Promise<void>
     update: () => Promise<void>
 }

@@ -1,3 +1,5 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
@@ -33,14 +35,19 @@ function InnerApp() {
     return <RouterProvider router={router} context={{ auth, game }} />
 }
 
+const queryClient = new QueryClient()
+
 // eslint-disable-next-line react-refresh/only-export-components
 function App() {
     return (
-        <AuthProvider>
-            <GameProvider>
-                <InnerApp />
-            </GameProvider>
-        </AuthProvider>
+        <QueryClientProvider client={queryClient}>
+            <AuthProvider>
+                <GameProvider>
+                    <InnerApp />
+                </GameProvider>
+            </AuthProvider>
+            <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
     )
 }
 

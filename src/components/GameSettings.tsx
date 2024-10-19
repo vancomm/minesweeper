@@ -1,8 +1,8 @@
 import { twMerge } from 'tailwind-merge'
 
-import { GameParams } from 'api/game'
+import { GameParams } from 'api/entities'
 
-import { FormProps } from '@/types'
+import { FormProps } from '@/props'
 
 type GameSettingsProps = Omit<FormProps, 'onSubmit'> & {
     defaultParams: GameParams
@@ -68,7 +68,7 @@ export default function GameSettings({
                 key={`mines-${defaultParams.mine_count}`}
             />
 
-            <div className="min-w-fit col-span-2">
+            <div className="col-span-2 min-w-fit">
                 <label htmlFor="unique" className="cursor-pointer">
                     <div className="mr-2 inline">Unique</div>
                     <input
@@ -81,7 +81,7 @@ export default function GameSettings({
                 </label>
             </div>
 
-            <button type="submit" className="underline col-span-2">
+            <button type="submit" className="col-span-2 underline">
                 Update
             </button>
         </form>

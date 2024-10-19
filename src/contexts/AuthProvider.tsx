@@ -10,7 +10,7 @@ import {
 } from 'api/auth'
 
 import { AuthContext } from '@/contexts/AuthContext'
-import { getJWTClaims } from '@/security/jwt'
+import { getJWTClaims } from '@/jwt'
 
 type AuthProviderProps = {
     children?: React.ReactNode

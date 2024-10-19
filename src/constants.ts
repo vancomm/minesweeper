@@ -1,4 +1,4 @@
-import { GameParams } from 'api/game'
+import { GameParams } from 'api/entities'
 
 export const GAME_PRESETS = {
     easy: {
@@ -29,6 +29,8 @@ export const GAME_PRESETS = {
 
 export type GamePresetName = keyof typeof GAME_PRESETS
 
+export const GAME_PRESET_NAMES = [...Object.keys(GAME_PRESETS)] as const
+
 export const paramsToSeed = ({
     width,
     height,
@@ -36,7 +38,23 @@ export const paramsToSeed = ({
     unique,
 }: GameParams) => `${width}:${height}:${mine_count}:${unique ? '1' : '0'}`
 
-export const SquareState = {
+export const GAME_PRESET_SEEDS = [
+    ...Object.values(GAME_PRESETS).map(paramsToSeed),
+] as const
+
+export const SEED_2_GAME_PRESET_NAME = Object.entries(GAME_PRESETS).reduce(
+    (acc, [k, v]) => ({ ...acc, [paramsToSeed(v)]: k }),
+    {} as Record<string, string>
+) as Readonly<Record<string, string>>
+
+export const paramsToPresetName = (params: GameParams) => {
+    const seed = paramsToSeed(params)
+    return GAME_PRESET_SEEDS.includes(seed)
+        ? SEED_2_GAME_PRESET_NAME[seed]
+        : undefined
+}
+
+export const CellState = {
     Question: -3,
     Up: -2,
     Flag: -1,
@@ -46,3 +64,7 @@ export const SquareState = {
     FalseMine: 66,
     Mine: 67,
 } as const
+
+export type CellStateKey = keyof typeof CellState
+
+export type CellState = (typeof CellState)[CellStateKey]

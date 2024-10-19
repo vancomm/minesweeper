@@ -1,117 +1,67 @@
-import { z } from 'zod'
-import { createApiMethod, ENDPOINT } from './common'
+import { createSearchParams, validateFetcher } from 'api/common'
+import { ENDPOINT } from 'api/constants'
+import { CellParams, GameParams, GameRecord, GameUpdate } from 'api/entities'
 
-// type PosParams struct {
-// 	X int `schema:"x,required"`
-// 	Y int `schema:"y,required"`
-// }
-
-type SquareParams = {
-    x: number
-    y: number
+type GetRecordsProps = {
+    username?: string
+    seed?: string
 }
 
-// type NewGameParams struct {
-// 	Width     int  `schema:"width,required"`
-// 	Height    int  `schema:"height,required"`
-// 	MineCount int  `schema:"mine_count,required"`
-// 	Unique    bool `schema:"unique,required"`
-// }
-
-export type GameParams = {
-    width: number
-    height: number
-    mine_count: number
-    unique: boolean
-}
-
-// type GameSessionJSON struct {
-// 	SessionId string         `json:"session_id"`
-// 	Grid      mines.GridInfo `json:"grid"`
-// 	Width     int            `json:"width"`
-// 	Height    int            `json:"height"`
-// 	MineCount int            `json:"mine_count"`
-// 	Unique    bool           `json:"unique"`
-// 	Dead      bool           `json:"dead"`
-// 	Won       bool           `json:"won"`
-// 	StartedAt int64          `json:"started_at"`
-// 	EndedAt   *int64         `json:"ended_at,omitempty"`
-// }
-
-export const GameUpdate = z.object({
-    session_id: z.string(),
-    grid: z.number().array(),
-    width: z.number(),
-    height: z.number(),
-    mine_count: z.number(),
-    unique: z.boolean(),
-    dead: z.boolean(),
-    won: z.boolean(),
-    started_at: z.number(),
-    ended_at: z.number().optional(),
-})
-
-export type GameUpdate = z.infer<typeof GameUpdate>
-
-export const createNewGame = createApiMethod<SquareParams & GameParams>(
-    `${ENDPOINT}/game`,
-    {
-        method: 'POST',
-    }
-)(GameUpdate)
-
-export const GameRecord = z.object({
-    username: z.string().nullable(),
-    width: z.number(),
-    height: z.number(),
-    mine_count: z.number(),
-    unique: z.boolean(),
-    playtime: z.number(),
-})
-
-export type GameRecord = z.infer<typeof GameRecord>
-
-export const getRecords = createApiMethod(`${ENDPOINT}/records`)(
-    GameRecord.array()
+export const getRecords = validateFetcher(
+    GameRecord.array(),
+    (search?: GetRecordsProps) =>
+        fetch(`${ENDPOINT}/records?` + createSearchParams(search).toString(), {
+            credentials: 'include',
+        })
 )
 
-export const getMyRecords = createApiMethod(`${ENDPOINT}/myrecords`)(
-    GameRecord.array()
+export const getMyRecords = validateFetcher(GameRecord.array(), () =>
+    fetch(`${ENDPOINT}/myrecords`, { credentials: 'include' })
 )
 
-export const createGameApi = (session_id: string) => {
-    const fetchGame = createApiMethod(`${ENDPOINT}/game/${session_id}`)(
-        GameUpdate
-    )
-    const openCell = createApiMethod<SquareParams>(
-        `${ENDPOINT}/game/${session_id}/open`,
-        {
+export const createNewGame = validateFetcher(
+    GameUpdate,
+    (search: CellParams & GameParams) =>
+        fetch(`${ENDPOINT}/game?` + createSearchParams(search).toString(), {
             method: 'POST',
-        }
-    )(GameUpdate)
-    const flagCell = createApiMethod<SquareParams>(
-        `${ENDPOINT}/game/${session_id}/flag`,
-        {
-            method: 'POST',
-        }
-    )(GameUpdate)
-    const chordCell = createApiMethod<SquareParams>(
-        `${ENDPOINT}/game/${session_id}/chord`,
-        {
-            method: 'POST',
-        }
-    )(GameUpdate)
-    const executeBatch = createApiMethod(
-        `${ENDPOINT}/game/${session_id}/batch`,
-        { method: 'POST' }
-    )(GameUpdate)
-    return {
-        fetchGame,
-        openCell,
-        flagCell,
-        chordCell,
-        executeBatch,
-    }
-}
+            credentials: 'include',
+        })
+)
 
-export type GameApi = ReturnType<typeof createGameApi>
+export const newGameApi = (session_id: string) => ({
+    fetchGame: validateFetcher(GameUpdate, () =>
+        fetch(`${ENDPOINT}/game/${session_id}`)
+    ),
+    openCell: validateFetcher(GameUpdate, (search: CellParams) =>
+        fetch(
+            `${ENDPOINT}/game/${session_id}/open?` +
+                createSearchParams(search).toString(),
+            {
+                method: 'POST',
+                credentials: 'include',
+            }
+        )
+    ),
+    flagCell: validateFetcher(GameUpdate, (search: CellParams) =>
+        fetch(
+            `${ENDPOINT}/game/${session_id}/flag?` +
+                createSearchParams(search).toString(),
+            {
+                method: 'POST',
+                credentials: 'include',
+            }
+        )
+    ),
+    chordCell: validateFetcher(GameUpdate, (search: CellParams) =>
+        fetch(
+            `${ENDPOINT}/game/${session_id}/chord?` +
+                createSearchParams(search).toString(),
+            {
+                method: 'POST',
+                credentials: 'include',
+            }
+        )
+    ),
+})
+
+export type GameApi = ReturnType<typeof newGameApi>

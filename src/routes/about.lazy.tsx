@@ -2,10 +2,9 @@ import { createLazyFileRoute } from '@tanstack/react-router'
 import React from 'react'
 import { twMerge } from 'tailwind-merge'
 
-import Square from 'components/Square'
-
-import { SquareState } from '@/constants'
-import { HeadingProps, ParagraphProps } from '@/types'
+import Cell from '@/components/Cell'
+import { CellState } from '@/constants'
+import { HeadingProps, ParagraphProps } from '@/props'
 
 export const Route = createLazyFileRoute('/about')({
     component: About,
@@ -22,21 +21,21 @@ const H2 = ({ className, ...props }: HeadingProps) => (
     />
 )
 
-const DemoSquare = ({ trueState }: { trueState: number }) => {
+const DemoCell = ({ trueState }: { trueState: number }) => {
     const [pressed, setPressed] = React.useState(false)
     const [opened, setOpened] = React.useState(false)
     const [flagged, setFlagged] = React.useState(false)
 
     return (
-        <Square
+        <Cell
             state={
                 pressed
-                    ? SquareState.Down
+                    ? CellState.Down
                     : opened
                       ? trueState
                       : flagged
-                        ? SquareState.Flag
-                        : SquareState.Up
+                        ? CellState.Flag
+                        : CellState.Up
             }
             onPointerDown={(e) => {
                 if (e.button !== 2 && !opened && !flagged) {
@@ -65,27 +64,27 @@ const ChordDemo = () => {
 
     return (
         <div className="h-[72px] w-[72px]">
-            <Square
-                state={SquareState.Flag}
+            <Cell
+                state={CellState.Flag}
                 className="float-left cursor-not-allowed"
                 onContextMenu={(e) => e.preventDefault()}
             />
-            <Square
-                state={SquareState.Flag}
+            <Cell
+                state={CellState.Flag}
                 className="float-left cursor-not-allowed"
                 onContextMenu={(e) => e.preventDefault()}
             />
-            <Square
-                state={pressed ? SquareState.Down : opened ? 1 : SquareState.Up}
+            <Cell
+                state={pressed ? CellState.Down : opened ? 1 : CellState.Up}
                 className="float-left cursor-not-allowed"
                 onContextMenu={(e) => e.preventDefault()}
             />
-            <Square
-                state={pressed ? SquareState.Down : opened ? 2 : SquareState.Up}
+            <Cell
+                state={pressed ? CellState.Down : opened ? 2 : CellState.Up}
                 className="float-left cursor-not-allowed"
                 onContextMenu={(e) => e.preventDefault()}
             />
-            <Square
+            <Cell
                 state={3}
                 className="float-left"
                 onPointerDown={(e) => {
@@ -101,23 +100,23 @@ const ChordDemo = () => {
                 }}
                 onContextMenu={(e) => e.preventDefault()}
             />
-            <Square
-                state={pressed ? SquareState.Down : opened ? 2 : SquareState.Up}
+            <Cell
+                state={pressed ? CellState.Down : opened ? 2 : CellState.Up}
                 className="float-left cursor-not-allowed"
                 onContextMenu={(e) => e.preventDefault()}
             />
-            <Square
-                state={pressed ? SquareState.Down : opened ? 0 : SquareState.Up}
+            <Cell
+                state={pressed ? CellState.Down : opened ? 0 : CellState.Up}
                 className="float-left cursor-not-allowed"
                 onContextMenu={(e) => e.preventDefault()}
             />
-            <Square
-                state={pressed ? SquareState.Down : opened ? 1 : SquareState.Up}
+            <Cell
+                state={pressed ? CellState.Down : opened ? 1 : CellState.Up}
                 className="float-left cursor-not-allowed"
                 onContextMenu={(e) => e.preventDefault()}
             />
-            <Square
-                state={SquareState.Flag}
+            <Cell
+                state={CellState.Flag}
                 className="float-left cursor-not-allowed"
                 onContextMenu={(e) => e.preventDefault()}
             />
@@ -133,32 +132,30 @@ function About() {
                 <H2>How to play</H2>
                 <P>
                     Mines are scattered throughout the game board. Open all
-                    squares without mines. Clicking on a square that conceals a
-                    mine ends the game.
+                    cells without mines. Clicking on a cell that conceals a mine
+                    ends the game.
                 </P>
                 <P>
-                    Each opened square displays a number that reflects how many
-                    mines there are in 8 squares around it (its <i>neighbors</i>
-                    ). Squares with no mined neighbors display no number. First
-                    square you click is guaranteed to be safe, and so are its
+                    Each opened cell displays a number that reflects how many
+                    mines there are in 8 cells around it (its <i>neighbors</i>
+                    ). Cells with no mined neighbors display no number. First
+                    cell you click is guaranteed to be safe, and so are its
                     neighbors.
                 </P>
                 <H2>Controls</H2>
                 <P>
-                    Use left click to <b>open</b> a closed square.
+                    Use left click to <b>open</b> a closed cell.
                 </P>
-                <DemoSquare trueState={1} />
+                <DemoCell trueState={1} />
                 <P>
-                    Use right click to place a <b>flag</b> on a closed square.
-                    Flags help you mark the squares you believe to contain
-                    mines.
+                    Use right click to place a <b>flag</b> on a closed cell.
+                    Flags help you mark the cells you believe to contain mines.
                 </P>
-                <DemoSquare trueState={SquareState.Blast} />
+                <DemoCell trueState={CellState.Blast} />
                 <P>
-                    If the number of flags near an opened square equals the
-                    number inside the square, you can open all neighboring
-                    squares at once by clicking on the opened square (this is
-                    called{' '}
+                    If the number of flags near an opened cell equals the number
+                    inside the cell, you can open all neighboring cells at once
+                    by clicking on the opened cell (this is called{' '}
                     <b>
                         <i>chording</i>
                     </b>

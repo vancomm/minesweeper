@@ -16,4 +16,4 @@ if [ -z "${OUT_DIR+x}" ] \
     exit 1
 fi
 
-rsync --dry-run -avz "${OUT_DIR%%/}/" "$DEPLOY_HOST":"$DEPLOY_LOCATION"
+rsync -avz "${OUT_DIR%%/}/" "$DEPLOY_HOST":"$DEPLOY_LOCATION"

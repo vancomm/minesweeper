@@ -20,15 +20,15 @@ import { twMerge } from 'tailwind-merge'
 
 import AuthDialog from 'components/AuthDialog'
 import { TanStackRouterDevtools } from 'components/Devtools'
-import Square from 'components/Square'
 
 import { AuthParams } from 'api/auth'
 
-import { SquareState } from '@/constants'
+import Cell from '@/components/Cell'
+import { CellState } from '@/constants'
 import { AuthContext, useAuth } from '@/contexts/AuthContext'
 import { GameContext } from '@/contexts/GameContext'
 import { useBreakpoint } from '@/hooks/useBreakpoint'
-import { DivProps } from '@/types'
+import { DivProps } from '@/props'
 
 interface RouterContext {
     auth: AuthContext
@@ -288,8 +288,8 @@ function RootComponent() {
 
 const TwentyTwentyFour = () => (
     <div className="flex items-center" aria-valuetext="2024">
-        {[2, SquareState.Mine, 2, 4].map((state, i) => (
-            <Square
+        {[2, CellState.Mine, 2, 4].map((state, i) => (
+            <Cell
                 key={i}
                 state={state}
                 className="inline-block h-[18px] w-[18px] cursor-default"

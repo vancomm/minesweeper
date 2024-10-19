@@ -16,22 +16,22 @@ import {
 } from 'components/Borders'
 import Counter from 'components/Counter'
 import Face, { FaceState } from 'components/Face'
-import Square, { SQUARE_SIZE_PX, SquareProps } from 'components/Square'
 
-export type Cell = Omit<SquareProps, 'gameOver'>
+import Cell, { CELL_SIZE_PX, CellProps } from '@/components/Cell'
+
+export type Cell = Omit<CellProps, 'gameOver'>
 
 export type BoardProps = {
     height: number
     width: number
     grid: number[]
-    disabled?: boolean
-    onSquareDown?: (x: number, y: number, state: number) => unknown
-    onSquareUp?: (x: number, y: number, state: number) => unknown
-    onSquareAux?: (x: number, y: number, state: number) => unknown
-    onSquareLeave?: (x: number, y: number, state: number) => unknown
+    faceState: FaceState
     leftCounterValue: string
     rightCounterValue: string
-    faceState: FaceState
+    onCellDown?: (x: number, y: number, state: number) => unknown
+    onCellUp?: (x: number, y: number, state: number) => unknown
+    onCellAux?: (x: number, y: number, state: number) => unknown
+    onCellLeave?: (x: number, y: number, state: number) => unknown
     onFaceClick?: React.MouseEventHandler<HTMLButtonElement>
 }
 
@@ -39,20 +39,20 @@ export default function Board({
     height,
     width,
     grid,
-    onSquareDown,
-    onSquareUp,
-    onSquareAux,
-    onSquareLeave,
+    faceState,
     leftCounterValue,
     rightCounterValue,
-    faceState,
+    onCellDown,
+    onCellUp,
+    onCellAux,
+    onCellLeave,
     onFaceClick,
 }: BoardProps) {
     const cssVariables = React.useMemo(
         () =>
             ({
-                '--grid-width': (width * SQUARE_SIZE_PX).toString() + 'px',
-                '--grid-height': (height * SQUARE_SIZE_PX).toString() + 'px',
+                '--grid-width': (width * CELL_SIZE_PX).toString() + 'px',
+                '--grid-height': (height * CELL_SIZE_PX).toString() + 'px',
             }) as React.CSSProperties,
         [width, height]
     )
@@ -89,26 +89,26 @@ export default function Board({
                     const x = i % width
                     const y = Math.floor(i / width)
                     return (
-                        <Square
+                        <Cell
                             state={state}
-                            key={`square-${i}`}
+                            key={`cell-${i}`}
                             className="float-left"
                             onPointerDown={(e) => {
                                 if (e.button !== 2) {
-                                    onSquareDown?.(x, y, state)
+                                    onCellDown?.(x, y, state)
                                 }
                             }}
                             onPointerUp={(e) => {
                                 if (e.button !== 2) {
-                                    onSquareUp?.(x, y, state)
+                                    onCellUp?.(x, y, state)
                                 }
                             }}
                             onPointerLeave={() => {
-                                onSquareLeave?.(x, y, state)
+                                onCellLeave?.(x, y, state)
                             }}
                             onContextMenu={(e) => {
                                 e.preventDefault()
-                                onSquareAux?.(x, y, state)
+                                onCellAux?.(x, y, state)
                             }}
                         />
                     )

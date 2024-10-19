@@ -3,55 +3,37 @@ import React from 'react'
 
 import { FaceState } from 'components/Face'
 
-import { ServerError } from 'api/common'
-import { GameApi, GameParams, GameUpdate } from 'api/game'
+import { GameParams, GameUpdate } from 'api/entities'
 
-export type GameSession = GameUpdate & {
-    api: GameApi
+import { GameApi } from '@/api/game'
+
+export type GameResetParams = {
+    gameParams?: GameParams
+    presetName?: string
+    navigate: UseNavigateResult<'/game/$session_id'>
 }
-
-export type GameState = {
-    session?: GameSession
-    presetName: string
-    gameParams: GameParams
-    face: FaceState
-    timer: number
-    timerInterval?: number
-    pressedSquares?: number[]
-}
-
-export type GameEvent =
-    | { type: 'cellDown'; x: number; y: number; squareState: number }
-    | { type: 'cellUp'; x: number; y: number; squareState: number }
-    | { type: 'cellLeave' }
-    | {
-          type: 'gameUpdated'
-          update: GameUpdate
-          navigate?: UseNavigateResult<'/game/$session_id'>
-      }
-    | { type: 'presetPicked'; presetName: string }
-    | { type: 'gameInit'; update: GameUpdate }
-    | {
-          type: 'gameReset'
-          gameParams?: GameParams
-          presetName?: string
-          navigate: UseNavigateResult<'/game/$session_id'>
-      }
-    | { type: 'timerStart'; interval: number; callback: () => unknown }
-    | { type: 'timerTick' }
-    | { type: 'timerStop' }
-    | { type: 'error'; error: ServerError }
 
 export type GameContext = {
-    state: GameState
-    dispatch: React.Dispatch<GameEvent>
+    session?: GameUpdate & { api: GameApi }
+    presetName: string
+    params: GameParams
+    pressedCells?: number[]
     over: boolean
-    openSquare: (
+    playtime: number
+    flags: number
+    face: FaceState
+    seed: string
+    init: (update: GameUpdate) => void
+    reset: (args: GameResetParams) => void
+    openCell: (
         x: number,
         y: number,
         navigate: UseNavigateResult<string>
     ) => void
-    flagSquare: (x: number, y: number) => void
+    flagCell: (x: number, y: number) => void
+    cellDown: (x: number, y: number, prevState: number) => void
+    cellUp: (x: number, y: number, prevState: number) => void
+    cellLeave: () => void
 }
 
 export const GameContext = React.createContext<GameContext>(null!)
