@@ -3,9 +3,8 @@ import { twJoin } from 'tailwind-merge'
 
 import { RankedLeaderboardRowProps } from 'components/Leaderboard'
 
-import { GameRecord } from 'api/entities'
+import { GameRecord,PlayerInfo } from 'api/entities'
 
-import { PlayerInfo } from '@/api/auth'
 import {
     GAME_PRESET_SEEDS,
     SEED_2_GAME_PRESET_NAME,

@@ -1,13 +1,14 @@
 import { createSearchParams, validateFetcher } from 'api/common'
-import { ENDPOINT } from 'api/constants'
 import { CellParams, GameParams, GameRecord, GameUpdate } from 'api/entities'
+
+import { API_URL as ENDPOINT } from '@/constants'
 
 type GetRecordsProps = {
     username?: string
     seed?: string
 }
 
-export const getRecords = validateFetcher(
+export const fetchRecords = validateFetcher(
     GameRecord.array(),
     (search?: GetRecordsProps) =>
         fetch(`${ENDPOINT}/records?` + createSearchParams(search).toString(), {
@@ -15,7 +16,7 @@ export const getRecords = validateFetcher(
         })
 )
 
-export const getMyRecords = validateFetcher(GameRecord.array(), () =>
+export const fetchMyRecords = validateFetcher(GameRecord.array(), () =>
     fetch(`${ENDPOINT}/myrecords`, { credentials: 'include' })
 )
 

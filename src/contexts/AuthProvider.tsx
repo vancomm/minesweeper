@@ -1,8 +1,6 @@
 import React from 'react'
 
 import {
-    AuthParams,
-    PlayerInfo,
     login,
     logout,
     register,
@@ -11,6 +9,7 @@ import {
 
 import { AuthContext } from '@/contexts/AuthContext'
 import { getJWTClaims } from '@/jwt'
+import { AuthParams, PlayerInfo } from '@/api/entities'
 
 type AuthProviderProps = {
     children?: React.ReactNode

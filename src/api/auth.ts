@@ -1,39 +1,8 @@
-import { z } from 'zod'
-
+import { validateFetcher } from 'api/common'
 import { ENDPOINT } from 'api/constants'
+import { AuthError, AuthParams, Status } from 'api/entities'
 
 import { Result } from '@/monad'
-
-import { validateFetcher } from './common'
-
-export type AuthError = {
-    statusCode: number
-    errorText: string
-}
-
-export type AuthParams = {
-    username: string
-    password: string
-}
-
-export const PlayerInfo = z.object({
-    player_id: z.number(),
-    username: z.string(),
-})
-
-export const Status = z.discriminatedUnion('logged_in', [
-    z.object({
-        logged_in: z.literal(false),
-    }),
-    z.object({
-        logged_in: z.literal(true),
-        player: PlayerInfo,
-    }),
-])
-
-export type Status = z.infer<typeof Status>
-
-export type PlayerInfo = z.infer<typeof PlayerInfo>
 
 export const status = validateFetcher(Status, () =>
     fetch(ENDPOINT + '/status', { credentials: 'include' })

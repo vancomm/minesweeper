@@ -1,5 +1,10 @@
 import { GameParams } from 'api/entities'
 
+export const BASE_URL = __BASE_URL__
+export const APP_VERSION = __APP_VERSION__
+export const API_URL = __API_URL__
+export const WS_URL = __WS_URL__
+
 export const GAME_PRESETS = {
     easy: {
         height: 9,

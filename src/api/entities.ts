@@ -38,3 +38,32 @@ export const GameRecord = z.object({
 })
 
 export type GameRecord = z.infer<typeof GameRecord>
+
+export type AuthError = {
+    statusCode: number
+    errorText: string
+}
+
+export type AuthParams = {
+    username: string
+    password: string
+}
+
+export const PlayerInfo = z.object({
+    player_id: z.number(),
+    username: z.string(),
+})
+
+export type PlayerInfo = z.infer<typeof PlayerInfo>
+
+export const Status = z.discriminatedUnion('logged_in', [
+    z.object({
+        logged_in: z.literal(false),
+    }),
+    z.object({
+        logged_in: z.literal(true),
+        player: PlayerInfo,
+    }),
+])
+
+export type Status = z.infer<typeof Status>

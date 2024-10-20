@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie'
 
-import { PlayerInfo } from 'api/auth'
+import { PlayerInfo } from 'api/entities'
 
 export const getJWTClaims = (): PlayerInfo | undefined => {
     const authCookie = Cookies.get('auth')

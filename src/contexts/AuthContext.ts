@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { AuthError, AuthParams, PlayerInfo } from 'api/auth'
+import { AuthError, AuthParams, PlayerInfo } from 'api/entities'
 
 import { Result } from '@/monad'
 

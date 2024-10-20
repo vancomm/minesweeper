@@ -19,11 +19,11 @@ import React from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import AuthDialog from 'components/AuthDialog'
-import { TanStackRouterDevtools } from 'components/Devtools'
+import Cell from 'components/Cell'
+import TanStackRouterDevtools from 'components/Devtools'
 
-import { AuthParams } from 'api/auth'
+import { AuthParams } from 'api/entities'
 
-import Cell from '@/components/Cell'
 import { CellState } from '@/constants'
 import { AuthContext, useAuth } from '@/contexts/AuthContext'
 import { GameContext } from '@/contexts/GameContext'
@@ -37,8 +37,10 @@ interface RouterContext {
 
 export const Route = createRootRouteWithContext<RouterContext>()({
     component: RootComponent,
-    notFoundComponent: () => <main className="p-32 text-3xl">Not found</main>,
+    notFoundComponent: () => <NotFound />,
 })
+
+const NotFound = () => <main className="p-32 text-3xl">Not found</main>
 
 type NavBarProps = {
     children?: React.ReactNode
@@ -79,6 +81,36 @@ const NavBar = ({ children }: NavBarProps) => {
         </div>
     )
 }
+
+const TwentyTwentyFour = () => (
+    <div className="flex items-center" aria-valuetext="2024">
+        {[2, CellState.Mine, 2, 4].map((state, i) => (
+            <Cell
+                key={i}
+                state={state}
+                className="inline-block h-[18px] w-[18px] cursor-default"
+            />
+        ))}
+    </div>
+)
+
+const Footer = ({ className, ...props }: DivProps) => (
+    <footer
+        className={twMerge('m-auto flex items-center gap-2 p-2', className)}
+        {...props}
+    >
+        <div className="pb-1 text-center leading-none">v{__APP_VERSION__}</div>
+        <div className="pb-1 text-center leading-none">&bull;</div>
+        <TwentyTwentyFour />
+        <div className="pb-1 text-center leading-none">&bull;</div>
+        <a
+            className="cursor-pointer pb-1 text-center leading-none hover:underline"
+            href="https://github.com/vancomm/minesweeper"
+        >
+            source
+        </a>
+    </footer>
+)
 
 function RootComponent() {
     const { isMd } = useBreakpoint('md')
@@ -283,39 +315,5 @@ function RootComponent() {
                 <TanStackRouterDevtools />
             </React.Suspense>
         </>
-    )
-}
-
-const TwentyTwentyFour = () => (
-    <div className="flex items-center" aria-valuetext="2024">
-        {[2, CellState.Mine, 2, 4].map((state, i) => (
-            <Cell
-                key={i}
-                state={state}
-                className="inline-block h-[18px] w-[18px] cursor-default"
-            />
-        ))}
-    </div>
-)
-
-function Footer({ className, ...props }: DivProps) {
-    return (
-        <footer
-            className={twMerge('m-auto flex items-center gap-2 p-2', className)}
-            {...props}
-        >
-            <div className="pb-1 text-center leading-none">
-                v{__APP_VERSION__}
-            </div>
-            <div className="pb-1 text-center leading-none">&bull;</div>
-            <TwentyTwentyFour />
-            <div className="pb-1 text-center leading-none">&bull;</div>
-            <a
-                className="cursor-pointer pb-1 text-center leading-none hover:underline"
-                href="https://github.com/vancomm/minesweeper"
-            >
-                source
-            </a>
-        </footer>
     )
 }

@@ -1,10 +1,8 @@
-import VisibilityIcon from '@mui/icons-material/Visibility'
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 import { capitalize } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import { twJoin } from 'tailwind-merge'
 
-import { getRecords } from '@/api/game'
+import { fetchRecords } from '@/api/game'
 import { paramsToSeed } from '@/constants'
 import { useGame } from '@/contexts/GameContext'
 import { useLeaderboardRows } from '@/hooks/useLeaderboardRows'
@@ -12,41 +10,15 @@ import usePersistentState from '@/hooks/usePersistentState'
 import { throwIfError } from '@/monad'
 import { DivProps } from '@/props'
 
-import { SingleRankedLeaderboard } from './Leaderboard'
-
-type HideToggleProps = {
-    hidden: boolean
-    onClick: () => unknown
-}
-
-const HideToggle = ({ hidden, onClick }: HideToggleProps) => (
-    <button
-        className={twJoin(
-            hidden
-                ? 'block'
-                : 'absolute left-0 top-0 translate-x-1 translate-y-1',
-            'opacity-30 transition-opacity hover:opacity-80'
-        )}
-        onClick={onClick}
-        title={hidden ? 'Display live leaderboard' : 'Hide live leaderboard'}
-    >
-        {hidden ? (
-            <VisibilityIcon fontSize="small" sx={{ translate: '0 -.25rem' }} />
-        ) : (
-            <VisibilityOffIcon
-                fontSize="small"
-                sx={{ translate: '0 -.25rem' }}
-            />
-        )}
-    </button>
-)
+import HideToggle from './HideToggle'
+import SingleRankedLeaderboard from './SingleRankedLeaderboard'
 
 export type LiveLeaderboardProps = DivProps & {
-    numRows?: number
+    numRows: number
 }
 
 export default function LiveLeaderboard({
-    numRows = 10,
+    numRows,
     className,
     ...props
 }: LiveLeaderboardProps) {
@@ -59,11 +31,11 @@ export default function LiveLeaderboard({
         isError,
     } = useQuery({
         queryKey: ['records', game.seed],
-        queryFn: () => getRecords({ seed: game.seed }).then(throwIfError),
+        queryFn: () => fetchRecords({ seed: game.seed }).then(throwIfError),
         select: (data) => data.filter((r) => paramsToSeed(r) === game.seed),
     })
 
-    const [hidden, setMinified] = usePersistentState(
+    const [hidden, setHidden] = usePersistentState(
         'live-leaderboard-hidden',
         false
     )
@@ -91,15 +63,13 @@ export default function LiveLeaderboard({
             )}
             {...props}
         >
-            <HideToggle hidden={hidden} onClick={() => setMinified(!hidden)} />
-            {
-                <SingleRankedLeaderboard
-                    className={twJoin(hidden && 'hidden')}
-                    title={title}
-                    rows={rows}
-                    bottomRows={bottomRows}
-                />
-            }
+            <HideToggle hidden={hidden} onClick={() => setHidden(!hidden)} />
+            <SingleRankedLeaderboard
+                className={twJoin(hidden && 'hidden')}
+                title={title}
+                rows={rows}
+                bottomRows={bottomRows}
+            />
         </div>
     )
 }

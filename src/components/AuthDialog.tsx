@@ -1,4 +1,4 @@
-import { AuthParams } from 'api/auth'
+import { AuthParams } from 'api/entities'
 
 type AuthDialogProps = {
     title: string

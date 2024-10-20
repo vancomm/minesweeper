@@ -1,10 +1,6 @@
 import React from 'react'
 import { twJoin } from 'tailwind-merge'
 
-import { GameRecord } from 'api/entities'
-
-import { useAuth } from '@/contexts/AuthContext'
-import { useGame } from '@/contexts/GameContext'
 import { TableProps } from '@/props'
 
 type RowTagProps = {
@@ -63,18 +59,6 @@ export const RankedLeaderboardRow = ({
     </tr>
 )
 
-export const LeaderboardSeparator = () => (
-    <tr className="border-b border-neutral-500" />
-)
-
-export const NoLeaderboardEntries = () => (
-    <tr>
-        <td colSpan={4} className="px-12 italic">
-            No records!
-        </td>
-    </tr>
-)
-
 export type LeaderboardTitleProps = {
     title: string
 }
@@ -87,150 +71,31 @@ export const LeaderboardTitle = ({ title }: LeaderboardTitleProps) => (
     </tr>
 )
 
-type RankedLeaderboardProps = TableProps & {
-    title?: string
-    rows: RankedLeaderboardRowProps[]
-    bottomRows?: RankedLeaderboardRowProps[]
-}
-
-export const SingleRankedLeaderboard = ({
-    title,
-    rows,
-    bottomRows,
-    ...props
-}: RankedLeaderboardProps) => (
-    <table {...props}>
-        <tbody>
-            {title && <LeaderboardTitle title={title} />}
-            {rows.length || bottomRows?.length ? (
-                <>
-                    {rows.map((row) => (
-                        <RankedLeaderboardRow
-                            key={`leaderboard-row-${row.session_id}`}
-                            {...row}
-                        />
-                    ))}
-                    {bottomRows && bottomRows.length > 0 && (
-                        <>
-                            <LeaderboardSeparator />
-                            {bottomRows.map((row) => (
-                                <RankedLeaderboardRow
-                                    key={`leaderboard-row-${row.session_id}`}
-                                    {...row}
-                                />
-                            ))}
-                        </>
-                    )}
-                </>
-            ) : (
-                <NoLeaderboardEntries />
-            )}
-        </tbody>
-    </table>
+export const LeaderboardSeparator = () => (
+    <tr className="border-b border-neutral-500" />
 )
 
-export type MultiRankedLeaderboardProps = TableProps & {
-    leaderboards: RankedLeaderboardProps[]
-}
-
-export const MultiRankedLeaderboard = ({
-    leaderboards,
-    ...props
-}: MultiRankedLeaderboardProps) => (
-    <table {...props}>
-        <tbody>
-            {leaderboards.map(({ title, rows }, i) => (
-                <React.Fragment key={`leaderboard-section-${i}`}>
-                    {title && <LeaderboardTitle title={title} />}
-                    {rows.length ? (
-                        rows.map((row) => (
-                            <RankedLeaderboardRow
-                                key={`leaderboard-row-${row.session_id}`}
-                                {...row}
-                            />
-                        ))
-                    ) : (
-                        <NoLeaderboardEntries />
-                    )}
-                </React.Fragment>
-            ))}
-        </tbody>
-    </table>
-)
-
-// =================================== * * * ===========================================
-
-type HiScoreRowProps = GameRecord & {
-    rank: number
-    isCurrent: boolean
-    isPB: boolean
-    isWB: boolean
-}
-
-export const HiScoreRow = ({
-    rank,
-    username,
-    playtime,
-    isCurrent,
-    isPB,
-    isWB,
-}: HiScoreRowProps) => (
-    <tr className={twJoin(isCurrent && 'font-bold')}>
-        <td className="pr-1 text-end">{rank}.</td>
-        <td className="pr-8">
-            {username ?? <div className="italic opacity-50">Anonymous</div>}
-        </td>
-        <td className="text-end font-mono">{playtime.toFixed(3)}</td>
-        <td>
-            {isPB && <PersonalBest />}
-            {isWB && <WorldBest />}
+export const NoLeaderboardEntries = () => (
+    <tr>
+        <td colSpan={4} className="px-12 italic">
+            No records yet!
         </td>
     </tr>
 )
 
-type HiScoreSectionProps = {
-    title: string
-    records: GameRecord[]
-}
+export type EmptyLeaderboardProps = { title?: string }
 
-export default function HiScoreCategoryRows({
-    title,
-    records,
-}: HiScoreSectionProps) {
-    const game = useGame()
-    const { player } = useAuth()
+export const EmptyLeaderboard = ({ title }: EmptyLeaderboardProps) => (
+    <table>
+        <tbody>
+            {title && <LeaderboardTitle title={title} />}
+            <NoLeaderboardEntries />
+        </tbody>
+    </table>
+)
 
-    const world = records.sort((a, b) => a.playtime - b.playtime)
-
-    const personal = world.filter(
-        ({ username }) => player?.username == username
-    )
-
-    const rows = world.slice(0, 10).map((r, i) => {
-        const isCurrent = r.session_id == game.session?.session_id
-        return {
-            ...r,
-            username: isCurrent ? (player?.username ?? 'You') : r.username,
-            rank: i + 1,
-            isCurrent,
-            isPB: !!(
-                isCurrent &&
-                player &&
-                game.session?.won &&
-                personal &&
-                personal[0].session_id === r.session_id
-            ),
-            isWB: isCurrent && world && world[0].session_id === r.session_id,
-        }
-    })
-
-    return rows.length > 0 ? (
-        rows.map((row, i) => <HiScoreRow key={`${title}-${i}`} {...row} />)
-    ) : (
-        <tr>
-            <td colSpan={4} className="px-12 italic">
-                No records!
-            </td>
-        </tr>
-    )
+export type RankedLeaderboardProps = TableProps & {
+    title?: string
+    rows: RankedLeaderboardRowProps[]
+    bottomRows?: RankedLeaderboardRowProps[]
 }
