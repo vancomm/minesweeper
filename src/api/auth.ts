@@ -1,17 +1,17 @@
 import { validateFetcher } from 'api/common'
-import { ENDPOINT } from 'api/constants'
 import { AuthError, AuthParams, Status } from 'api/entities'
 
+import { API_URL } from '@/constants'
 import { Result } from '@/monad'
 
 export const status = validateFetcher(Status, () =>
-    fetch(ENDPOINT + '/status', { credentials: 'include' })
+    fetch(API_URL + '/status', { credentials: 'include' })
 )
 
 export const register = async (
     data: AuthParams
 ): Promise<Result<null, AuthError>> => {
-    const res = await fetch(ENDPOINT + '/register', {
+    const res = await fetch(API_URL + '/register', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -35,7 +35,7 @@ export const register = async (
 export const login = async (
     data: AuthParams
 ): Promise<Result<null, AuthError>> => {
-    const res = await fetch(ENDPOINT + '/login', {
+    const res = await fetch(API_URL + '/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -57,4 +57,4 @@ export const login = async (
 }
 
 export const logout = () =>
-    fetch(ENDPOINT + '/logout', { method: 'POST', credentials: 'include' })
+    fetch(API_URL + '/logout', { method: 'POST', credentials: 'include' })

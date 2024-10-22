@@ -1,13 +1,12 @@
 import { z } from 'zod'
 
-import { WS_ENDPOINT } from 'api/constants'
-
+import { WS_URL } from '@/constants'
 import { Errorable, isErrorable, newErrorable } from '@/errorable'
 import { raise } from '@/lib'
 import { Result } from '@/monad'
 
 export const sessionIdToWS = (session_id: string) =>
-    `${WS_ENDPOINT}/game/${session_id}/connect`
+    `${WS_URL}/game/${session_id}/connect`
 
 export type ServerError = { statusCode: number; errorText: string }
 
