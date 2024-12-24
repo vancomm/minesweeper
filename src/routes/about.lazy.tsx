@@ -2,7 +2,8 @@ import { createLazyFileRoute } from '@tanstack/react-router'
 import React from 'react'
 import { twMerge } from 'tailwind-merge'
 
-import Cell from '@/components/Cell'
+import Cell from 'components/Cell'
+
 import { CellState } from '@/constants'
 import { HeadingProps, ParagraphProps } from '@/props'
 

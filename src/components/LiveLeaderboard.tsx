@@ -57,7 +57,7 @@ export default function LiveLeaderboard({
     return (
         <div
             className={twJoin(
-                'relative min-h-8 border border-neutral-300 border-opacity-0',
+                'relative min-h-8 w-fit border border-neutral-300 border-opacity-0',
                 hidden ? 'p-1' : 'border-opacity-100 p-2',
                 className
             )}
