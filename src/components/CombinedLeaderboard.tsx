@@ -1,22 +1,19 @@
-import React from 'react'
+import React from 'react';
 
 import {
     LeaderboardTitle,
     NoLeaderboardEntries,
     RankedLeaderboardProps,
     RankedLeaderboardRow,
-} from 'components/Leaderboard'
+} from 'components/Leaderboard';
 
-import { TableProps } from '@/props'
+import { TableProps } from '@/props';
 
 export type MultiRankedLeaderboardProps = TableProps & {
-    leaderboards: RankedLeaderboardProps[]
-}
+    leaderboards: RankedLeaderboardProps[];
+};
 
-const CombinedLeaderboard = ({
-    leaderboards,
-    ...props
-}: MultiRankedLeaderboardProps) => (
+const CombinedLeaderboard = ({ leaderboards, ...props }: MultiRankedLeaderboardProps) => (
     <table {...props}>
         <tbody>
             {leaderboards.map(({ title, rows }, i) => (
@@ -24,10 +21,7 @@ const CombinedLeaderboard = ({
                     {title && <LeaderboardTitle title={title} />}
                     {rows.length ? (
                         rows.map((row) => (
-                            <RankedLeaderboardRow
-                                key={`leaderboard-row-${row.session_id}`}
-                                {...row}
-                            />
+                            <RankedLeaderboardRow key={`leaderboard-row-${row.game_session_id}`} {...row} />
                         ))
                     ) : (
                         <NoLeaderboardEntries />
@@ -37,6 +31,6 @@ const CombinedLeaderboard = ({
             {leaderboards.length === 0 && <NoLeaderboardEntries />}
         </tbody>
     </table>
-)
+);
 
-export default CombinedLeaderboard
+export default CombinedLeaderboard;

@@ -1,4 +1,4 @@
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from 'tailwind-merge';
 
 // FIXME counter borders are rendered wrong
 
@@ -14,33 +14,30 @@ const DIGIT_TO_BG: Map<string, string> = new Map([
     ['7', 'bg-counter-7'],
     ['8', 'bg-counter-8'],
     ['9', 'bg-counter-9'],
-])
+]);
 
 type CounterDigitProps = {
-    value: string
-}
+    value: string;
+};
 
 const CounterDigit = ({ value }: CounterDigitProps) => (
     <div
-        className={twMerge(
-            'counter-digit h-[34.5px] w-[19.5px] bg-[size:100%_100%]',
-            DIGIT_TO_BG.get(value)
-        )}
+        className={twMerge('counter-digit h-[34.5px] w-[19.5px] bg-[size:100%_100%]', DIGIT_TO_BG.get(value))}
         data-value={value}
     />
-)
+);
 
 const CounterLeftBorder = () => (
-    <div className="counter-left bg-border-counter-left h-[37.5px] w-[1.5px] bg-[size:100%_100%]" />
-)
+    <div className="counter-left h-[37.5px] w-[1.5px] bg-border-counter-left bg-[size:100%_100%]" />
+);
 
 const CounterRightBorder = () => (
-    <div className="counter-right bg-border-counter-right h-[37.5px] w-[1.5px] bg-[size:100%_100%]" />
-)
+    <div className="counter-right h-[37.5px] w-[1.5px] bg-border-counter-right bg-[size:100%_100%]" />
+);
 
 export type CounterProps = React.HTMLAttributes<HTMLDivElement> & {
-    value: string
-}
+    value: string;
+};
 
 export default function Counter({ value, className }: CounterProps) {
     return (
@@ -56,5 +53,5 @@ export default function Counter({ value, className }: CounterProps) {
             ))}
             <CounterRightBorder />
         </div>
-    )
+    );
 }

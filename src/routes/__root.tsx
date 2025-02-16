@@ -1,54 +1,48 @@
-import { Dropdown } from '@mui/base/Dropdown'
-import { Menu } from '@mui/base/Menu'
-import { MenuButton } from '@mui/base/MenuButton'
-import { MenuItem } from '@mui/base/MenuItem'
-import Create from '@mui/icons-material/Create'
-import Login from '@mui/icons-material/Login'
-import Logout from '@mui/icons-material/Logout'
-import Person from '@mui/icons-material/Person'
-import Collapse from '@mui/material/Collapse'
-import Dialog from '@mui/material/Dialog'
-import {
-    Link,
-    Outlet,
-    createRootRouteWithContext,
-    useRouter,
-    useRouterState,
-} from '@tanstack/react-router'
-import React from 'react'
-import { twMerge } from 'tailwind-merge'
+import { Dropdown } from '@mui/base/Dropdown';
+import { Menu } from '@mui/base/Menu';
+import { MenuButton } from '@mui/base/MenuButton';
+import { MenuItem } from '@mui/base/MenuItem';
+import Create from '@mui/icons-material/Create';
+import Login from '@mui/icons-material/Login';
+import Logout from '@mui/icons-material/Logout';
+import Person from '@mui/icons-material/Person';
+import Collapse from '@mui/material/Collapse';
+import Dialog from '@mui/material/Dialog';
+import { Link, Outlet, createRootRouteWithContext, useRouter, useRouterState } from '@tanstack/react-router';
+import React from 'react';
+import { twMerge } from 'tailwind-merge';
 
-import AuthDialog from 'components/AuthDialog'
-import Cell from 'components/Cell'
-import TanStackRouterDevtools from 'components/Devtools'
+import AuthDialog from 'components/AuthDialog';
+import Cell from 'components/Cell';
+import TanStackRouterDevtools from 'components/Devtools';
 
-import { AuthParams } from 'api/entities'
+import { AuthParams } from 'api/entities';
 
-import { CellState } from '@/constants'
-import { AuthContext, useAuth } from '@/contexts/AuthContext'
-import { GameContext } from '@/contexts/GameContext'
-import { useBreakpoint } from '@/hooks/useBreakpoint'
-import { DivProps } from '@/props'
+import { CellState } from '@/constants';
+import { AuthContext, useAuth } from '@/contexts/AuthContext';
+import { GameContext } from '@/contexts/GameContext';
+import { useBreakpoint } from '@/hooks/useBreakpoint';
+import { DivProps } from '@/props';
 
 interface RouterContext {
-    auth: AuthContext
-    game: GameContext
+    auth: AuthContext;
+    game: GameContext;
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
     component: RootComponent,
     notFoundComponent: () => <NotFound />,
-})
+});
 
-const NotFound = () => <main className="p-32 text-3xl">Not found</main>
+const NotFound = () => <main className="p-32 text-3xl">Not found</main>;
 
 type NavBarProps = {
-    children?: React.ReactNode
-}
+    children?: React.ReactNode;
+};
 
 const NavBar = ({ children }: NavBarProps) => {
-    const { isMd } = useBreakpoint('md')
-    const [expanded, setExpanded] = React.useState(false)
+    const { isMd } = useBreakpoint('md');
+    const [expanded, setExpanded] = React.useState(false);
 
     return (
         <div className="flex flex-wrap items-center justify-between bg-neutral-200 p-4 dark:bg-neutral-800">
@@ -62,43 +56,29 @@ const NavBar = ({ children }: NavBarProps) => {
                     className="flex items-center rounded border border-neutral-500 p-2 dark:border-neutral-600 dark:text-neutral-200 dark:hover:border-white dark:hover:text-white"
                     onClick={() => setExpanded((o) => !o)}
                 >
-                    <svg
-                        className="h-3 w-3 fill-current"
-                        viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
+                    <svg className="h-3 w-3 fill-current" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                         <title>Menu</title>
                         <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
                     </svg>
                 </button>
             </div>
-            <Collapse
-                in={expanded || isMd}
-                className="block w-full flex-grow md:flex md:w-auto"
-            >
+            <Collapse in={expanded || isMd} className="block w-full flex-grow md:flex md:w-auto">
                 {children}
             </Collapse>
         </div>
-    )
-}
+    );
+};
 
 const TwentyTwentyFour = () => (
     <div className="flex items-center" aria-valuetext="2024">
         {[2, CellState.Mine, 2, 4].map((state, i) => (
-            <Cell
-                key={i}
-                state={state}
-                className="inline-block h-[18px] w-[18px] cursor-default"
-            />
+            <Cell key={i} state={state} className="inline-block h-[18px] w-[18px] cursor-default" />
         ))}
     </div>
-)
+);
 
 const Footer = ({ className, ...props }: DivProps) => (
-    <footer
-        className={twMerge('m-auto flex items-center gap-2 p-2', className)}
-        {...props}
-    >
+    <footer className={twMerge('m-auto flex items-center gap-2 p-2', className)} {...props}>
         <div className="pb-1 text-center leading-none">v{__APP_VERSION__}</div>
         <div className="pb-1 text-center leading-none">&bull;</div>
         <TwentyTwentyFour />
@@ -110,63 +90,63 @@ const Footer = ({ className, ...props }: DivProps) => (
             source
         </a>
     </footer>
-)
+);
 
 function RootComponent() {
-    const { isMd } = useBreakpoint('md')
+    const { isMd } = useBreakpoint('md');
 
-    const router = useRouter()
-    const { player, ...auth } = useAuth()
+    const router = useRouter();
+    const { player, ...auth } = useAuth();
 
-    const isLoading = useRouterState({ select: (s) => s.isLoading })
-    const [isSubmitting, setIsSubmitting] = React.useState(false)
+    const isLoading = useRouterState({ select: (s) => s.isLoading });
+    const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-    const [signupOpen, setSignupOpen] = React.useState(false)
-    const [signupError, setSignupError] = React.useState<string | undefined>()
+    const [signupOpen, setSignupOpen] = React.useState(false);
+    const [signupError, setSignupError] = React.useState<string | undefined>();
 
-    const [loginOpen, setLoginOpen] = React.useState(false)
-    const [loginError, setLoginError] = React.useState<string | undefined>()
+    const [loginOpen, setLoginOpen] = React.useState(false);
+    const [loginError, setLoginError] = React.useState<string | undefined>();
 
     const handleSignupSubmit = async (data: AuthParams) => {
-        setIsSubmitting(true)
+        setIsSubmitting(true);
         try {
-            const { success, error } = await auth.register(data)
+            const { success, error } = await auth.register(data);
             if (!success) {
-                const { statusCode, errorText } = error
-                setSignupError(errorText || `unknown error ${statusCode}`)
+                const { statusCode, errorText } = error;
+                setSignupError(errorText || `unknown error ${statusCode}`);
             } else {
-                setSignupOpen(false)
+                setSignupOpen(false);
             }
         } catch (e) {
-            console.error(e)
+            console.error(e);
         } finally {
-            setIsSubmitting(false)
+            setIsSubmitting(false);
         }
-    }
+    };
 
     const handleLoginSubmit = async (data: AuthParams) => {
-        setIsSubmitting(true)
+        setIsSubmitting(true);
         try {
-            const { success, error } = await auth.login(data)
+            const { success, error } = await auth.login(data);
             if (!success) {
-                const { statusCode, errorText } = error
-                setLoginError(errorText || `unknown error ${statusCode}`)
+                const { statusCode, errorText } = error;
+                setLoginError(errorText || `unknown error ${statusCode}`);
             } else {
-                setLoginOpen(false)
+                setLoginOpen(false);
             }
         } catch (e) {
-            console.error(e)
+            console.error(e);
         } finally {
-            setIsSubmitting(false)
+            setIsSubmitting(false);
         }
-    }
+    };
 
     const handleLogout = async () => {
-        await auth.logout()
-        await router.invalidate()
-    }
+        await auth.logout();
+        await router.invalidate();
+    };
 
-    const isLoggingIn = isLoading || isSubmitting
+    const isLoggingIn = isLoading || isSubmitting;
 
     return (
         <>
@@ -225,12 +205,8 @@ function RootComponent() {
                         ) : (
                             <>
                                 <div>
-                                    <div className="mr-1.5 inline-block italic opacity-50">
-                                        Signed in as
-                                    </div>
-                                    <div className="inline-block">
-                                        {player.username}
-                                    </div>
+                                    <div className="mr-1.5 inline-block italic opacity-50">Signed in as</div>
+                                    <div className="inline-block">{player.username}</div>
                                 </div>
                                 <button
                                     className="text-md flex cursor-pointer items-center gap-0.5 hover:underline"
@@ -258,24 +234,15 @@ function RootComponent() {
                         >
                             New Game
                         </Link>
-                        <Link
-                            to="/hiscores"
-                            className="min-w-fit [&.active]:font-bold"
-                        >
+                        <Link to="/hiscores" className="min-w-fit [&.active]:font-bold">
                             Hi Scores
                         </Link>
                         {player && (
-                            <Link
-                                to="/myscores"
-                                className="min-w-fit [&.active]:font-bold"
-                            >
+                            <Link to="/myscores" className="min-w-fit [&.active]:font-bold">
                                 My Scores
                             </Link>
                         )}
-                        <Link
-                            to="/about"
-                            className="min-w-fit [&.active]:font-bold"
-                        >
+                        <Link to="/about" className="min-w-fit [&.active]:font-bold">
                             About
                         </Link>
                     </div>
@@ -315,5 +282,5 @@ function RootComponent() {
                 <TanStackRouterDevtools />
             </React.Suspense>
         </>
-    )
+    );
 }

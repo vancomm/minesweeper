@@ -1,33 +1,21 @@
-export const TopLeftBorder = () => (
-    <div className="bg-full bg-border-top-left" />
-)
+export const TopLeftBorder = () => <div className="bg-border-top-left bg-full" />;
 
-export const TopBorder = () => <div className="bg-full bg-border-top" />
+export const TopBorder = () => <div className="bg-border-top bg-full" />;
 
-export const TopRightBorder = () => (
-    <div className="bg-full bg-border-top-right" />
-)
+export const TopRightBorder = () => <div className="bg-border-top-right bg-full" />;
 
-export const LeftBorder = () => <div className="bg-full bg-border-left" />
+export const LeftBorder = () => <div className="bg-border-left bg-full" />;
 
-export const RightBorder = () => <div className="bg-full bg-border-right" />
+export const RightBorder = () => <div className="bg-border-right bg-full" />;
 
-export const MidLeftBorder = () => (
-    <div className="bg-full bg-border-middle-left" />
-)
+export const MidLeftBorder = () => <div className="bg-border-middle-left bg-full" />;
 
-export const MidBorder = () => <div className="bg-full bg-border-middle" />
+export const MidBorder = () => <div className="bg-border-middle bg-full" />;
 
-export const MidRightBorder = () => (
-    <div className="bg-full bg-border-middle-right" />
-)
+export const MidRightBorder = () => <div className="bg-border-middle-right bg-full" />;
 
-export const BottomLeftBorder = () => (
-    <div className="bg-full bg-border-bottom-left" />
-)
+export const BottomLeftBorder = () => <div className="bg-border-bottom-left bg-full" />;
 
-export const BottomBorder = () => <div className="bg-full bg-border-bottom" />
+export const BottomBorder = () => <div className="bg-border-bottom bg-full" />;
 
-export const BottomRightBorder = () => (
-    <div className="bg-full bg-border-bottom-right" />
-)
+export const BottomRightBorder = () => <div className="bg-border-bottom-right bg-full" />;

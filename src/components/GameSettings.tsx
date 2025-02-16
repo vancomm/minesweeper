@@ -1,20 +1,15 @@
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from 'tailwind-merge';
 
-import { GameParams } from 'api/entities'
+import { GameParams } from 'api/entities';
 
-import { FormProps } from '@/props'
+import { FormProps } from '@/props';
 
 type GameSettingsProps = Omit<FormProps, 'onSubmit'> & {
-    defaultParams: GameParams
-    onSubmit: (update: GameParams) => unknown
-}
+    defaultParams: GameParams;
+    onSubmit: (update: GameParams) => unknown;
+};
 
-export default function GameSettings({
-    defaultParams,
-    onSubmit,
-    className,
-    ...props
-}: GameSettingsProps) {
+export default function GameSettings({ defaultParams, onSubmit, className, ...props }: GameSettingsProps) {
     return (
         <form
             className={twMerge(
@@ -22,13 +17,13 @@ export default function GameSettings({
                 className
             )}
             onSubmit={(e) => {
-                e.preventDefault()
-                const formData = new FormData(e.target as HTMLFormElement)
-                const height = parseInt(formData.get('rows') as string)
-                const width = parseInt(formData.get('cols') as string)
-                const mine_count = parseInt(formData.get('mines') as string)
-                const unique = formData.has('unique')
-                onSubmit({ height, width, mine_count, unique })
+                e.preventDefault();
+                const formData = new FormData(e.target as HTMLFormElement);
+                const height = parseInt(formData.get('rows') as string);
+                const width = parseInt(formData.get('cols') as string);
+                const mine_count = parseInt(formData.get('mines') as string);
+                const unique = formData.has('unique');
+                onSubmit({ height, width, mine_count, unique });
             }}
             {...props}
         >
@@ -85,5 +80,5 @@ export default function GameSettings({
                 Update
             </button>
         </form>
-    )
+    );
 }

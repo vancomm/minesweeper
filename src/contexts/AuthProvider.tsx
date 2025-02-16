@@ -1,56 +1,49 @@
-import React from 'react'
+import React from 'react';
 
-import {
-    login,
-    logout,
-    register,
-    status,
-} from 'api/auth'
+import { login, logout, register, status } from 'api/auth';
 
-import { AuthContext } from '@/contexts/AuthContext'
-import { getJWTClaims } from '@/jwt'
-import { AuthParams, PlayerInfo } from '@/api/entities'
+import { AuthParams, PlayerInfo } from '@/api/entities';
+import { AuthContext } from '@/contexts/AuthContext';
+import { getJWTClaims } from '@/jwt';
 
 type AuthProviderProps = {
-    children?: React.ReactNode
-}
+    children?: React.ReactNode;
+};
 
 export default function AuthProvider({ children }: AuthProviderProps) {
-    const [player, setPlayer] = React.useState<PlayerInfo | undefined>(
-        getJWTClaims()
-    )
+    const [player, setPlayer] = React.useState<PlayerInfo | undefined>(getJWTClaims());
 
     const update = React.useCallback(async () => {
-        console.log('update')
-        await status()
-        setPlayer(getJWTClaims())
-    }, [setPlayer])
+        console.log('update');
+        await status();
+        setPlayer(getJWTClaims());
+    }, [setPlayer]);
 
     const value = React.useMemo(
         () => ({
             player,
             register: async (data: AuthParams) => {
-                const res = await register(data)
-                await update()
-                return res
+                const res = await register(data);
+                await update();
+                return res;
             },
             login: async (data: AuthParams) => {
-                const res = await login(data)
-                await update()
-                return res
+                const res = await login(data);
+                await update();
+                return res;
             },
             logout: async () => {
-                await logout()
-                await update()
+                await logout();
+                await update();
             },
             update,
         }),
         [player, update]
-    )
+    );
 
     React.useEffect(() => {
-        update().catch(console.error)
-    }, [update])
+        update().catch(console.error);
+    }, [update]);
 
-    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

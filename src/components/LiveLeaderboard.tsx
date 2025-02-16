@@ -1,28 +1,24 @@
-import { capitalize } from '@mui/material'
-import { useQuery } from '@tanstack/react-query'
-import { twJoin } from 'tailwind-merge'
+import { capitalize } from '@mui/material';
+import { useQuery } from '@tanstack/react-query';
+import { twJoin } from 'tailwind-merge';
 
-import { fetchRecords } from '@/api/game'
-import { paramsToSeed } from '@/constants'
-import { useGame } from '@/contexts/GameContext'
-import { useLeaderboardRows } from '@/hooks/useLeaderboardRows'
-import usePersistentState from '@/hooks/usePersistentState'
-import { throwIfError } from '@/monad'
-import { DivProps } from '@/props'
+import { fetchHighscores } from '@/api/game';
+import { paramsToSeed } from '@/constants';
+import { useGame } from '@/contexts/GameContext';
+import { useLeaderboardRows } from '@/hooks/useLeaderboardRows';
+import usePersistentState from '@/hooks/usePersistentState';
+import { throwIfError } from '@/monad';
+import { DivProps } from '@/props';
 
-import HideToggle from './HideToggle'
-import SingleRankedLeaderboard from './SingleRankedLeaderboard'
+import HideToggle from './HideToggle';
+import SingleRankedLeaderboard from './SingleRankedLeaderboard';
 
 export type LiveLeaderboardProps = DivProps & {
-    numRows: number
-}
+    numRows: number;
+};
 
-export default function LiveLeaderboard({
-    numRows,
-    className,
-    ...props
-}: LiveLeaderboardProps) {
-    const game = useGame()
+export default function LiveLeaderboard({ numRows, className, ...props }: LiveLeaderboardProps) {
+    const game = useGame();
 
     const {
         data: world,
@@ -31,28 +27,25 @@ export default function LiveLeaderboard({
         isError,
     } = useQuery({
         queryKey: ['records', game.seed],
-        queryFn: () => fetchRecords({ seed: game.seed }).then(throwIfError),
+        queryFn: () => fetchHighscores({ seed: game.seed }).then(throwIfError),
         select: (data) => data.filter((r) => paramsToSeed(r) === game.seed),
-    })
+    });
 
-    const [hidden, setHidden] = usePersistentState(
-        'live-leaderboard-hidden',
-        false
-    )
-    const { rows, bottomRows } = useLeaderboardRows(world ?? [], numRows)
+    const [hidden, setHidden] = usePersistentState('live-leaderboard-hidden', false);
+    const { rows, bottomRows } = useLeaderboardRows(world ?? [], numRows);
 
     if (isError) {
-        throw error
+        throw error;
     }
 
     if (isPending) {
-        return null
+        return null;
     }
 
     const title =
         game.presetName == 'custom'
             ? `${capitalize(game.presetName)} (${game.params.width}×${game.params.height}, ${game.params.mine_count})`
-            : capitalize(game.presetName)
+            : capitalize(game.presetName);
 
     return (
         <div
@@ -71,5 +64,5 @@ export default function LiveLeaderboard({
                 bottomRows={bottomRows}
             />
         </div>
-    )
+    );
 }

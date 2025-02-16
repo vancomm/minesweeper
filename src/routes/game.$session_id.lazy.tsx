@@ -1,9 +1,9 @@
-import CircularProgress from '@mui/material/CircularProgress'
-import { createLazyFileRoute } from '@tanstack/react-router'
+import CircularProgress from '@mui/material/CircularProgress';
+import { createLazyFileRoute } from '@tanstack/react-router';
 
-import ErrorComponent from 'components/ErrorComponent'
-import Game from 'components/Game'
-import LiveLeaderboard from 'components/LiveLeaderboard'
+import ErrorComponent from 'components/ErrorComponent';
+import Game from 'components/Game';
+import LiveLeaderboard from 'components/LiveLeaderboard';
 
 export const Route = createLazyFileRoute('/game/$session_id')({
     component: () => (
@@ -18,4 +18,4 @@ export const Route = createLazyFileRoute('/game/$session_id')({
         </div>
     ),
     errorComponent: ErrorComponent,
-})
+});

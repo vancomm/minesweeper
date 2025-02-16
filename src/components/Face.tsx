@@ -1,12 +1,12 @@
-import { twJoin } from 'tailwind-merge'
+import { twJoin } from 'tailwind-merge';
 
-const faceStates = ['smile', 'win', 'lost', 'click'] as const
+const faceStates = ['smile', 'win', 'lost', 'click'] as const;
 
-export type FaceState = (typeof faceStates)[number]
+export type FaceState = (typeof faceStates)[number];
 
 type FaceProps = React.HTMLAttributes<HTMLButtonElement> & {
-    state: FaceState
-}
+    state: FaceState;
+};
 
 export default function Face({ state, className, style, ...props }: FaceProps) {
     return (
@@ -26,5 +26,5 @@ export default function Face({ state, className, style, ...props }: FaceProps) {
                 {...props}
             />
         </div>
-    )
+    );
 }

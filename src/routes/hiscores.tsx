@@ -1,16 +1,16 @@
-import CircularProgress from '@mui/material/CircularProgress'
-import { useSuspenseQuery } from '@tanstack/react-query'
-import { createFileRoute } from '@tanstack/react-router'
-import React from 'react'
-import { twJoin } from 'tailwind-merge'
+import CircularProgress from '@mui/material/CircularProgress';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { createFileRoute } from '@tanstack/react-router';
+import React from 'react';
+import { twJoin } from 'tailwind-merge';
 
-import TallLeaderboard from 'components/TallLeaderboard'
-import WideLeaderboard from 'components/WideLeaderboard'
+import TallLeaderboard from 'components/TallLeaderboard';
+import WideLeaderboard from 'components/WideLeaderboard';
 
-import { fetchRecords } from 'api/game'
+import { fetchHighscores } from 'api/game';
 
-import { useBreakpoint } from '@/hooks/useBreakpoint'
-import { throwIfError } from '@/monad'
+import { useBreakpoint } from '@/hooks/useBreakpoint';
+import { throwIfError } from '@/monad';
 
 export const Route = createFileRoute('/hiscores')({
     component: () => (
@@ -23,33 +23,25 @@ export const Route = createFileRoute('/hiscores')({
             <CircularProgress color="inherit" />
         </div>
     ),
-})
+});
 
 type HiScoresProps = {
-    numRows: number
-}
+    numRows: number;
+};
 
 function HiScores({ numRows }: HiScoresProps) {
     const { data: records } = useSuspenseQuery({
         queryKey: ['records'],
-        queryFn: () => fetchRecords().then(throwIfError),
+        queryFn: () => fetchHighscores().then(throwIfError),
         refetchOnMount: 'always',
-    })
+    });
 
-    const { isLg } = useBreakpoint('lg')
+    const { isLg } = useBreakpoint('lg');
 
     return (
         <>
-            <WideLeaderboard
-                className={twJoin(!isLg && 'hidden')}
-                records={records}
-                numRows={numRows}
-            />
-            <TallLeaderboard
-                className={twJoin(isLg && 'hidden')}
-                records={records}
-                numRows={numRows}
-            />
+            <WideLeaderboard className={twJoin(!isLg && 'hidden')} records={records} numRows={numRows} />
+            <TallLeaderboard className={twJoin(isLg && 'hidden')} records={records} numRows={numRows} />
         </>
-    )
+    );
 }

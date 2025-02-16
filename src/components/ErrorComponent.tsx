@@ -1,3 +1,3 @@
-import { ErrorComponent } from '@tanstack/react-router'
+import { ErrorComponent } from '@tanstack/react-router';
 
-export default ErrorComponent
+export default ErrorComponent;

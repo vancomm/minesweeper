@@ -1,24 +1,20 @@
 export type Success<TOutput> = {
-    success: true
-    data: TOutput
-    error?: never
-}
+    success: true;
+    data: TOutput;
+    error?: never;
+};
 
 export type Failure<TError> = {
-    success: false
-    error: TError
-    data?: never
-}
+    success: false;
+    data?: never;
+    error: TError;
+};
 
-export type Result<TOutput, TError> = Success<TOutput> | Failure<TError>
+export type Result<TOutput, TError> = Success<TOutput> | Failure<TError>;
 
-export const throwIfError = <D, E>({
-    success,
-    data,
-    error,
-}: Result<D, E>): D => {
+export const throwIfError = <D, E>({ success, data, error }: Result<D, E>): D => {
     if (!success) {
-        throw error
+        throw error;
     }
-    return data
-}
+    return data;
+};

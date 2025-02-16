@@ -1,5 +1,5 @@
-import React from 'react'
-import { twMerge } from 'tailwind-merge'
+import React from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import {
     BottomBorder,
@@ -13,27 +13,27 @@ import {
     TopBorder,
     TopLeftBorder,
     TopRightBorder,
-} from 'components/Borders'
-import Counter from 'components/Counter'
-import Face, { FaceState } from 'components/Face'
+} from 'components/Borders';
+import Counter from 'components/Counter';
+import Face, { FaceState } from 'components/Face';
 
-import Cell, { CELL_SIZE_PX, CellProps } from '@/components/Cell'
+import Cell, { CELL_SIZE_PX, CellProps } from '@/components/Cell';
 
-export type Cell = Omit<CellProps, 'gameOver'>
+export type Cell = Omit<CellProps, 'gameOver'>;
 
 export type BoardProps = {
-    height: number
-    width: number
-    grid: number[]
-    faceState: FaceState
-    leftCounterValue: string
-    rightCounterValue: string
-    onCellDown?: (x: number, y: number, state: number) => unknown
-    onCellUp?: (x: number, y: number, state: number) => unknown
-    onCellAux?: (x: number, y: number, state: number) => unknown
-    onCellLeave?: (x: number, y: number, state: number) => unknown
-    onFaceClick?: React.MouseEventHandler<HTMLButtonElement>
-}
+    height: number;
+    width: number;
+    grid: number[];
+    faceState: FaceState;
+    leftCounterValue: string;
+    rightCounterValue: string;
+    onCellDown?: (x: number, y: number, state: number) => unknown;
+    onCellUp?: (x: number, y: number, state: number) => unknown;
+    onCellAux?: (x: number, y: number, state: number) => unknown;
+    onCellLeave?: (x: number, y: number, state: number) => unknown;
+    onFaceClick?: React.MouseEventHandler<HTMLButtonElement>;
+};
 
 export default function Board({
     height,
@@ -55,7 +55,7 @@ export default function Board({
                 '--grid-height': (height * CELL_SIZE_PX).toString() + 'px',
             }) as React.CSSProperties,
         [width, height]
-    )
+    );
 
     return (
         <div
@@ -86,8 +86,8 @@ export default function Board({
             <LeftBorder />
             <div id="game-board" className="board-cells bg-[silver]">
                 {grid.map((state, i) => {
-                    const x = i % width
-                    const y = Math.floor(i / width)
+                    const x = i % width;
+                    const y = Math.floor(i / width);
                     return (
                         <Cell
                             state={state}
@@ -95,23 +95,23 @@ export default function Board({
                             className="float-left"
                             onPointerDown={(e) => {
                                 if (e.button !== 2) {
-                                    onCellDown?.(x, y, state)
+                                    onCellDown?.(x, y, state);
                                 }
                             }}
                             onPointerUp={(e) => {
                                 if (e.button !== 2) {
-                                    onCellUp?.(x, y, state)
+                                    onCellUp?.(x, y, state);
                                 }
                             }}
                             onPointerLeave={() => {
-                                onCellLeave?.(x, y, state)
+                                onCellLeave?.(x, y, state);
                             }}
                             onContextMenu={(e) => {
-                                e.preventDefault()
-                                onCellAux?.(x, y, state)
+                                e.preventDefault();
+                                onCellAux?.(x, y, state);
                             }}
                         />
-                    )
+                    );
                 })}
             </div>
             <RightBorder />
@@ -120,5 +120,5 @@ export default function Board({
             <BottomBorder />
             <BottomRightBorder />
         </div>
-    )
+    );
 }

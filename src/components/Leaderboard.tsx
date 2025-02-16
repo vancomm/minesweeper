@@ -1,13 +1,13 @@
-import React from 'react'
-import { twJoin } from 'tailwind-merge'
+import React from 'react';
+import { twJoin } from 'tailwind-merge';
 
-import { TableProps } from '@/props'
+import { TableProps } from '@/props';
 
 type RowTagProps = {
-    title?: string
-    className?: string
-    children: React.ReactNode
-}
+    title?: string;
+    className?: string;
+    children: React.ReactNode;
+};
 
 const RowTag = ({ className, ...props }: RowTagProps) => (
     <div
@@ -17,28 +17,28 @@ const RowTag = ({ className, ...props }: RowTagProps) => (
         )}
         {...props}
     />
-)
+);
 
 const PersonalBest = () => (
     <RowTag className="cursor-help" title="Personal Best">
         PB
     </RowTag>
-)
+);
 const WorldBest = () => (
     <RowTag className="cursor-help" title="World Best">
         WB
     </RowTag>
-)
+);
 
 export type RankedLeaderboardRowProps = {
-    session_id: string
-    rank: React.ReactNode
-    username: React.ReactNode
-    playtime: React.ReactNode
-    isPB?: boolean
-    isWB?: boolean
-    className?: string
-}
+    game_session_id: string;
+    rank: React.ReactNode;
+    username: React.ReactNode;
+    playtime: React.ReactNode;
+    isPB?: boolean;
+    isWB?: boolean;
+    className?: string;
+};
 
 export const RankedLeaderboardRow = ({
     rank,
@@ -57,11 +57,11 @@ export const RankedLeaderboardRow = ({
             {isWB && <WorldBest />}
         </td>
     </tr>
-)
+);
 
 export type LeaderboardTitleProps = {
-    title: string
-}
+    title: string;
+};
 
 export const LeaderboardTitle = ({ title }: LeaderboardTitleProps) => (
     <tr className="border-b border-neutral-500">
@@ -69,11 +69,9 @@ export const LeaderboardTitle = ({ title }: LeaderboardTitleProps) => (
             {title}
         </td>
     </tr>
-)
+);
 
-export const LeaderboardSeparator = () => (
-    <tr className="border-b border-neutral-500" />
-)
+export const LeaderboardSeparator = () => <tr className="border-b border-neutral-500" />;
 
 export const NoLeaderboardEntries = () => (
     <tr>
@@ -81,9 +79,9 @@ export const NoLeaderboardEntries = () => (
             No records yet!
         </td>
     </tr>
-)
+);
 
-export type EmptyLeaderboardProps = { title?: string }
+export type EmptyLeaderboardProps = { title?: string };
 
 export const EmptyLeaderboard = ({ title }: EmptyLeaderboardProps) => (
     <table>
@@ -92,10 +90,10 @@ export const EmptyLeaderboard = ({ title }: EmptyLeaderboardProps) => (
             <NoLeaderboardEntries />
         </tbody>
     </table>
-)
+);
 
 export type RankedLeaderboardProps = TableProps & {
-    title?: string
-    rows: RankedLeaderboardRowProps[]
-    bottomRows?: RankedLeaderboardRowProps[]
-}
+    title?: string;
+    rows: RankedLeaderboardRowProps[];
+    bottomRows?: RankedLeaderboardRowProps[];
+};

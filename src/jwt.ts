@@ -1,22 +1,22 @@
-import Cookies from 'js-cookie'
+import Cookies from 'js-cookie';
 
-import { PlayerInfo } from 'api/entities'
+import { PlayerInfo } from 'api/entities';
 
 export const getJWTClaims = (): PlayerInfo | undefined => {
-    const authCookie = Cookies.get('auth')
+    const authCookie = Cookies.get('auth');
     if (!authCookie) {
-        return undefined
+        return undefined;
     }
-    const parts = authCookie.split('.')
+    const parts = authCookie.split('.');
     if (parts.length != 2) {
-        return undefined
+        return undefined;
     }
-    const [, b64Payload] = parts
-    const jsonPayload = atob(b64Payload)
+    const [, b64Payload] = parts;
+    const jsonPayload = atob(b64Payload);
     try {
-        const obj = JSON.parse(jsonPayload)
-        return PlayerInfo.parse(obj)
+        const obj = JSON.parse(jsonPayload);
+        return PlayerInfo.parse(obj);
     } catch {
-        return undefined
+        return undefined;
     }
-}
+};

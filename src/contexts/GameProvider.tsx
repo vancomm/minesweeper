@@ -1,61 +1,59 @@
-import { useQueryClient } from '@tanstack/react-query'
-import { UseNavigateResult } from '@tanstack/react-router'
-import React from 'react'
-import useWebSocket from 'react-use-websocket'
+import { useQueryClient } from '@tanstack/react-query';
+import { UseNavigateResult } from '@tanstack/react-router';
+import React from 'react';
+import useWebSocket from 'react-use-websocket';
 
-import { FaceState } from 'components/Face'
+import { FaceState } from 'components/Face';
 
-import { sessionIdToWS } from 'api/common'
-import { GameParams, GameUpdate } from 'api/entities'
+import { GameParams, GameUpdate } from 'api/entities';
+import { GameApi, createNewGame, getWSConnectURL, newGameApi } from 'api/game';
 
-import { GameApi, createNewGame, newGameApi } from '@/api/game'
-import {
-    CellState,
-    GAME_PRESETS,
-    GamePresetName,
-    paramsToSeed,
-} from '@/constants'
-import { GameContext, GameResetParams } from '@/contexts/GameContext'
-import { Errorable } from '@/errorable'
+import { CellState, GAME_PRESETS, GamePresetName, paramsToSeed } from '@/constants';
+import { GameContext, GameResetParams } from '@/contexts/GameContext';
+import { Errorable } from '@/errorable';
 
-const DEFAULT_GAME_PRESET_NAME = 'medium'
+const DEFAULT_GAME_PRESET_NAME = 'medium';
 
 type GameState = {
-    session?: GameUpdate & { api: GameApi }
-    presetName: string
-    gameParams: GameParams
-    face: FaceState
-    timer: number
-    timerInterval?: number
-    pressedCells?: number[]
-}
+    session?: GameUpdate & { api: GameApi };
+    presetName: string;
+    gameParams: GameParams;
+    face: FaceState;
+    timer: number;
+    timerInterval?: number;
+    pressedCells?: number[];
+};
 
 type GameEvent =
     | { type: 'cellDown'; x: number; y: number; cellState: number }
     | { type: 'cellUp'; x: number; y: number; cellState: number }
     | { type: 'cellLeave' }
     | {
-          type: 'gameUpdated'
-          update: GameUpdate
-          navigate?: UseNavigateResult<string>
+          type: 'gameUpdated';
+          update: GameUpdate;
+          navigate?: UseNavigateResult<string>;
       }
     | { type: 'presetPicked'; presetName: string }
     | { type: 'gameInit'; update: GameUpdate }
     | {
-          type: 'gameReset'
-          navigate: UseNavigateResult<string>
-          gameParams?: GameParams
-          presetName?: string
+          type: 'gameReset';
+          navigate: UseNavigateResult<string>;
+          gameParams?: GameParams;
+          presetName?: string;
       }
     | { type: 'timerStart'; interval: number; callback: () => unknown }
     | { type: 'timerTick' }
     | { type: 'timerStop' }
-    | { type: 'error'; error: Errorable }
+    | { type: 'error'; error: Errorable };
 
-type GameProviderProps = { children?: React.ReactNode }
+type GameProviderProps = { children?: React.ReactNode };
+
+function pointsAround(x: number, y: number): [number, number][] {
+    return [x - 1, x, x + 1].flatMap((xx) => [y - 1, y, y + 1].map((yy) => [xx, yy] as [number, number]));
+}
 
 export default function GameProvider({ children }: GameProviderProps) {
-    const queryClient = useQueryClient()
+    const queryClient = useQueryClient();
 
     const initialState: GameState = React.useMemo(
         () => ({
@@ -65,63 +63,55 @@ export default function GameProvider({ children }: GameProviderProps) {
             timer: 0,
         }),
         []
-    )
+    );
 
     const handleGameEvent = React.useCallback(
         (state: GameState, event: GameEvent): GameState => {
             if (event.type !== 'timerTick') {
-                console.debug(event)
+                console.debug(event);
             }
 
             switch (event.type) {
                 case 'cellDown': {
-                    const { x, y, cellState } = event
-                    const { width, height } = state.session ?? state.gameParams
-                    const index = y * width + x
+                    const { x, y, cellState } = event;
+                    const { width, height } = state.session ?? state.gameParams;
+                    const index = y * width + x;
                     if (cellState == CellState.Up) {
-                        return { ...state, pressedCells: [index] }
+                        return { ...state, pressedCells: [index] };
                     }
                     if (
+                        !(0 <= cellState && cellState <= 8) ||
                         state.session === undefined ||
                         state.session.ended_at !== undefined
                     ) {
-                        return state
+                        return state;
                     }
-                    const { grid } = state.session
-                    if (0 <= cellState && cellState <= 8) {
-                        return {
-                            ...state,
-                            pressedCells: [x - 1, x, x + 1]
-                                .flatMap((xx) =>
-                                    [y - 1, y, y + 1].map((yy) => [xx, yy])
-                                )
-                                .filter(
-                                    ([xx, yy]) =>
-                                        0 <= xx &&
-                                        xx < width &&
-                                        0 <= yy &&
-                                        yy < height &&
-                                        yy * width + xx !== index &&
-                                        grid[yy * width + xx] === CellState.Up
-                                )
-                                .map(([xx, yy]) => yy * width + xx),
-                        }
-                    }
-                    return state
+                    const { grid } = state.session;
+                    return {
+                        ...state,
+                        pressedCells: pointsAround(x, y)
+                            .filter(
+                                ([xx, yy]) =>
+                                    0 <= xx &&
+                                    xx < width &&
+                                    0 <= yy &&
+                                    yy < height &&
+                                    yy * width + xx !== index &&
+                                    grid[yy * width + xx] === CellState.Up
+                            )
+                            .map(([xx, yy]) => yy * width + xx),
+                    };
                 }
                 case 'cellLeave': {
-                    return { ...state, pressedCells: undefined }
+                    return { ...state, pressedCells: undefined };
                 }
                 case 'gameInit': {
-                    const { update } = event
-
-                    const seed = paramsToSeed(update)
+                    const { update } = event;
+                    const seed = paramsToSeed(update);
                     const presetName = Object.entries(GAME_PRESETS).reduce(
-                        (acc, [name, params]) =>
-                            seed == paramsToSeed(params) ? name : acc,
+                        (acc, [name, params]) => (seed == paramsToSeed(params) ? name : acc),
                         'custom'
-                    )
-
+                    );
                     return {
                         ...handleGameEvent(
                             handleGameEvent(state, {
@@ -131,40 +121,27 @@ export default function GameProvider({ children }: GameProviderProps) {
                             { type: 'timerTick' }
                         ),
                         presetName,
-                    }
+                    };
                 }
                 case 'gameUpdated': {
-                    const { update, navigate } = event
-
+                    const { update, navigate } = event;
                     if (window.location.href.endsWith('/new') && navigate) {
                         void navigate({
                             to: '/game/$session_id',
-                            params: { session_id: update.session_id },
-                        })
+                            params: { session_id: update.game_session_id },
+                        });
                     }
-
                     if (update.ended_at !== undefined) {
                         queryClient
                             .invalidateQueries({
                                 queryKey: ['records', paramsToSeed(update)],
                             })
-                            .catch(console.error)
-                        window.clearInterval(state.timerInterval)
+                            .catch(console.error);
+                        window.clearInterval(state.timerInterval);
                     }
-
-                    const face: FaceState = update.dead
-                        ? 'lost'
-                        : update.won
-                          ? 'win'
-                          : 'smile'
-
-                    const timer = update.ended_at
-                        ? update.ended_at - update.started_at
-                        : state.timer
-
-                    const api =
-                        state.session?.api ?? newGameApi(update.session_id)
-
+                    const face: FaceState = update.dead ? 'lost' : update.won ? 'win' : 'smile';
+                    const timer = update.ended_at ? update.ended_at - update.started_at : state.timer;
+                    const api = state.session?.api ?? newGameApi(update.game_session_id);
                     return {
                         ...state,
                         face,
@@ -175,19 +152,19 @@ export default function GameProvider({ children }: GameProviderProps) {
                             ...update,
                             api,
                         },
-                    }
+                    };
                 }
                 case 'presetPicked': {
-                    const { presetName } = event
-                    return { ...state, presetName }
+                    const { presetName } = event;
+                    return { ...state, presetName };
                 }
                 case 'gameReset': {
-                    const { presetName, gameParams, navigate } = event
+                    const { presetName, gameParams, navigate } = event;
                     if (!window.location.href.endsWith('/new')) {
                         void navigate({
                             to: '/game/$session_id',
                             params: { session_id: 'new' },
-                        })
+                        });
                     }
                     return {
                         ...initialState,
@@ -200,78 +177,64 @@ export default function GameProvider({ children }: GameProviderProps) {
                                     ? (state.presetName as GamePresetName)
                                     : DEFAULT_GAME_PRESET_NAME
                             ],
-                    }
+                    };
                 }
                 case 'timerStart': {
                     if (state.timerInterval !== undefined) {
-                        window.clearInterval(state.timerInterval)
+                        window.clearInterval(state.timerInterval);
                     }
-                    const { callback, interval } = event
+                    const { callback, interval } = event;
                     return {
                         ...state,
                         timerInterval: window.setInterval(callback, interval),
-                    }
+                    };
                 }
                 case 'timerTick': {
                     if (!state.session) {
-                        return state
+                        return state;
                     }
                     return {
                         ...state,
-                        timer:
-                            ((state.session.ended_at ?? Date.now()) -
-                                state.session.started_at) /
-                            1000,
-                    }
+                        timer: ((state.session.ended_at ?? Date.now()) - state.session.started_at) / 1000,
+                    };
                 }
                 case 'timerStop': {
                     return {
                         ...state,
-                        timerInterval: void window.clearInterval(
-                            state.timerInterval
-                        ),
-                    }
+                        timerInterval: void window.clearInterval(state.timerInterval),
+                    };
                 }
             }
-            return state
+            return state;
         },
         [initialState, queryClient]
-    )
+    );
 
-    const [state, dispatch] = React.useReducer(handleGameEvent, initialState)
+    const [state, dispatch] = React.useReducer(handleGameEvent, initialState);
 
-    const { sendMessage, lastJsonMessage } = useWebSocket(
-        state.session ? sessionIdToWS(state.session.session_id) : '',
-        {},
-        !!state.session
-    )
+    const ws = useWebSocket(state.session ? getWSConnectURL(state.session.game_session_id) : '', {}, !!state.session);
 
-    const over = React.useMemo(
-        () =>
-            state.session === undefined ||
-            state.session?.ended_at !== undefined,
-        [state]
-    )
+    const over = React.useMemo(() => state.session === undefined || state.session?.ended_at !== undefined, [state]);
 
     React.useEffect(() => {
-        if (lastJsonMessage) {
-            const update = GameUpdate.parse(lastJsonMessage)
-            dispatch({ type: 'gameUpdated', update })
+        if (ws.lastJsonMessage) {
+            const update = GameUpdate.parse(ws.lastJsonMessage);
+            dispatch({ type: 'gameUpdated', update });
         }
-    }, [lastJsonMessage, dispatch])
+    }, [ws.lastJsonMessage, dispatch]);
 
     React.useEffect(() => {
         if (!over) {
-            dispatch({ type: 'timerTick' })
+            dispatch({ type: 'timerTick' });
             dispatch({
                 type: 'timerStart',
                 callback: () => dispatch({ type: 'timerTick' }),
                 interval: 1000,
-            })
-            return () => dispatch({ type: 'timerStop' })
+            });
+            return () => dispatch({ type: 'timerStop' });
         }
-        return () => {}
-    }, [over, dispatch])
+        return () => {};
+    }, [over, dispatch]);
 
     const value = React.useMemo(
         () => ({
@@ -280,22 +243,15 @@ export default function GameProvider({ children }: GameProviderProps) {
             params: state.session ?? state.gameParams,
             pressedCells: state.pressedCells,
             over,
-            playtime: state.session
-                ? ((state.session.ended_at ?? Date.now()) -
-                      state.session.started_at) /
-                  1000
-                : 0,
+            playtime_ms: state.session ? (state.session.ended_at ?? Date.now()) - state.session.started_at : 0,
             flags:
                 state.session?.grid.filter(
-                    (c) =>
-                        c == CellState.Flag ||
-                        c == CellState.FlagMine ||
-                        c == CellState.FalseMine
+                    (c) => c == CellState.Flag || c == CellState.FlagMine || c == CellState.FalseMine
                 ).length ?? 0,
             face: state.face,
             seed: paramsToSeed(state.session ?? state.gameParams),
             init: (update: GameUpdate) => {
-                dispatch({ type: 'gameInit', update })
+                dispatch({ type: 'gameInit', update });
             },
             reset: ({ navigate, gameParams, presetName }: GameResetParams) => {
                 dispatch({
@@ -303,15 +259,11 @@ export default function GameProvider({ children }: GameProviderProps) {
                     presetName,
                     gameParams,
                     navigate,
-                })
+                });
             },
-            openCell: (
-                x: number,
-                y: number,
-                navigate: UseNavigateResult<string>
-            ) => {
+            openCell: (x: number, y: number, navigate: UseNavigateResult<string>) => {
                 if (!state.session) {
-                    const res = createNewGame({ x, y, ...state.gameParams })
+                    const res = createNewGame({ x, y, ...state.gameParams });
                     return res.then(({ success, data, error }) =>
                         success
                             ? dispatch({
@@ -323,17 +275,14 @@ export default function GameProvider({ children }: GameProviderProps) {
                                   type: 'error',
                                   error,
                               })
-                    )
+                    );
                 }
                 const message =
-                    (state.session.grid[y * state.session.width + x] ===
-                    CellState.Up
-                        ? 'o'
-                        : 'c') + ` ${x} ${y}`
-                sendMessage(message)
+                    (state.session.grid[y * state.session.width + x] === CellState.Up ? 'o' : 'c') + ` ${x} ${y}`;
+                ws.sendMessage(message);
             },
             flagCell: (x: number, y: number) => {
-                sendMessage(`f ${x} ${y}`)
+                ws.sendMessage(`f ${x} ${y}`);
             },
             cellDown: (x: number, y: number, prevState: number) => {
                 dispatch({
@@ -341,7 +290,7 @@ export default function GameProvider({ children }: GameProviderProps) {
                     x,
                     y,
                     cellState: prevState,
-                })
+                });
             },
             cellUp: (x: number, y: number, prevState: number) => {
                 dispatch({
@@ -349,16 +298,16 @@ export default function GameProvider({ children }: GameProviderProps) {
                     x,
                     y,
                     cellState: prevState,
-                })
+                });
             },
             cellLeave: () => {
                 if (state.pressedCells?.length) {
-                    dispatch({ type: 'cellLeave' })
+                    dispatch({ type: 'cellLeave' });
                 }
             },
         }),
-        [state, sendMessage, over]
-    )
+        [state, ws, over]
+    );
 
-    return <GameContext.Provider value={value}>{children}</GameContext.Provider>
+    return <GameContext.Provider value={value}>{children}</GameContext.Provider>;
 }

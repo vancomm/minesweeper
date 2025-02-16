@@ -1,8 +1,8 @@
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from 'tailwind-merge';
 
-import { CellState } from '@/constants'
+import { CellState } from '@/constants';
 
-export const CELL_SIZE_PX = 24
+export const CELL_SIZE_PX = 24;
 
 const CELL_STATE_TO_BG: Map<number, string> = new Map([
     [CellState.Question, ''], // TODO
@@ -21,20 +21,13 @@ const CELL_STATE_TO_BG: Map<number, string> = new Map([
     [CellState.Blast, 'bg-cell-blast'],
     [CellState.FalseMine, 'bg-cell-false-mine'],
     [CellState.Mine, 'bg-cell-mine'],
-])
+]);
 
-export type CellProps = React.DetailedHTMLProps<
-    React.ButtonHTMLAttributes<HTMLButtonElement>,
-    HTMLButtonElement
-> & {
-    state?: number
-}
+export type CellProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
+    state?: number;
+};
 
-export default function Cell({
-    state = CellState.Up,
-    className,
-    ...props
-}: CellProps) {
+export default function Cell({ state = CellState.Up, className, ...props }: CellProps) {
     return (
         <button
             className={twMerge(
@@ -45,5 +38,5 @@ export default function Cell({
             data-state={state}
             {...props}
         />
-    )
+    );
 }

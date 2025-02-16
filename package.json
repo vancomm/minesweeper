@@ -1,10 +1,11 @@
 {
     "name": "minesweeper-app",
     "private": true,
-    "version": "0.1.4",
+    "version": "0.1.5",
     "type": "module",
     "scripts": {
         "dev": "vite",
+        "dev:debug": "vite --debug",
         "dev:stage": "vite --mode staging",
         "build": "tsc && vite build",
         "build:stage": "tsc && vite build --mode staging",

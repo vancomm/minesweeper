@@ -1,12 +1,12 @@
-import { AuthParams } from 'api/entities'
+import { AuthParams } from 'api/entities';
 
 type AuthDialogProps = {
-    title: string
-    onSubmit: (data: AuthParams) => unknown
-    errorText?: string
-    disabled?: boolean
-    submitText?: string
-}
+    title: string;
+    onSubmit: (data: AuthParams) => unknown;
+    errorText?: string;
+    disabled?: boolean;
+    submitText?: string;
+};
 
 export default function AuthDialog({
     title,
@@ -21,20 +21,17 @@ export default function AuthDialog({
                 'w-64 bg-white p-2 shadow-[.5rem_.5rem_0_black] dark:border dark:border-white dark:bg-neutral-900'
             }
             onSubmit={(e) => {
-                e.preventDefault()
-                const form = e.target as HTMLFormElement
-                const data = new FormData(form)
+                e.preventDefault();
+                const form = e.target as HTMLFormElement;
+                const data = new FormData(form);
                 onSubmit({
                     username: data.get('username') as string,
                     password: data.get('password') as string,
-                })
-                form.reset()
+                });
+                form.reset();
             }}
         >
-            <fieldset
-                className="flex flex-col items-center gap-2"
-                disabled={disabled}
-            >
+            <fieldset className="flex flex-col items-center gap-2" disabled={disabled}>
                 <h2 className="font-bold">{title}</h2>
                 <div>
                     <input
@@ -57,13 +54,10 @@ export default function AuthDialog({
                     />
                 </div>
                 {errorText && <div className="text-center">{errorText}</div>}
-                <button
-                    className="underline disabled:cursor-not-allowed disabled:opacity-50"
-                    type="submit"
-                >
+                <button className="underline disabled:cursor-not-allowed disabled:opacity-50" type="submit">
                     {submitText}
                 </button>
             </fieldset>
         </form>
-    )
+    );
 }
