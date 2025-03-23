@@ -7,7 +7,8 @@ import { paramsToSeed } from '@/constants';
 import { useGame } from '@/contexts/GameContext';
 import { useLeaderboardRows } from '@/hooks/useLeaderboardRows';
 import usePersistentState from '@/hooks/usePersistentState';
-import { throwIfError } from '@/monad';
+import { raise } from '@/lib';
+// import { throwIfError } from '@/monad';
 import { DivProps } from '@/props';
 
 import HideToggle from './HideToggle';
@@ -27,7 +28,7 @@ export default function LiveLeaderboard({ numRows, className, ...props }: LiveLe
         isError,
     } = useQuery({
         queryKey: ['records', game.seed],
-        queryFn: () => fetchHighscores({ seed: game.seed }).then(throwIfError),
+        queryFn: () => fetchHighscores({ seed: game.seed }).then((res) => (res.isErr() ? raise(res.error) : res.value)),
         select: (data) => data.filter((r) => paramsToSeed(r) === game.seed),
     });
 

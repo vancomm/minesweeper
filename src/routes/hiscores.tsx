@@ -10,7 +10,7 @@ import WideLeaderboard from 'components/WideLeaderboard';
 import { fetchHighscores } from 'api/game';
 
 import { useBreakpoint } from '@/hooks/useBreakpoint';
-import { throwIfError } from '@/monad';
+import { unwrap } from '@/lib';
 
 export const Route = createFileRoute('/hiscores')({
     component: () => (
@@ -32,7 +32,7 @@ type HiScoresProps = {
 function HiScores({ numRows }: HiScoresProps) {
     const { data: records } = useSuspenseQuery({
         queryKey: ['records'],
-        queryFn: () => fetchHighscores().then(throwIfError),
+        queryFn: () => fetchHighscores().then(unwrap),
         refetchOnMount: 'always',
     });
 

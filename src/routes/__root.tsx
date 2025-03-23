@@ -22,6 +22,7 @@ import { CellState } from '@/constants';
 import { AuthContext, useAuth } from '@/contexts/AuthContext';
 import { GameContext } from '@/contexts/GameContext';
 import { useBreakpoint } from '@/hooks/useBreakpoint';
+import { iterateDigits } from '@/lib';
 import { DivProps } from '@/props';
 
 interface RouterContext {
@@ -69,11 +70,15 @@ const NavBar = ({ children }: NavBarProps) => {
     );
 };
 
-const TwentyTwentyFour = () => (
-    <div className="flex items-center" aria-valuetext="2024">
-        {[2, CellState.Mine, 2, 4].map((state, i) => (
-            <Cell key={i} state={state} className="inline-block h-[18px] w-[18px] cursor-default" />
-        ))}
+const CurrentYear = () => (
+    <div className="flex items-center" aria-valuetext={new Date().getFullYear().toString()}>
+        {[...iterateDigits(new Date().getFullYear())].map((digit, i) =>
+            digit === 0 ? (
+                <Cell key={i} state={CellState.Mine} className="inline-block h-[18px] w-[18px] cursor-default" />
+            ) : (
+                <Cell key={i} state={digit} className="inline-block h-[18px] w-[18px] cursor-default" />
+            )
+        )}
     </div>
 );
 
@@ -81,7 +86,7 @@ const Footer = ({ className, ...props }: DivProps) => (
     <footer className={twMerge('m-auto flex items-center gap-2 p-2', className)} {...props}>
         <div className="pb-1 text-center leading-none">v{__APP_VERSION__}</div>
         <div className="pb-1 text-center leading-none">&bull;</div>
-        <TwentyTwentyFour />
+        <CurrentYear />
         <div className="pb-1 text-center leading-none">&bull;</div>
         <a
             className="cursor-pointer pb-1 text-center leading-none hover:underline"
@@ -110,10 +115,9 @@ function RootComponent() {
     const handleSignupSubmit = async (data: AuthParams) => {
         setIsSubmitting(true);
         try {
-            const { success, error } = await auth.register(data);
-            if (!success) {
-                const { statusCode, errorText } = error;
-                setSignupError(errorText || `unknown error ${statusCode}`);
+            const res = await auth.register(data);
+            if (res.isErr()) {
+                setSignupError('registration failed'); // TODO improve error type
             } else {
                 setSignupOpen(false);
             }
@@ -127,10 +131,9 @@ function RootComponent() {
     const handleLoginSubmit = async (data: AuthParams) => {
         setIsSubmitting(true);
         try {
-            const { success, error } = await auth.login(data);
-            if (!success) {
-                const { statusCode, errorText } = error;
-                setLoginError(errorText || `unknown error ${statusCode}`);
+            const res = await auth.login(data);
+            if (res.isErr()) {
+                setLoginError('login failed'); // TODO improve error type
             } else {
                 setLoginOpen(false);
             }
@@ -224,7 +227,7 @@ function RootComponent() {
                         ))}
                 </div>
             </NavBar>
-            <div className="flex-auto flex-shrink-0 overflow-x-scroll p-4">
+            <div className="mx-auto flex-auto flex-shrink-0 overflow-x-scroll p-4">
                 <div className="flex w-fit flex-col gap-2 border border-neutral-300 p-3 md:flex-row">
                     <div className="flex flex-shrink-0 items-center gap-x-4 gap-y-2 border-b border-neutral-500 px-1 py-2 pt-0 md:w-28 md:flex-col md:border-b-0 md:border-r md:pr-4">
                         <Link

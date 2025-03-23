@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: rgb(203, 203, 203);
+        }
+
+        main {
+            display: flex;
+            gap: .5rem;
+            /* flex-direction: column; */
+            align-items: start;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            min-width: 200px;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 1rem;
+        }
+
+        [data-theme="dark"] {
+            .card {
+                background-color: gray;
+            }
+
+            body {
+                background-color: black;
+                color: white;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h2>Money store</h2>
+        <button id="theme-switch">Switch</button>
+        <script>
+            console.log(document.documentElement.dataset.theme)
+        </script>
+    </header>
+    <main>
+        <div class="card">
+            <h3>Money</h3>
+            <div>
+                The very best money money can buy
+            </div>
+            <div>
+                <button>
+                    Buy
+                </button>
+            </div>
+        </div>
+        <div class="card">
+            <h3>Money</h3>
+            <div>
+                The very best money money can buy
+            </div>
+            <div>
+                <button>
+                    Buy
+                </button>
+            </div>
+        </div>
+        <div class="card">
+            <h3>Money</h3>
+            <div>
+                The very best money money can buy
+            </div>
+            <div>
+                <button>
+                    Buy
+                </button>
+            </div>
+        </div>
+        <div class="card">
+            <h3>Money</h3>
+            <div>
+                The very best money money can buy
+            </div>
+            <div>
+                <button>
+                    Buy
+                </button>
+            </div>
+        </div>
+        <div class="card">
+            <h3>Money</h3>
+            <div>
+                The very best money money can buy
+            </div>
+            <div>
+                <button>
+                    Buy
+                </button>
+            </div>
+        </div>
+        <div class="card">
+            <h3>Money</h3>
+            <div>
+                The very best money money can buy
+            </div>
+            <div>
+                <button>
+                    Buy
+                </button>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

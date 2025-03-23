@@ -10,7 +10,6 @@ import { GameApi, createNewGame, getWSConnectURL, newGameApi } from 'api/game';
 
 import { CellState, GAME_PRESETS, GamePresetName, paramsToSeed } from '@/constants';
 import { GameContext, GameResetParams } from '@/contexts/GameContext';
-import { Errorable } from '@/errorable';
 
 const DEFAULT_GAME_PRESET_NAME = 'medium';
 
@@ -44,7 +43,7 @@ type GameEvent =
     | { type: 'timerStart'; interval: number; callback: () => unknown }
     | { type: 'timerTick' }
     | { type: 'timerStop' }
-    | { type: 'error'; error: Errorable };
+    | { type: 'error'; error: unknown };
 
 type GameProviderProps = { children?: React.ReactNode };
 
@@ -263,19 +262,19 @@ export default function GameProvider({ children }: GameProviderProps) {
             },
             openCell: (x: number, y: number, navigate: UseNavigateResult<string>) => {
                 if (!state.session) {
-                    const res = createNewGame({ x, y, ...state.gameParams });
-                    return res.then(({ success, data, error }) =>
-                        success
-                            ? dispatch({
-                                  type: 'gameUpdated',
-                                  update: data,
-                                  navigate,
-                              })
-                            : dispatch({
-                                  type: 'error',
-                                  error,
-                              })
-                    );
+                    return createNewGame({ x, y, ...state.gameParams }).then((res) => {
+                        if (res.isErr()) {
+                            return dispatch({
+                                type: 'error',
+                                error: res.error,
+                            });
+                        }
+                        return dispatch({
+                            type: 'gameUpdated',
+                            update: res.value,
+                            navigate,
+                        });
+                    });
                 }
                 const message =
                     (state.session.grid[y * state.session.width + x] === CellState.Up ? 'o' : 'c') + ` ${x} ${y}`;

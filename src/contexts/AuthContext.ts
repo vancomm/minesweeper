@@ -1,13 +1,14 @@
+import { Result } from 'neverthrow';
 import React from 'react';
 
-import { AuthError, AuthParams, PlayerInfo } from 'api/entities';
+import { AuthParams, PlayerInfo } from 'api/entities';
 
-import { Result } from '@/monad';
+import { ValidatedFetchError } from '@/api/common';
 
 export type AuthContext = {
     player: PlayerInfo | undefined;
-    register: (data: AuthParams) => Promise<Result<null, AuthError>>;
-    login: (data: AuthParams) => Promise<Result<null, AuthError>>;
+    register: (data: AuthParams) => Promise<Result<unknown, ValidatedFetchError>>;
+    login: (data: AuthParams) => Promise<Result<unknown, ValidatedFetchError>>;
     logout: () => Promise<void>;
     update: () => Promise<void>;
 };

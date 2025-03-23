@@ -11,7 +11,7 @@ import { fetchHighscores } from 'api/game';
 
 import { useAuth } from '@/contexts/AuthContext';
 import { useBreakpoint } from '@/hooks/useBreakpoint';
-import { throwIfError } from '@/monad';
+import { unwrap } from '@/lib';
 
 export const Route = createFileRoute('/myscores')({
     beforeLoad: ({ context }) => {
@@ -42,7 +42,7 @@ function MyScores({ numRows }: MyScoresProps) {
 
     const { data: records } = useSuspenseQuery({
         queryKey: ['records', player.username],
-        queryFn: () => fetchHighscores({ username: player.username }).then(throwIfError),
+        queryFn: () => fetchHighscores({ username: player.username }).then(unwrap),
         refetchOnMount: 'always',
     });
 

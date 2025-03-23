@@ -17,6 +17,7 @@ const CELL_STATE_TO_BG: Map<number, string> = new Map([
     [6, 'bg-cell-6'],
     [7, 'bg-cell-7'],
     [8, 'bg-cell-8'],
+    [9, 'bg-cell-9'],
     [CellState.FlagMine, 'bg-cell-flag-mine'],
     [CellState.Blast, 'bg-cell-blast'],
     [CellState.FalseMine, 'bg-cell-false-mine'],

@@ -1,8 +1,8 @@
 import React from 'react';
 
-import { login, logout, register, status } from 'api/auth';
+import * as auth from 'api/auth';
+import { AuthParams, PlayerInfo } from 'api/entities';
 
-import { AuthParams, PlayerInfo } from '@/api/entities';
 import { AuthContext } from '@/contexts/AuthContext';
 import { getJWTClaims } from '@/jwt';
 
@@ -15,7 +15,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 
     const update = React.useCallback(async () => {
         console.log('update');
-        await status();
+        await auth.status();
         setPlayer(getJWTClaims());
     }, [setPlayer]);
 
@@ -23,17 +23,17 @@ export default function AuthProvider({ children }: AuthProviderProps) {
         () => ({
             player,
             register: async (data: AuthParams) => {
-                const res = await register(data);
+                const res = await auth.register(data);
                 await update();
                 return res;
             },
             login: async (data: AuthParams) => {
-                const res = await login(data);
+                const res = await auth.login(data);
                 await update();
                 return res;
             },
             logout: async () => {
-                await logout();
+                await auth.logout();
                 await update();
             },
             update,

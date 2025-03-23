@@ -60,6 +60,7 @@ export default {
                 "cell-6": "url('/svg/cells/cell6.svg')",
                 "cell-7": "url('/svg/cells/cell7.svg')",
                 "cell-8": "url('/svg/cells/cell8.svg')",
+                "cell-9": "url('/svg/cells/cell9.svg')",
                 "cell-up": "url('/svg/cells/cellup.svg')",
                 "cell-down": "url('/svg/cells/celldown.svg')",
                 "cell-flag": "url('/svg/cells/cellflag.svg')",
