@@ -5,18 +5,9 @@ import { defineConfig, loadEnv } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
 const getPackageVersion = (): string => {
-    const pkg: unknown = JSON.parse(
-        readFileSync(new URL('package.json', import.meta.url), 'utf-8')
-    );
+    const pkg: unknown = JSON.parse(readFileSync(new URL('package.json', import.meta.url), 'utf-8'));
 
-    if (
-        !(
-            typeof pkg === 'object' &&
-            pkg !== null &&
-            'version' in pkg &&
-            typeof pkg.version === 'string'
-        )
-    ) {
+    if (!(typeof pkg === 'object' && pkg !== null && 'version' in pkg && typeof pkg.version === 'string')) {
         throw new Error('package.json does not provide version');
     }
 
@@ -31,10 +22,10 @@ export default defineConfig(({ mode }) => {
 
     // create a .env.{mode}.local file for each mode you want to use
     const env = loadEnv(mode, process.cwd(), '');
-    const backendProxy = env.BACKEND_PROXY || 'http://localhost:8000';
+    const backendProxy = env.BACKEND_PROXY || 'http://localhost:8080';
     const baseUrl = env.BASE_URL || '/';
     const outDir = env.OUT_DIR || 'dist';
-    const apiPrefix = '/api';
+    const apiPrefix = env.API_URL || '/api';
 
     console.log(`building version ${buildVersion} to be mounted at ${baseUrl}`);
 

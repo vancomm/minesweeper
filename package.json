@@ -9,6 +9,7 @@
         "dev:stage": "vite --mode staging",
         "build": "tsc && vite build",
         "build:stage": "tsc && vite build --mode staging",
+        "build:prod": "tsc && vite build --mode production",
         "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
         "format": "prettier --write src/**/*.{js,jsx,ts,tsx}",
         "preview": "vite preview",
