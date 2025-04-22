@@ -23,7 +23,6 @@ import { AuthContext, useAuth } from '@/contexts/AuthContext';
 import { GameContext } from '@/contexts/GameContext';
 import { useBreakpoint } from '@/hooks/useBreakpoint';
 import { iterateDigits } from '@/lib';
-import { DivProps } from '@/props';
 
 interface RouterContext {
     auth: AuthContext;
@@ -82,7 +81,7 @@ const CurrentYear = () => (
     </div>
 );
 
-const Footer = ({ className, ...props }: DivProps) => (
+const Footer = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
     <footer className={twMerge('m-auto flex items-center gap-2 p-2', className)} {...props}>
         <div className="pb-1 text-center leading-none">v{__APP_VERSION__}</div>
         <div className="pb-1 text-center leading-none">&bull;</div>

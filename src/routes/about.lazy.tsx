@@ -5,17 +5,16 @@ import { twMerge } from 'tailwind-merge';
 import Cell from 'components/Cell';
 
 import { CellState } from '@/constants';
-import { HeadingProps, ParagraphProps } from '@/props';
 
 export const Route = createLazyFileRoute('/about')({
     component: About,
 });
 
-const P = ({ className, ...props }: ParagraphProps) => (
+const P = ({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) => (
     <p className={twMerge('my-2 first:mt-0 last:mb-0', className)} {...props} />
 );
 
-const H2 = ({ className, ...props }: HeadingProps) => (
+const H2 = ({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
     <h2 className={twMerge('my-3 font-bold first:mt-0 last:mb-0', className)} {...props} />
 );
 

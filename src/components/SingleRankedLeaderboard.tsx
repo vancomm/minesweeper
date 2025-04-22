@@ -6,13 +6,11 @@ import {
     RankedLeaderboardRowProps,
 } from 'components/Leaderboard';
 
-import { TableProps } from '@/props';
-
-export type RankedLeaderboardProps = TableProps & {
+export interface RankedLeaderboardProps extends React.TableHTMLAttributes<HTMLTableElement> {
     title?: string;
     rows: RankedLeaderboardRowProps[];
     bottomRows?: RankedLeaderboardRowProps[];
-};
+}
 
 const SingleRankedLeaderboard = ({ title, rows, bottomRows, ...props }: RankedLeaderboardProps) => (
     <table {...props}>

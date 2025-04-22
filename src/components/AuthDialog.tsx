@@ -1,12 +1,12 @@
 import { AuthParams } from 'api/entities';
 
-type AuthDialogProps = {
+interface AuthDialogProps {
     title: string;
-    onSubmit: (data: AuthParams) => unknown;
     errorText?: string;
     disabled?: boolean;
     submitText?: string;
-};
+    onSubmit(data: AuthParams): unknown;
+}
 
 export default function AuthDialog({
     title,

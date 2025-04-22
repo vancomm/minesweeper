@@ -5,7 +5,7 @@ import { RankedLeaderboardRowProps } from 'components/Leaderboard';
 
 import { GameRecord, PlayerInfo } from 'api/entities';
 
-import { GAME_PRESET_SEEDS, SEED_2_GAME_PRESET_NAME, paramsToSeed } from '@/constants';
+import { gamePresetSeeds, paramsToSeed, seedToPresetName } from '@/constants';
 import { useAuth } from '@/contexts/AuthContext';
 import { GameContext, useGame } from '@/contexts/GameContext';
 import { bisectLeft } from '@/lib';
@@ -88,7 +88,7 @@ export const useSplitLeaderboardRows = (records: GameRecord[], numRows: number) 
 
     const recordsPerPreset = records
         .map((r) => [r, paramsToSeed(r)] as const)
-        .map(([r, seed]) => [r, GAME_PRESET_SEEDS.includes(seed) ? SEED_2_GAME_PRESET_NAME[seed] : undefined] as const)
+        .map(([r, seed]) => [r, gamePresetSeeds.includes(seed) ? seedToPresetName[seed] : undefined] as const)
         .reduce(
             (acc, [r, presetName]) =>
                 presetName

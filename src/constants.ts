@@ -4,7 +4,7 @@ export const BASE_URL = __BASE_URL__;
 export const APP_VERSION = __APP_VERSION__;
 export const API_PREFIX = __API_PREFIX__;
 
-export const GAME_PRESETS = {
+export const gamePresets = {
     easy: {
         height: 9,
         width: 9,
@@ -29,26 +29,27 @@ export const GAME_PRESETS = {
         mine_count: 130,
         unique: true,
     },
-} as const satisfies Record<string, GameParams>;
+} as const satisfies Readonly<Record<string, GameParams>>;
 
-export type GamePresetName = keyof typeof GAME_PRESETS;
+export type GamePresetName = keyof typeof gamePresets;
 
-export const GAME_PRESET_NAMES = [...Object.keys(GAME_PRESETS)] as const;
+export const gamePresetNames = [...Object.keys(gamePresets)] as const;
 
-export const paramsToSeed = ({ width, height, mine_count, unique }: GameParams) =>
-    `${width}:${height}:${mine_count}:${unique ? '1' : '0'}`;
+export function paramsToSeed({ width, height, mine_count, unique }: GameParams) {
+    return `${width}:${height}:${mine_count}:${unique ? '1' : '0'}`;
+}
 
-export const GAME_PRESET_SEEDS = [...Object.values(GAME_PRESETS).map(paramsToSeed)] as const;
+export const gamePresetSeeds = [...Object.values(gamePresets).map(paramsToSeed)] as const;
 
-export const SEED_2_GAME_PRESET_NAME = Object.entries(GAME_PRESETS).reduce(
+export const seedToPresetName = Object.entries(gamePresets).reduce(
     (acc, [k, v]) => ({ ...acc, [paramsToSeed(v)]: k }),
     {} as Readonly<Record<string, string>>
 );
 
-export const paramsToPresetName = (params: GameParams) => {
+export function paramsToPresetName(params: GameParams) {
     const seed = paramsToSeed(params);
-    return GAME_PRESET_SEEDS.includes(seed) ? SEED_2_GAME_PRESET_NAME[seed] : undefined;
-};
+    return gamePresetSeeds.includes(seed) ? seedToPresetName[seed] : undefined;
+}
 
 export const CellState = {
     Question: -3,

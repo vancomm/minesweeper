@@ -1,19 +1,6 @@
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import {
-    BottomBorder,
-    BottomLeftBorder,
-    BottomRightBorder,
-    LeftBorder,
-    MidBorder,
-    MidLeftBorder,
-    MidRightBorder,
-    RightBorder,
-    TopBorder,
-    TopLeftBorder,
-    TopRightBorder,
-} from 'components/Borders';
 import Counter from 'components/Counter';
 import Face, { FaceState } from 'components/Face';
 
@@ -21,19 +8,19 @@ import Cell, { CELL_SIZE_PX, CellProps } from '@/components/Cell';
 
 export type Cell = Omit<CellProps, 'gameOver'>;
 
-export type BoardProps = {
+export interface BoardProps {
     height: number;
     width: number;
     grid: number[];
     faceState: FaceState;
     leftCounterValue: string;
     rightCounterValue: string;
-    onCellDown?: (x: number, y: number, state: number) => unknown;
-    onCellUp?: (x: number, y: number, state: number) => unknown;
-    onCellAux?: (x: number, y: number, state: number) => unknown;
-    onCellLeave?: (x: number, y: number, state: number) => unknown;
+    onCellDown(x: number, y: number, state: number): unknown;
+    onCellUp(x: number, y: number, state: number): unknown;
+    onCellAux(x: number, y: number, state: number): unknown;
+    onCellLeave(x: number, y: number, state: number): unknown;
     onFaceClick?: React.MouseEventHandler<HTMLButtonElement>;
-};
+}
 
 export default function Board({
     height,
@@ -121,4 +108,48 @@ export default function Board({
             <BottomRightBorder />
         </div>
     );
+}
+
+function TopLeftBorder() {
+    return <div className="bg-border-top-left bg-full" />;
+}
+
+function TopBorder() {
+    return <div className="bg-border-top bg-full" />;
+}
+
+function TopRightBorder() {
+    return <div className="bg-border-top-right bg-full" />;
+}
+
+function LeftBorder() {
+    return <div className="bg-border-left bg-full" />;
+}
+
+function RightBorder() {
+    return <div className="bg-border-right bg-full" />;
+}
+
+function MidLeftBorder() {
+    return <div className="bg-border-middle-left bg-full" />;
+}
+
+function MidBorder() {
+    return <div className="bg-border-middle bg-full" />;
+}
+
+function MidRightBorder() {
+    return <div className="bg-border-middle-right bg-full" />;
+}
+
+function BottomLeftBorder() {
+    return <div className="bg-border-bottom-left bg-full" />;
+}
+
+function BottomBorder() {
+    return <div className="bg-border-bottom bg-full" />;
+}
+
+function BottomRightBorder() {
+    return <div className="bg-border-bottom-right bg-full" />;
 }

@@ -8,7 +8,7 @@ import { FaceState } from 'components/Face';
 import { GameParams, GameUpdate } from 'api/entities';
 import { GameApi, createNewGame, getWSConnectURL, newGameApi } from 'api/game';
 
-import { CellState, GAME_PRESETS, GamePresetName, paramsToSeed } from '@/constants';
+import { CellState, GamePresetName, gamePresets, paramsToSeed } from '@/constants';
 import { GameContext, GameResetParams } from '@/contexts/GameContext';
 
 const DEFAULT_GAME_PRESET_NAME = 'medium';
@@ -57,7 +57,7 @@ export default function GameProvider({ children }: GameProviderProps) {
     const initialState: GameState = React.useMemo(
         () => ({
             presetName: DEFAULT_GAME_PRESET_NAME,
-            gameParams: GAME_PRESETS[DEFAULT_GAME_PRESET_NAME],
+            gameParams: gamePresets[DEFAULT_GAME_PRESET_NAME],
             face: 'smile',
             timer: 0,
         }),
@@ -107,7 +107,7 @@ export default function GameProvider({ children }: GameProviderProps) {
                 case 'gameInit': {
                     const { update } = event;
                     const seed = paramsToSeed(update);
-                    const presetName = Object.entries(GAME_PRESETS).reduce(
+                    const presetName = Object.entries(gamePresets).reduce(
                         (acc, [name, params]) => (seed == paramsToSeed(params) ? name : acc),
                         'custom'
                     );
@@ -171,8 +171,8 @@ export default function GameProvider({ children }: GameProviderProps) {
                         gameParams:
                             gameParams ??
                             state.session ??
-                            GAME_PRESETS[
-                                state.presetName in GAME_PRESETS
+                            gamePresets[
+                                state.presetName in gamePresets
                                     ? (state.presetName as GamePresetName)
                                     : DEFAULT_GAME_PRESET_NAME
                             ],

@@ -4,7 +4,7 @@ import { readFileSync } from 'fs';
 import { defineConfig, loadEnv } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
-const getPackageVersion = (): string => {
+function getPackageVersion(): string {
     const pkg: unknown = JSON.parse(readFileSync(new URL('package.json', import.meta.url), 'utf-8'));
 
     if (!(typeof pkg === 'object' && pkg !== null && 'version' in pkg && typeof pkg.version === 'string')) {
@@ -12,7 +12,7 @@ const getPackageVersion = (): string => {
     }
 
     return pkg.version;
-};
+}
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {

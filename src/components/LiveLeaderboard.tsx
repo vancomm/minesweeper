@@ -8,15 +8,13 @@ import { useGame } from '@/contexts/GameContext';
 import { useLeaderboardRows } from '@/hooks/useLeaderboardRows';
 import usePersistentState from '@/hooks/usePersistentState';
 import { raise } from '@/lib';
-// import { throwIfError } from '@/monad';
-import { DivProps } from '@/props';
 
 import HideToggle from './HideToggle';
 import SingleRankedLeaderboard from './SingleRankedLeaderboard';
 
-export type LiveLeaderboardProps = DivProps & {
+export interface LiveLeaderboardProps extends React.HTMLAttributes<HTMLDivElement> {
     numRows: number;
-};
+}
 
 export default function LiveLeaderboard({ numRows, className, ...props }: LiveLeaderboardProps) {
     const game = useGame();

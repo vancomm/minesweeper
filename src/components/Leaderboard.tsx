@@ -1,13 +1,11 @@
 import React from 'react';
 import { twJoin } from 'tailwind-merge';
 
-import { TableProps } from '@/props';
-
-type RowTagProps = {
+interface RowTagProps {
     title?: string;
     className?: string;
     children: React.ReactNode;
-};
+}
 
 const RowTag = ({ className, ...props }: RowTagProps) => (
     <div
@@ -30,7 +28,7 @@ const WorldBest = () => (
     </RowTag>
 );
 
-export type RankedLeaderboardRowProps = {
+export interface RankedLeaderboardRowProps {
     game_session_id: string;
     rank: React.ReactNode;
     username: React.ReactNode;
@@ -38,7 +36,7 @@ export type RankedLeaderboardRowProps = {
     isPB?: boolean;
     isWB?: boolean;
     className?: string;
-};
+}
 
 export const RankedLeaderboardRow = ({
     rank,
@@ -59,9 +57,9 @@ export const RankedLeaderboardRow = ({
     </tr>
 );
 
-export type LeaderboardTitleProps = {
+export interface LeaderboardTitleProps {
     title: string;
-};
+}
 
 export const LeaderboardTitle = ({ title }: LeaderboardTitleProps) => (
     <tr className="border-b border-neutral-500">
@@ -81,7 +79,9 @@ export const NoLeaderboardEntries = () => (
     </tr>
 );
 
-export type EmptyLeaderboardProps = { title?: string };
+export interface EmptyLeaderboardProps {
+    title?: string;
+}
 
 export const EmptyLeaderboard = ({ title }: EmptyLeaderboardProps) => (
     <table>
@@ -92,8 +92,8 @@ export const EmptyLeaderboard = ({ title }: EmptyLeaderboardProps) => (
     </table>
 );
 
-export type RankedLeaderboardProps = TableProps & {
+export interface RankedLeaderboardProps extends React.TableHTMLAttributes<HTMLTableElement> {
     title?: string;
     rows: RankedLeaderboardRowProps[];
     bottomRows?: RankedLeaderboardRowProps[];
-};
+}

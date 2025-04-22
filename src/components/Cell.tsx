@@ -4,7 +4,7 @@ import { CellState } from '@/constants';
 
 export const CELL_SIZE_PX = 24;
 
-const CELL_STATE_TO_BG: Map<number, string> = new Map([
+const cellStateToBackground: ReadonlyMap<number, string> = new Map([
     [CellState.Question, ''], // TODO
     [CellState.Up, 'bg-cell-up'],
     [CellState.Flag, 'bg-cell-flag'],
@@ -24,16 +24,16 @@ const CELL_STATE_TO_BG: Map<number, string> = new Map([
     [CellState.Mine, 'bg-cell-mine'],
 ]);
 
-export type CellProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
+export interface CellProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     state?: number;
-};
+}
 
 export default function Cell({ state = CellState.Up, className, ...props }: CellProps) {
     return (
         <button
             className={twMerge(
                 'block h-[24px] w-[24px] bg-[size:100%]',
-                CELL_STATE_TO_BG.get(state) ?? 'bg-cell-up',
+                cellStateToBackground.get(state) ?? 'bg-cell-up',
                 className
             )}
             data-state={state}

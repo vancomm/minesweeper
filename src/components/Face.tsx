@@ -4,9 +4,9 @@ const faceStates = ['smile', 'win', 'lost', 'click'] as const;
 
 export type FaceState = (typeof faceStates)[number];
 
-type FaceProps = React.HTMLAttributes<HTMLButtonElement> & {
+interface FaceProps extends React.HTMLAttributes<HTMLButtonElement> {
     state: FaceState;
-};
+}
 
 export default function Face({ state, className, style, ...props }: FaceProps) {
     return (
