@@ -5,7 +5,7 @@ interface AuthDialogProps {
     errorText?: string;
     disabled?: boolean;
     submitText?: string;
-    onSubmit(data: AuthParams): unknown;
+    onSubmit: (data: AuthParams) => unknown;
 }
 
 export default function AuthDialog({

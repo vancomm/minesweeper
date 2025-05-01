@@ -15,10 +15,10 @@ export interface BoardProps {
     faceState: FaceState;
     leftCounterValue: string;
     rightCounterValue: string;
-    onCellDown(x: number, y: number, state: number): unknown;
-    onCellUp(x: number, y: number, state: number): unknown;
-    onCellAux(x: number, y: number, state: number): unknown;
-    onCellLeave(x: number, y: number, state: number): unknown;
+    onCellDown: (x: number, y: number, state: number) => unknown;
+    onCellUp: (x: number, y: number, state: number) => unknown;
+    onCellAux: (x: number, y: number, state: number) => unknown;
+    onCellLeave: (x: number, y: number, state: number) => unknown;
     onFaceClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
