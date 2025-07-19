@@ -77,7 +77,7 @@ export default function Game() {
 interface GamePresetFormProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onSubmit'> {
     activePresetName: string;
     activeGameParams: GameParams;
-    onSubmit(presetName: string, gameParams: GameParams): unknown;
+    onSubmit: (presetName: string, gameParams: GameParams) => unknown;
 }
 
 function GamePresetForm({ activePresetName, activeGameParams, onSubmit, className, ...props }: GamePresetFormProps) {

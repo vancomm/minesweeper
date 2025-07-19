@@ -13,7 +13,7 @@ html {
 }
 
 #root {
-    @apply flex min-h-dvh flex-col dark:bg-neutral-900;
+    @apply flex min-h-dvh flex-col bg-amber-100 dark:bg-neutral-900;
 }
 
 :root {

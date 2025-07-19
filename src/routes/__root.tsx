@@ -45,7 +45,7 @@ const NavBar = ({ children }: NavBarProps) => {
     const [expanded, setExpanded] = React.useState(false);
 
     return (
-        <div className="flex flex-wrap items-center justify-between bg-neutral-200 p-4 dark:bg-neutral-800">
+        <div className="flex flex-wrap items-center justify-between bg-amber-800/80 p-4 text-white dark:bg-neutral-800">
             <div className="mr-6 flex flex-shrink-0 items-center">
                 <Link to="/" className="text-3xl font-semibold tracking-tight">
                     Minesweeper
@@ -227,7 +227,7 @@ function RootComponent() {
                 </div>
             </NavBar>
             <div className="mx-auto flex-auto flex-shrink-0 overflow-x-scroll p-4">
-                <div className="flex w-fit flex-col gap-2 border border-neutral-300 p-3 md:flex-row">
+                <div className="flex w-fit flex-col gap-2 p-3 md:flex-row">
                     <div className="flex flex-shrink-0 items-center gap-x-4 gap-y-2 border-b border-neutral-500 px-1 py-2 pt-0 md:w-28 md:flex-col md:border-b-0 md:border-r md:pr-4">
                         <Link
                             to="/game/$session_id"
