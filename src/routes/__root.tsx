@@ -8,7 +8,7 @@ import Logout from '@mui/icons-material/Logout';
 import Person from '@mui/icons-material/Person';
 import Collapse from '@mui/material/Collapse';
 import Dialog from '@mui/material/Dialog';
-import { Link, Outlet, createRootRouteWithContext, useRouter, useRouterState } from '@tanstack/react-router';
+import { Link, Navigate, Outlet, createRootRouteWithContext, useRouter, useRouterState } from '@tanstack/react-router';
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -30,73 +30,11 @@ interface RouterContext {
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
-    component: RootComponent,
-    notFoundComponent: () => <NotFound />,
+    component: Layout,
+    notFoundComponent: () => <Navigate to="/" replace />,
 });
 
-const NotFound = () => <main className="p-32 text-3xl">Not found</main>;
-
-type NavBarProps = {
-    children?: React.ReactNode;
-};
-
-const NavBar = ({ children }: NavBarProps) => {
-    const { isMd } = useBreakpoint('md');
-    const [expanded, setExpanded] = React.useState(false);
-
-    return (
-        <div className="flex flex-wrap items-center justify-between bg-neutral-200 p-4 dark:bg-neutral-800">
-            <div className="mr-6 flex flex-shrink-0 items-center">
-                <Link to="/" className="text-3xl font-semibold tracking-tight">
-                    Minesweeper
-                </Link>
-            </div>
-            <div className="block md:hidden">
-                <button
-                    className="flex items-center rounded border border-neutral-500 p-2 dark:border-neutral-600 dark:text-neutral-200 dark:hover:border-white dark:hover:text-white"
-                    onClick={() => setExpanded((o) => !o)}
-                >
-                    <svg className="h-3 w-3 fill-current" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <title>Menu</title>
-                        <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
-                    </svg>
-                </button>
-            </div>
-            <Collapse in={expanded || isMd} className="block w-full flex-grow md:flex md:w-auto">
-                {children}
-            </Collapse>
-        </div>
-    );
-};
-
-const CurrentYear = () => (
-    <div className="flex items-center" aria-valuetext={new Date().getFullYear().toString()}>
-        {[...iterateDigits(new Date().getFullYear())].map((digit, i) =>
-            digit === 0 ? (
-                <Cell key={i} state={CellState.Mine} className="inline-block h-[18px] w-[18px] cursor-default" />
-            ) : (
-                <Cell key={i} state={digit} className="inline-block h-[18px] w-[18px] cursor-default" />
-            )
-        )}
-    </div>
-);
-
-const Footer = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-    <footer className={twMerge('m-auto flex items-center gap-2 p-2', className)} {...props}>
-        <div className="pb-1 text-center leading-none">v{__APP_VERSION__}</div>
-        <div className="pb-1 text-center leading-none">&bull;</div>
-        <CurrentYear />
-        <div className="pb-1 text-center leading-none">&bull;</div>
-        <a
-            className="cursor-pointer pb-1 text-center leading-none hover:underline"
-            href="https://github.com/vancomm/minesweeper"
-        >
-            source
-        </a>
-    </footer>
-);
-
-function RootComponent() {
+function Layout() {
     const { isMd } = useBreakpoint('md');
 
     const router = useRouter();
@@ -253,6 +191,7 @@ function RootComponent() {
                     </main>
                 </div>
             </div>
+
             <Footer className="flex-shrink-0" />
             <Dialog
                 open={signupOpen}
@@ -284,5 +223,65 @@ function RootComponent() {
                 <TanStackRouterDevtools />
             </React.Suspense>
         </>
+    );
+}
+
+function NavBar({ children }: { children?: React.ReactNode }) {
+    const { isMd } = useBreakpoint('md');
+    const [expanded, setExpanded] = React.useState(false);
+
+    return (
+        <div className="flex flex-wrap items-center justify-between bg-neutral-200 p-4 dark:bg-neutral-800">
+            <div className="mr-6 flex flex-shrink-0 items-center">
+                <Link to="/" className="text-3xl font-semibold tracking-tight">
+                    Minesweeper
+                </Link>
+            </div>
+            <div className="block md:hidden">
+                <button
+                    className="flex items-center rounded border border-neutral-500 p-2 dark:border-neutral-600 dark:text-neutral-200 dark:hover:border-white dark:hover:text-white"
+                    onClick={() => setExpanded((o) => !o)}
+                >
+                    <svg className="h-3 w-3 fill-current" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <title>Menu</title>
+                        <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
+                    </svg>
+                </button>
+            </div>
+            <Collapse in={expanded || isMd} className="block w-full flex-grow md:flex md:w-auto">
+                {children}
+            </Collapse>
+        </div>
+    );
+}
+
+function Footer({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+    return (
+        <footer className={twMerge('m-auto flex items-center gap-2 p-2', className)} {...props}>
+            <div className="pb-1 text-center leading-none">v{__APP_VERSION__}</div>
+            <div className="pb-1 text-center leading-none">&bull;</div>
+            <CurrentYear />
+            <div className="pb-1 text-center leading-none">&bull;</div>
+            <a
+                className="cursor-pointer pb-1 text-center leading-none hover:underline"
+                href="https://github.com/vancomm/minesweeper"
+            >
+                source
+            </a>
+        </footer>
+    );
+}
+
+function CurrentYear() {
+    return (
+        <div className="flex items-center" aria-valuetext={new Date().getFullYear().toString()}>
+            {[...iterateDigits(new Date().getFullYear())].map((digit, i) =>
+                digit === 0 ? (
+                    <Cell key={i} state={CellState.Mine} className="inline-block h-[18px] w-[18px] cursor-default" />
+                ) : (
+                    <Cell key={i} state={digit} className="inline-block h-[18px] w-[18px] cursor-default" />
+                )
+            )}
+        </div>
     );
 }
