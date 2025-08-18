@@ -1,5 +1,4 @@
 import React from 'react';
-import { twMerge } from 'tailwind-merge';
 
 import Counter from 'components/Counter';
 import Face, { FaceState } from 'components/Face';
@@ -47,11 +46,9 @@ export default function Board({
     return (
         <div
             style={cssVariables}
-            className={twMerge(
-                'grid',
-                'grid-cols-[18px_var(--grid-width)_13.5px]',
-                'grid-rows-[18px_48px_22.5px_var(--grid-height)_13.5px]'
-            )}
+            className={
+                'grid w-fit grid-cols-[18px_var(--grid-width)_13.5px] grid-rows-[18px_48px_22.5px_var(--grid-height)_13.5px] shadow-lg'
+            }
             id="game-container"
         >
             <TopLeftBorder />

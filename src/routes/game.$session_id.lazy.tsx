@@ -6,12 +6,7 @@ import Game from 'components/Game';
 import LiveLeaderboard from 'components/LiveLeaderboard';
 
 export const Route = createLazyFileRoute('/game/$session_id')({
-    component: () => (
-        <div className="overflow-x-scroll md:flex md:items-start md:gap-2">
-            <Game />
-            <LiveLeaderboard numRows={10} className="hidden md:block" />
-        </div>
-    ),
+    component: GameLayout,
     pendingComponent: () => (
         <div className="grid h-64 w-64 place-items-center">
             <CircularProgress color="inherit" />
@@ -19,3 +14,12 @@ export const Route = createLazyFileRoute('/game/$session_id')({
     ),
     errorComponent: ErrorComponent,
 });
+
+function GameLayout() {
+    return (
+        <div>
+            <Game />
+            <LiveLeaderboard numRows={10} className="mt-4 hidden md:block" />
+        </div>
+    );
+}

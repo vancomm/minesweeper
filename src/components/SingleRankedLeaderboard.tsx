@@ -12,24 +12,24 @@ export interface RankedLeaderboardProps extends React.TableHTMLAttributes<HTMLTa
     bottomRows?: RankedLeaderboardRowProps[];
 }
 
-const SingleRankedLeaderboard = ({ title, rows, bottomRows, ...props }: RankedLeaderboardProps) => (
-    <table {...props}>
-        <tbody>
-            {title && <LeaderboardTitle title={title} />}
-            {rows.map((row) => (
-                <RankedLeaderboardRow key={`leaderboard-row-${row.game_session_id}`} {...row} />
-            ))}
-            {bottomRows && bottomRows.length > 0 && (
-                <>
-                    <LeaderboardSeparator />
-                    {bottomRows.map((row) => (
-                        <RankedLeaderboardRow key={`leaderboard-row-${row.game_session_id}`} {...row} />
-                    ))}
-                </>
-            )}
-            {!(rows.length || bottomRows?.length) && <NoLeaderboardEntries />}
-        </tbody>
-    </table>
-);
-
-export default SingleRankedLeaderboard;
+export default function SingleRankedLeaderboard({ title, rows, bottomRows, ...props }: RankedLeaderboardProps) {
+    return (
+        <table {...props}>
+            <tbody>
+                {title && <LeaderboardTitle title={title} />}
+                {rows.map((row) => (
+                    <RankedLeaderboardRow key={`leaderboard-row-${row.game_session_id}`} {...row} />
+                ))}
+                {bottomRows && bottomRows.length > 0 && (
+                    <>
+                        <LeaderboardSeparator />
+                        {bottomRows.map((row) => (
+                            <RankedLeaderboardRow key={`leaderboard-row-${row.game_session_id}`} {...row} />
+                        ))}
+                    </>
+                )}
+                {!(rows.length || bottomRows?.length) && <NoLeaderboardEntries />}
+            </tbody>
+        </table>
+    );
+}

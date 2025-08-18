@@ -34,7 +34,7 @@ export default function Game() {
     return (
         <div id="game-container" className="flex flex-col">
             <GamePresetForm
-                className="mb-2 w-fit"
+                className="my-2 md:mt-0"
                 activeGameParams={game.params}
                 activePresetName={game.presetName}
                 onSubmit={(presetName, gameParams) => game.reset({ navigate, presetName, gameParams })}
@@ -84,56 +84,48 @@ function GamePresetForm({ activePresetName, activeGameParams, onSubmit, classNam
     const [gameParamsFormExpanded, setGameParamsFormExpanded] = React.useState(false);
 
     return (
-        <>
-            <div className={twMerge(className, 'select-none')} {...props}>
-                <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 px-2">
-                    {Object.entries(gamePresets).map(([presetName, presetParams]) => (
-                        <div
-                            key={`preset-${presetName}`}
-                            className="inline-block cursor-pointer has-checked:font-bold"
-                        >
-                            <label htmlFor={`preset-${presetName}`} className={'inline-block cursor-pointer'}>
-                                {capitalize(presetName)}
-                            </label>
-                            <input
-                                type="radio"
-                                className="hidden"
-                                id={`preset-${presetName}`}
-                                name={presetName}
-                                checked={presetName === activePresetName}
-                                onChange={() => {
-                                    setGameParamsFormExpanded(false);
-                                    onSubmit(presetName, presetParams);
-                                }}
-                            />
-                        </div>
-                    ))}
-                    <button
-                        onClick={() => setGameParamsFormExpanded((e) => !e)}
-                        className={twJoin(activePresetName === 'custom' && 'font-bold')}
-                    >
-                        <div className="inline">Custom</div>
-                        <ExpandMoreIcon
-                            sx={{
-                                translate: '0 -.1rem',
-                                transition: 'transform 300ms',
+        <div className={twMerge(className, 'select-none')} {...props}>
+            <div className="flex gap-x-4 gap-y-2 px-2">
+                {Object.entries(gamePresets).map(([presetName, presetParams]) => (
+                    <div key={`preset-${presetName}`} className="inline-block cursor-pointer has-checked:font-bold">
+                        <label htmlFor={`preset-${presetName}`} className={'inline-block cursor-pointer'}>
+                            {capitalize(presetName)}
+                        </label>
+                        <input
+                            type="radio"
+                            className="hidden"
+                            id={`preset-${presetName}`}
+                            name={presetName}
+                            checked={presetName === activePresetName}
+                            onChange={() => {
+                                setGameParamsFormExpanded(false);
+                                onSubmit(presetName, presetParams);
                             }}
-                            className={twJoin(gameParamsFormExpanded && 'rotate-180')}
                         />
-                    </button>
-                </div>
-                <Collapse in={gameParamsFormExpanded}>
-                    <GameParamsForm
-                        className="mt-2"
-                        defaultParams={activeGameParams}
-                        onSubmit={(gameParams) => {
-                            setGameParamsFormExpanded(false);
-                            onSubmit('custom', gameParams);
-                        }}
+                    </div>
+                ))}
+                <button
+                    onClick={() => setGameParamsFormExpanded((e) => !e)}
+                    className={twJoin('flex cursor-pointer items-center', activePresetName === 'custom' && 'font-bold')}
+                >
+                    <div className="inline">Custom</div>
+                    <ExpandMoreIcon
+                        sx={{ translate: '0 .1rem' }}
+                        className={twJoin(gameParamsFormExpanded && 'rotate-180')}
                     />
-                </Collapse>
+                </button>
             </div>
-        </>
+            <Collapse in={gameParamsFormExpanded}>
+                <GameParamsForm
+                    className="mt-2"
+                    defaultParams={activeGameParams}
+                    onSubmit={(gameParams) => {
+                        setGameParamsFormExpanded(false);
+                        onSubmit('custom', gameParams);
+                    }}
+                />
+            </Collapse>
+        </div>
     );
 }
 
@@ -146,7 +138,7 @@ function GameParamsForm({ defaultParams, onSubmit, className, ...props }: GameSe
     return (
         <form
             className={twMerge(
-                'grid w-fit select-none grid-cols-2 gap-2 gap-y-3 border border-neutral-500 p-2',
+                'grid w-fit grid-cols-2 gap-2 gap-y-3 rounded border border-zinc-400 bg-zinc-100 p-2 shadow-md select-none dark:border-zinc-600 dark:border-t-zinc-400 dark:bg-zinc-800 dark:shadow-none',
                 className
             )}
             onSubmit={(e) => {
@@ -164,52 +156,55 @@ function GameParamsForm({ defaultParams, onSubmit, className, ...props }: GameSe
                 Rows
             </label>
             <input
-                className="w-12"
+                key={`rows-${defaultParams.height}`} // defaultValue doesn't reload without key
+                id="rows"
                 type="number"
                 name="rows"
-                id="rows"
+                className="w-12 rounded bg-zinc-300 px-1 text-end dark:bg-zinc-950"
                 defaultValue={defaultParams.height}
-                key={`rows-${defaultParams.height}`} // defaultValue doesn't reload without key
             />
 
             <label htmlFor="cols" className="cursor-pointer">
                 Cols
             </label>
             <input
-                className="w-12"
+                key={`cols-${defaultParams.width}`}
+                id="cols"
                 type="number"
                 name="cols"
-                id="cols"
+                className="w-12 rounded bg-zinc-300 px-1 text-end dark:bg-zinc-950"
                 defaultValue={defaultParams.width}
-                key={`cols-${defaultParams.width}`}
             />
 
             <label htmlFor="mines" className="cursor-pointer">
                 Mines
             </label>
             <input
-                className="w-12"
+                key={`mines-${defaultParams.mine_count}`}
+                id="mines"
                 type="number"
                 name="mines"
-                id="mines"
+                className="w-12 rounded bg-zinc-300 px-1 text-end dark:bg-zinc-950"
                 defaultValue={defaultParams.mine_count}
-                key={`mines-${defaultParams.mine_count}`}
             />
 
             <div className="col-span-2 min-w-fit">
                 <label htmlFor="unique" className="cursor-pointer">
                     <div className="mr-2 inline">Unique</div>
                     <input
+                        key={`unique-${defaultParams.unique}`}
+                        id="unique"
                         type="checkbox"
                         name="unique"
-                        id="unique"
                         defaultChecked={defaultParams.unique}
-                        key={`unique-${defaultParams.unique}`}
                     />
                 </label>
             </div>
 
-            <button type="submit" className="col-span-2 underline">
+            <button
+                type="submit"
+                className="col-span-2 mx-auto w-fit cursor-pointer rounded bg-sky-600 px-4 py-1 text-white hover:bg-sky-500"
+            >
                 Update
             </button>
         </form>

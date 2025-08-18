@@ -89,33 +89,23 @@ function Layout() {
     const isLoggingIn = isLoading || isSubmitting;
 
     return (
-        <>
-            <NavBar>
-                <div className="mt-2 flex flex-col gap-x-4 gap-y-2 md:m-0 md:flex-row">
+        <div className="flex min-h-screen flex-col bg-zinc-200 dark:bg-black">
+            <Header>
+                <div className="main-layout mt-2 grid gap-y-2 md:m-0 md:flex md:flex-row md:gap-x-4">
                     {!player && (
                         <>
                             <button
-                                className="text-md flex cursor-pointer items-center gap-0.5 hover:underline"
+                                className="text-md col-start-[left-gutter] flex cursor-pointer items-center gap-0.5 hover:underline"
                                 onClick={() => setSignupOpen(true)}
                             >
-                                <Create
-                                    sx={{
-                                        translate: '0 .1rem',
-                                        fontSize: '18px',
-                                    }}
-                                />
+                                <Create sx={{ translate: '0 .1rem', fontSize: '20px' }} />
                                 <div>Sign up</div>
                             </button>
                             <button
-                                className="text-md flex cursor-pointer items-center gap-0.5 hover:underline"
+                                className="text-md col-start-[content-start] flex cursor-pointer items-center gap-0.5 hover:underline"
                                 onClick={() => setLoginOpen(true)}
                             >
-                                <Login
-                                    sx={{
-                                        translate: '-.1rem .1rem',
-                                        fontSize: '20px',
-                                    }}
-                                />
+                                <Login sx={{ translate: '-.15rem .1rem', fontSize: '20px' }} />
                                 <div>Log in</div>
                             </button>
                         </>
@@ -144,12 +134,12 @@ function Layout() {
                             </Dropdown>
                         ) : (
                             <>
-                                <div>
+                                <div className="col-start-[left-gutter]">
                                     <div className="mr-1.5 inline-block italic opacity-50">Signed in as</div>
                                     <div className="inline-block">{player.username}</div>
                                 </div>
                                 <button
-                                    className="text-md flex cursor-pointer items-center gap-0.5 hover:underline"
+                                    className="text-md col-start-[left-gutter] flex cursor-pointer items-center gap-0.5 hover:underline"
                                     onClick={() => void handleLogout()}
                                 >
                                     <Logout
@@ -163,34 +153,33 @@ function Layout() {
                             </>
                         ))}
                 </div>
-            </NavBar>
-            <div className="mx-auto flex-auto shrink-0 overflow-x-scroll p-4">
-                <div className="flex w-fit flex-col gap-2 border border-neutral-300 p-3 md:flex-row">
-                    <div className="flex shrink-0 items-center gap-x-4 gap-y-2 border-b border-neutral-500 px-1 py-2 pt-0 md:w-28 md:flex-col md:border-b-0 md:border-r md:pr-4">
-                        <Link
-                            to="/game/$session_id"
-                            params={{ session_id: 'new' }}
-                            className="min-w-fit [&.active]:font-bold"
-                        >
-                            New Game
+            </Header>
+
+            <main className="main-layout mt-4 grid grow grid-rows-[auto_1fr] overflow-x-scroll">
+                <aside className="col-[left-gutter] flex h-fit w-fit flex-row gap-x-3 gap-y-2 rounded border border-zinc-400 bg-zinc-100 p-2 shadow-md md:w-full md:flex-col dark:border-zinc-600 dark:border-t-zinc-400 dark:bg-zinc-800 dark:shadow-none">
+                    <Link
+                        to="/game/$session_id"
+                        params={{ session_id: 'new' }}
+                        className="min-w-fit hover:underline [&.active]:font-bold"
+                    >
+                        New Game
+                    </Link>
+                    <Link to="/hiscores" className="min-w-fit hover:underline [&.active]:font-bold">
+                        Hi Scores
+                    </Link>
+                    {player && (
+                        <Link to="/myscores" className="min-w-fit hover:underline [&.active]:font-bold">
+                            My Scores
                         </Link>
-                        <Link to="/hiscores" className="min-w-fit [&.active]:font-bold">
-                            Hi Scores
-                        </Link>
-                        {player && (
-                            <Link to="/myscores" className="min-w-fit [&.active]:font-bold">
-                                My Scores
-                            </Link>
-                        )}
-                        <Link to="/about" className="min-w-fit [&.active]:font-bold">
-                            About
-                        </Link>
-                    </div>
-                    <main className="md:pl-2">
-                        <Outlet />
-                    </main>
+                    )}
+                    <Link to="/about" className="min-w-fit hover:underline [&.active]:font-bold">
+                        About
+                    </Link>
+                </aside>
+                <div className="col-[content-start]">
+                    <Outlet />
                 </div>
-            </div>
+            </main>
 
             <Footer className="shrink-0" />
             <Dialog
@@ -222,33 +211,39 @@ function Layout() {
             <React.Suspense>
                 <TanStackRouterDevtools />
             </React.Suspense>
-        </>
+        </div>
     );
 }
 
-function NavBar({ children }: { children?: React.ReactNode }) {
+function Header({ children }: { children?: React.ReactNode }) {
     const { isMd } = useBreakpoint('md');
     const [expanded, setExpanded] = React.useState(false);
 
     return (
-        <div className="flex flex-wrap items-center justify-between bg-neutral-200 p-4 dark:bg-neutral-800">
-            <div className="mr-6 flex shrink-0 items-center">
-                <Link to="/" className="text-3xl font-semibold tracking-tight">
-                    Minesweeper
-                </Link>
+        <div className="main-layout bg-zinc-300 py-3 md:grid dark:bg-zinc-900">
+            <div className="main-layout grid items-center justify-between md:col-[left-gutter/content-end] md:block">
+                <div className="col-[left-gutter/content-end] flex shrink-0 items-center justify-between">
+                    <Link to="/" className="text-3xl font-semibold tracking-tight">
+                        Minesweeper
+                    </Link>
+                    <div className="block md:hidden">
+                        <button
+                            className="flex items-center rounded-sm border border-neutral-500 p-2 dark:border-neutral-600 dark:text-neutral-200 dark:hover:border-white dark:hover:text-white"
+                            onClick={() => setExpanded((o) => !o)}
+                        >
+                            <svg
+                                className="h-3 w-3 fill-current"
+                                viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <title>Menu</title>
+                                <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
             </div>
-            <div className="block md:hidden">
-                <button
-                    className="flex items-center rounded-sm border border-neutral-500 p-2 dark:border-neutral-600 dark:text-neutral-200 dark:hover:border-white dark:hover:text-white"
-                    onClick={() => setExpanded((o) => !o)}
-                >
-                    <svg className="h-3 w-3 fill-current" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <title>Menu</title>
-                        <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
-                    </svg>
-                </button>
-            </div>
-            <Collapse in={expanded || isMd} className="block w-full grow md:flex md:w-auto">
+            <Collapse in={expanded || isMd} className="block items-center md:col-span-2 md:flex">
                 {children}
             </Collapse>
         </div>
