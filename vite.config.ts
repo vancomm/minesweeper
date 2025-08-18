@@ -1,3 +1,4 @@
+import tailwindcss from '@tailwindcss/vite';
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin';
 import react from '@vitejs/plugin-react-swc';
 import { readFileSync } from 'fs';
@@ -51,7 +52,7 @@ export default defineConfig(({ mode }) => {
                 },
             },
         },
-        plugins: [tsconfigPaths(), react(), TanStackRouterVite()],
+        plugins: [tsconfigPaths(), tailwindcss(), react(), TanStackRouterVite()],
         define: {
             __BASE_URL__: JSON.stringify(baseUrl),
             __API_PREFIX__: JSON.stringify(apiPrefix),

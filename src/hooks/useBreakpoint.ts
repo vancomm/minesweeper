@@ -1,9 +1,12 @@
 import { useMediaQuery } from '@mui/material';
-import resolveConfig from 'tailwindcss/resolveConfig';
 
-import config from '@/../tailwind.config';
-
-const breakpoints = resolveConfig(config).theme.screens;
+const breakpoints = {
+    sm: '40rem',
+    md: '48rem',
+    lg: '64rem',
+    xl: '80rem',
+    '2xl': '96rem',
+} as const;
 
 type BreakpointKey = keyof typeof breakpoints;
 

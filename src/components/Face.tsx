@@ -14,7 +14,7 @@ export default function Face({ state, className, style, ...props }: FaceProps) {
             <button
                 id="face"
                 className={twJoin(
-                    'mx-auto block h-[39px] w-[39px] bg-full',
+                    'mx-auto block h-[39px] w-[39px] bg-size-[100%_100%]',
                     'active:bg-face-smile-down',
                     state === 'smile' && 'bg-face-smile',
                     state === 'click' && 'bg-face-click',

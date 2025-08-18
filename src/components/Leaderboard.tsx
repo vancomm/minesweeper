@@ -10,7 +10,7 @@ interface RowTagProps {
 const RowTag = ({ className, ...props }: RowTagProps) => (
     <div
         className={twJoin(
-            'ml-1 inline-block -translate-y-0.5 rounded-sm border border-neutral-500 px-[.2rem] pb-[.1rem] text-xs leading-4 first:ml-2 dark:border-neutral-400 dark:bg-neutral-500',
+            'ml-1 inline-block -translate-y-0.5 rounded-xs border border-neutral-500 px-[.2rem] pb-[.1rem] text-xs leading-4 first:ml-2 dark:border-neutral-400 dark:bg-neutral-500',
             className
         )}
         {...props}

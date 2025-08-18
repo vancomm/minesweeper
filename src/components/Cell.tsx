@@ -1,4 +1,4 @@
-import { twMerge } from 'tailwind-merge';
+import { twJoin } from 'tailwind-merge';
 
 import { CellState } from '@/constants';
 
@@ -31,8 +31,8 @@ export interface CellProps extends React.ButtonHTMLAttributes<HTMLButtonElement>
 export default function Cell({ state = CellState.Up, className, ...props }: CellProps) {
     return (
         <button
-            className={twMerge(
-                'block h-[24px] w-[24px] bg-[size:100%]',
+            className={twJoin(
+                'block h-[24px] w-[24px] bg-size-[100%]',
                 cellStateToBackground.get(state) ?? 'bg-cell-up',
                 className
             )}

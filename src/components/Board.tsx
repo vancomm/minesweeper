@@ -111,45 +111,45 @@ export default function Board({
 }
 
 function TopLeftBorder() {
-    return <div className="bg-border-top-left bg-full" />;
+    return <div className="bg-border-top-left bg-size-[100%_100%]" />;
 }
 
 function TopBorder() {
-    return <div className="bg-border-top bg-full" />;
+    return <div className="bg-border-top bg-size-[100%_100%]" />;
 }
 
 function TopRightBorder() {
-    return <div className="bg-border-top-right bg-full" />;
+    return <div className="bg-border-top-right bg-size-[100%_100%]" />;
 }
 
 function LeftBorder() {
-    return <div className="bg-border-left bg-full" />;
+    return <div className="bg-border-left bg-size-[100%_100%]" />;
 }
 
 function RightBorder() {
-    return <div className="bg-border-right bg-full" />;
+    return <div className="bg-border-right bg-size-[100%_100%]" />;
 }
 
 function MidLeftBorder() {
-    return <div className="bg-border-middle-left bg-full" />;
+    return <div className="bg-border-middle-left bg-size-[100%_100%]" />;
 }
 
 function MidBorder() {
-    return <div className="bg-border-middle bg-full" />;
+    return <div className="bg-border-middle bg-size-[100%_100%]" />;
 }
 
 function MidRightBorder() {
-    return <div className="bg-border-middle-right bg-full" />;
+    return <div className="bg-border-middle-right bg-size-[100%_100%]" />;
 }
 
 function BottomLeftBorder() {
-    return <div className="bg-border-bottom-left bg-full" />;
+    return <div className="bg-border-bottom-left bg-size-[100%_100%]" />;
 }
 
 function BottomBorder() {
-    return <div className="bg-border-bottom bg-full" />;
+    return <div className="bg-border-bottom bg-size-[100%_100%]" />;
 }
 
 function BottomRightBorder() {
-    return <div className="bg-border-bottom-right bg-full" />;
+    return <div className="bg-border-bottom-right bg-size-[100%_100%]" />;
 }

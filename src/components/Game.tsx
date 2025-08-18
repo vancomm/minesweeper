@@ -90,7 +90,7 @@ function GamePresetForm({ activePresetName, activeGameParams, onSubmit, classNam
                     {Object.entries(gamePresets).map(([presetName, presetParams]) => (
                         <div
                             key={`preset-${presetName}`}
-                            className="inline-block cursor-pointer has-[:checked]:font-bold"
+                            className="inline-block cursor-pointer has-checked:font-bold"
                         >
                             <label htmlFor={`preset-${presetName}`} className={'inline-block cursor-pointer'}>
                                 {capitalize(presetName)}
@@ -118,7 +118,7 @@ function GamePresetForm({ activePresetName, activeGameParams, onSubmit, classNam
                                 translate: '0 -.1rem',
                                 transition: 'transform 300ms',
                             }}
-                            className={twJoin(gameParamsFormExpanded && 'rotate-[180deg]')}
+                            className={twJoin(gameParamsFormExpanded && 'rotate-180')}
                         />
                     </button>
                 </div>

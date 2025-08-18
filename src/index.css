@@ -1,6 +1,91 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@theme {
+    --animate-half-spin-to: halfspinto 200ms linear both;
+    --animate-half-spin-from: halfspinfrom 200ms linear both;
+
+    --background-image-face-smile-down: url('/svg/faces/smilefacedown.svg');
+    --background-image-face-smile: url('/svg/faces/smileface.svg');
+    --background-image-face-click: url('/svg/faces/clickface.svg');
+    --background-image-face-win: url('/svg/faces/winface.svg');
+    --background-image-face-lost: url('/svg/faces/lostface.svg');
+    --background-image-border-top-left: url('/svg/border/topleft.svg');
+    --background-image-border-top: url('/svg/border/top.svg');
+    --background-image-border-top-right: url('/svg/border/topright.svg');
+    --background-image-border-left: url('/svg/border/left.svg');
+    --background-image-border-right: url('/svg/border/right.svg');
+    --background-image-border-middle-left: url('/svg/border/middleleft.svg');
+    --background-image-border-middle: url('/svg/border/middle.svg');
+    --background-image-border-middle-right: url('/svg/border/middleright.svg');
+    --background-image-border-bottom-left: url('/svg/border/bottomleft.svg');
+    --background-image-border-bottom: url('/svg/border/bottom.svg');
+    --background-image-border-bottom-right: url('/svg/border/bottomright.svg');
+    --background-image-border-bottom-counter-middle: url('/svg/border/countermiddle.svg');
+    --background-image-border-counter-left: url('/svg/border/counterleft.svg');
+    --background-image-border-counter-right: url('/svg/border/counterright.svg');
+    --background-image-cell-1: url('/svg/cells/cell1.svg');
+    --background-image-cell-2: url('/svg/cells/cell2.svg');
+    --background-image-cell-3: url('/svg/cells/cell3.svg');
+    --background-image-cell-4: url('/svg/cells/cell4.svg');
+    --background-image-cell-5: url('/svg/cells/cell5.svg');
+    --background-image-cell-6: url('/svg/cells/cell6.svg');
+    --background-image-cell-7: url('/svg/cells/cell7.svg');
+    --background-image-cell-8: url('/svg/cells/cell8.svg');
+    --background-image-cell-9: url('/svg/cells/cell9.svg');
+    --background-image-cell-up: url('/svg/cells/cellup.svg');
+    --background-image-cell-down: url('/svg/cells/celldown.svg');
+    --background-image-cell-flag: url('/svg/cells/cellflag.svg');
+    --background-image-cell-mine: url('/svg/cells/cellmine.svg');
+    --background-image-cell-false-mine: url('/svg/cells/falsemine.svg');
+    --background-image-cell-blast: url('/svg/cells/blast.svg');
+    --background-image-cell-flag-mine: url('/svg/cells/flagmine.svg');
+    --background-image-counter-dash: url('/svg/counter/counter-.svg');
+    --background-image-counter-0: url('/svg/counter/counter0.svg');
+    --background-image-counter-1: url('/svg/counter/counter1.svg');
+    --background-image-counter-2: url('/svg/counter/counter2.svg');
+    --background-image-counter-3: url('/svg/counter/counter3.svg');
+    --background-image-counter-4: url('/svg/counter/counter4.svg');
+    --background-image-counter-5: url('/svg/counter/counter5.svg');
+    --background-image-counter-6: url('/svg/counter/counter6.svg');
+    --background-image-counter-7: url('/svg/counter/counter7.svg');
+    --background-image-counter-8: url('/svg/counter/counter8.svg');
+    --background-image-counter-9: url('/svg/counter/counter9.svg');
+
+    @keyframes halfspinto {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(-180deg);
+        }
+    }
+    @keyframes halfspinfrom {
+        0% {
+            transform: rotate(-180deg);
+        }
+        100% {
+            transform: rotate(0deg);
+        }
+    }
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--color-gray-200, currentcolor);
+    }
+}
 
 html {
     @apply box-border;

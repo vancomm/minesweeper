@@ -164,9 +164,9 @@ function Layout() {
                         ))}
                 </div>
             </NavBar>
-            <div className="mx-auto flex-auto flex-shrink-0 overflow-x-scroll p-4">
+            <div className="mx-auto flex-auto shrink-0 overflow-x-scroll p-4">
                 <div className="flex w-fit flex-col gap-2 border border-neutral-300 p-3 md:flex-row">
-                    <div className="flex flex-shrink-0 items-center gap-x-4 gap-y-2 border-b border-neutral-500 px-1 py-2 pt-0 md:w-28 md:flex-col md:border-b-0 md:border-r md:pr-4">
+                    <div className="flex shrink-0 items-center gap-x-4 gap-y-2 border-b border-neutral-500 px-1 py-2 pt-0 md:w-28 md:flex-col md:border-b-0 md:border-r md:pr-4">
                         <Link
                             to="/game/$session_id"
                             params={{ session_id: 'new' }}
@@ -192,7 +192,7 @@ function Layout() {
                 </div>
             </div>
 
-            <Footer className="flex-shrink-0" />
+            <Footer className="shrink-0" />
             <Dialog
                 open={signupOpen}
                 onClose={() => setSignupOpen(false)}
@@ -232,14 +232,14 @@ function NavBar({ children }: { children?: React.ReactNode }) {
 
     return (
         <div className="flex flex-wrap items-center justify-between bg-neutral-200 p-4 dark:bg-neutral-800">
-            <div className="mr-6 flex flex-shrink-0 items-center">
+            <div className="mr-6 flex shrink-0 items-center">
                 <Link to="/" className="text-3xl font-semibold tracking-tight">
                     Minesweeper
                 </Link>
             </div>
             <div className="block md:hidden">
                 <button
-                    className="flex items-center rounded border border-neutral-500 p-2 dark:border-neutral-600 dark:text-neutral-200 dark:hover:border-white dark:hover:text-white"
+                    className="flex items-center rounded-sm border border-neutral-500 p-2 dark:border-neutral-600 dark:text-neutral-200 dark:hover:border-white dark:hover:text-white"
                     onClick={() => setExpanded((o) => !o)}
                 >
                     <svg className="h-3 w-3 fill-current" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -248,7 +248,7 @@ function NavBar({ children }: { children?: React.ReactNode }) {
                     </svg>
                 </button>
             </div>
-            <Collapse in={expanded || isMd} className="block w-full flex-grow md:flex md:w-auto">
+            <Collapse in={expanded || isMd} className="block w-full grow md:flex md:w-auto">
                 {children}
             </Collapse>
         </div>
