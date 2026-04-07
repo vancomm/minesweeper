@@ -50,10 +50,10 @@ export default function LiveLeaderboard({ numRows, className, ...props }: LiveLe
     return (
         <div
             className={twJoin(
-                'relative min-h-8 w-fit min-w-48 rounded',
+                'relative w-fit min-w-48 rounded',
                 hidden
                     ? 'p-1'
-                    : 'rounded border border-zinc-400 bg-zinc-100 p-2 shadow-md dark:border-zinc-600 dark:border-t-zinc-400 dark:bg-zinc-800 dark:shadow-none',
+                    : 'border border-zinc-400 bg-zinc-100 p-2 shadow-md dark:border-zinc-600 dark:border-t-zinc-400 dark:bg-zinc-800 dark:shadow-none',
                 className
             )}
             {...props}

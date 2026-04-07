@@ -17,9 +17,11 @@ export const Route = createLazyFileRoute('/game/$session_id')({
 
 function GameLayout() {
     return (
-        <div>
-            <Game />
-            <LiveLeaderboard numRows={10} className="mt-4 hidden md:block" />
-        </div>
+        <>
+            <LiveLeaderboard numRows={10} className="mt-4 hidden self-start sm:col-[left-gutter] md:block" />
+            <div className="col-[content-start] sm:row-span-2 sm:row-start-1">
+                <Game />
+            </div>
+        </>
     );
 }

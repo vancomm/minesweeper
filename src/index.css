@@ -79,13 +79,20 @@
     @variant sm {
         grid-template-columns:
             [page-start] max(6rem, 10%)
-            [left-gutter] 8rem
+            [left-gutter] 12rem
             1rem
             [content-start] 1fr
             [content-end] 8rem
             [right-gutter] max(6rem, 10%)
             [page-end];
     }
+}
+
+.leaderboard-layout {
+    grid-template-columns:
+        [rank] auto
+        [name] 1fr
+        [time] auto;
 }
 
 /*

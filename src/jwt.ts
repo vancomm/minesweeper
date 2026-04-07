@@ -2,7 +2,7 @@ import Cookies from 'js-cookie';
 
 import { PlayerInfo } from 'api/entities';
 
-export const getJWTClaims = (): PlayerInfo | undefined => {
+export function getJWTClaims(): PlayerInfo | undefined {
     const authCookie = Cookies.get('auth');
     if (!authCookie) {
         return undefined;
@@ -19,4 +19,4 @@ export const getJWTClaims = (): PlayerInfo | undefined => {
     } catch {
         return undefined;
     }
-};
+}

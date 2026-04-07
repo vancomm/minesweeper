@@ -17,12 +17,12 @@ const RowTag = ({ className, ...props }: RowTagProps) => (
     />
 );
 
-const PersonalBest = () => (
+export const PersonalBest = () => (
     <RowTag className="cursor-help" title="Personal Best">
         PB
     </RowTag>
 );
-const WorldBest = () => (
+export const WorldBest = () => (
     <RowTag className="cursor-help" title="World Best">
         WB
     </RowTag>

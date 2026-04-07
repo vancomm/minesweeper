@@ -10,6 +10,50 @@ export const Route = createLazyFileRoute('/about')({
     component: About,
 });
 
+function About() {
+    return (
+        <div className="col-[content-start] max-w-lg p-2 md:pr-32">
+            <P>Yet another implementation of a classic game.</P>
+            <H2>How to play</H2>
+            <P>
+                Mines are scattered throughout the game board. Open all cells without mines. Clicking on a cell that
+                conceals a mine ends the game.
+            </P>
+            <P>
+                Each opened cell displays a number that reflects how many mines there are in 8 cells around it (its{' '}
+                <i>neighbors</i>
+                ). Cells with no mined neighbors display no number. First cell you click is guaranteed to be safe, and
+                so are its neighbors.
+            </P>
+            <H2>Controls</H2>
+            <P>
+                Use left click to <b>open</b> a closed cell.
+            </P>
+            <DemoCell trueState={1} />
+            <P>
+                Use right click to place a <b>flag</b> on a closed cell. Flags help you mark the cells you believe to
+                contain mines.
+            </P>
+            <DemoCell trueState={CellState.Blast} />
+            <P>
+                If the number of flags near an opened cell equals the number inside the cell, you can open all
+                neighboring cells at once by clicking on the opened cell (this is called{' '}
+                <b>
+                    <i>chording</i>
+                </b>
+                ).
+            </P>
+            <ChordDemo />
+            <H2>Custom game settings</H2>
+            <P>
+                In addition to the predefined game modes, you may provide your own width, height and mine count for the
+                game grid. The &quot;unique&quot; game setting determines if the generated grid allows for only one
+                possible solution. All predefined game modes offer only &quot;unique&quot; games.
+            </P>
+        </div>
+    );
+}
+
 const P = ({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) => (
     <p className={twMerge('my-2 first:mt-0 last:mb-0', className)} {...props} />
 );
@@ -112,49 +156,3 @@ const ChordDemo = () => {
         </div>
     );
 };
-
-function About() {
-    return (
-        <div className="max-w-lg p-2 md:pr-32">
-            <div>
-                <P>Yet another implementation of a classic game.</P>
-                <H2>How to play</H2>
-                <P>
-                    Mines are scattered throughout the game board. Open all cells without mines. Clicking on a cell that
-                    conceals a mine ends the game.
-                </P>
-                <P>
-                    Each opened cell displays a number that reflects how many mines there are in 8 cells around it (its{' '}
-                    <i>neighbors</i>
-                    ). Cells with no mined neighbors display no number. First cell you click is guaranteed to be safe,
-                    and so are its neighbors.
-                </P>
-                <H2>Controls</H2>
-                <P>
-                    Use left click to <b>open</b> a closed cell.
-                </P>
-                <DemoCell trueState={1} />
-                <P>
-                    Use right click to place a <b>flag</b> on a closed cell. Flags help you mark the cells you believe
-                    to contain mines.
-                </P>
-                <DemoCell trueState={CellState.Blast} />
-                <P>
-                    If the number of flags near an opened cell equals the number inside the cell, you can open all
-                    neighboring cells at once by clicking on the opened cell (this is called{' '}
-                    <b>
-                        <i>chording</i>
-                    </b>
-                    ).
-                </P>
-                <ChordDemo />
-                <H2>Custom game settings</H2>
-                <P>
-                    In addition to the predefined game modes, you may provide your own width, height and mine count for
-                    the game grid. The &quot;unique&quot; game setting determines if the generated grid allows for only
-                    one possible solution. All predefined game modes offer only &quot;unique&quot; games.
-                </P>
-            </div>
-        </div>
-    );
-}

@@ -156,7 +156,7 @@ function Layout() {
             </Header>
 
             <main className="main-layout mt-4 grid grow grid-rows-[auto_1fr] overflow-x-scroll">
-                <aside className="col-[left-gutter] flex h-fit w-fit flex-row gap-x-3 gap-y-2 rounded border border-zinc-400 bg-zinc-100 p-2 shadow-md md:w-full md:flex-col dark:border-zinc-600 dark:border-t-zinc-400 dark:bg-zinc-800 dark:shadow-none">
+                <aside className="col-[left-gutter] flex h-fit w-fit flex-row gap-x-3 gap-y-2 rounded p-2 text-lg shadow-md md:w-full md:flex-col dark:shadow-none">
                     <Link
                         to="/game/$session_id"
                         params={{ session_id: 'new' }}
@@ -176,9 +176,9 @@ function Layout() {
                         About
                     </Link>
                 </aside>
-                <div className="col-[content-start]">
-                    <Outlet />
-                </div>
+                {/* <div className="col-[content-start]"> */}
+                <Outlet />
+                {/* </div> */}
             </main>
 
             <Footer className="shrink-0" />

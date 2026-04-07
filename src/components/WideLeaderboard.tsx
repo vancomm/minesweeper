@@ -15,7 +15,7 @@ export type AdaptiveLeaderboardProps = {
 const WideLeaderboard = ({ records, numRows, className }: AdaptiveLeaderboardProps) => {
     const leaderboards = useSplitLeaderboardRows(records, numRows);
     return (
-        <div className={twJoin('wide-hs flex items-start gap-x-5', className)}>
+        <div className={twJoin('flex items-start gap-x-5', className)}>
             {leaderboards.map(({ title, rows, bottomRows }) => (
                 <SingleRankedLeaderboard
                     key={`leaderboard-${title}`}

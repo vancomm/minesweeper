@@ -262,7 +262,8 @@ export default function GameProvider({ children }: GameProviderProps) {
             },
             openCell: (x: number, y: number, navigate: UseNavigateResult<string>) => {
                 if (!state.session) {
-                    return createNewGame({ x, y, ...state.gameParams }).then((res) => {
+                    const { height, width, mine_count, unique } = state.gameParams;
+                    return createNewGame({ x, y, height, width, mine_count, unique }).then((res) => {
                         if (res.isErr()) {
                             return dispatch({
                                 type: 'error',

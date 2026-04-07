@@ -1,15 +1,15 @@
-import { wrapFetch } from 'api/common';
+import { timeoutFetch, wrapFetch } from 'api/common';
 import { AuthParams } from 'api/entities';
 
 import { API_PREFIX } from '@/constants';
 
 export async function status() {
-    return wrapFetch(() => fetch(API_PREFIX + '/status', { credentials: 'include' }))();
+    return wrapFetch(() => timeoutFetch(5000)(API_PREFIX + '/status', { credentials: 'include' }))();
 }
 
 export async function register(data: AuthParams) {
     return wrapFetch(() =>
-        fetch(API_PREFIX + '/register', {
+        timeoutFetch(5000)(API_PREFIX + '/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -22,7 +22,7 @@ export async function register(data: AuthParams) {
 
 export async function login(data: AuthParams) {
     return wrapFetch(() =>
-        fetch(API_PREFIX + '/login', {
+        timeoutFetch(5000)(API_PREFIX + '/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -34,5 +34,5 @@ export async function login(data: AuthParams) {
 }
 
 export async function logout() {
-    return wrapFetch(() => fetch(API_PREFIX + '/logout', { method: 'POST', credentials: 'include' }))();
+    return wrapFetch(() => timeoutFetch(5000)(API_PREFIX + '/logout', { method: 'POST', credentials: 'include' }))();
 }

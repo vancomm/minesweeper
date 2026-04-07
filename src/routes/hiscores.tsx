@@ -2,14 +2,12 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import React from 'react';
-import { twJoin } from 'tailwind-merge';
 
 import TallLeaderboard from 'components/TallLeaderboard';
 import WideLeaderboard from 'components/WideLeaderboard';
 
 import { fetchHighscores } from 'api/game';
 
-import { useBreakpoint } from '@/hooks/useBreakpoint';
 import { unwrap } from '@/lib';
 
 export const Route = createFileRoute('/hiscores')({
@@ -36,12 +34,10 @@ function HiScores({ numRows }: HiScoresProps) {
         refetchOnMount: 'always',
     });
 
-    const { isLg } = useBreakpoint('lg');
-
     return (
         <>
-            <WideLeaderboard className={twJoin(!isLg && 'hidden')} records={records} numRows={numRows} />
-            <TallLeaderboard className={twJoin(isLg && 'hidden')} records={records} numRows={numRows} />
+            <WideLeaderboard className="col-[content-start] hidden lg:block" records={records} numRows={numRows} />
+            <TallLeaderboard className="col-[content-start] block lg:hidden" records={records} numRows={numRows} />
         </>
     );
 }
