@@ -39,30 +39,33 @@
     --background-image-cell-false-mine: url('/svg/cells/falsemine.svg');
     --background-image-cell-blast: url('/svg/cells/blast.svg');
     --background-image-cell-flag-mine: url('/svg/cells/flagmine.svg');
-    --background-image-counter-dash: url('/svg/counter/counter-.svg');
-    --background-image-counter-0: url('/svg/counter/counter0.svg');
-    --background-image-counter-1: url('/svg/counter/counter1.svg');
-    --background-image-counter-2: url('/svg/counter/counter2.svg');
-    --background-image-counter-3: url('/svg/counter/counter3.svg');
-    --background-image-counter-4: url('/svg/counter/counter4.svg');
-    --background-image-counter-5: url('/svg/counter/counter5.svg');
-    --background-image-counter-6: url('/svg/counter/counter6.svg');
-    --background-image-counter-7: url('/svg/counter/counter7.svg');
-    --background-image-counter-8: url('/svg/counter/counter8.svg');
-    --background-image-counter-9: url('/svg/counter/counter9.svg');
+    --background-image-counter-dash: url('/svg/digit/minus.svg');
+    --background-image-counter-0: url('/svg/digit/0.svg');
+    --background-image-counter-1: url('/svg/digit/1.svg');
+    --background-image-counter-2: url('/svg/digit/2.svg');
+    --background-image-counter-3: url('/svg/digit/3.svg');
+    --background-image-counter-4: url('/svg/digit/4.svg');
+    --background-image-counter-5: url('/svg/digit/5.svg');
+    --background-image-counter-6: url('/svg/digit/6.svg');
+    --background-image-counter-7: url('/svg/digit/7.svg');
+    --background-image-counter-8: url('/svg/digit/8.svg');
+    --background-image-counter-9: url('/svg/digit/9.svg');
 
     @keyframes halfspinto {
         0% {
             transform: rotate(0deg);
         }
+
         100% {
             transform: rotate(-180deg);
         }
     }
+
     @keyframes halfspinfrom {
         0% {
             transform: rotate(-180deg);
         }
+
         100% {
             transform: rotate(0deg);
         }
@@ -71,28 +74,17 @@
 
 .main-layout {
     grid-template-columns:
-        [page-start] 1rem
-        [left-gutter content-start] 1fr
-        [content-end right-gutter] 1rem
-        [page-end];
+        [page-start] 1rem [left-gutter content-start] 1fr [content-end right-gutter] 1rem [page-end];
 
     @variant sm {
         grid-template-columns:
-            [page-start] max(6rem, 10%)
-            [left-gutter] 12rem
-            1rem
-            [content-start] 1fr
-            [content-end] 8rem
-            [right-gutter] max(6rem, 10%)
-            [page-end];
+            [page-start] max(6rem, 10%) [left-gutter] 12rem 1rem [content-start] 1fr [content-end] 8rem [right-gutter] max(6rem, 10%) [page-end];
     }
 }
 
 .leaderboard-layout {
     grid-template-columns:
-        [rank] auto
-        [name] 1fr
-        [time] auto;
+        [rank] auto [name] 1fr [time] auto;
 }
 
 /*
@@ -104,6 +96,7 @@
   color utility to any element that depends on these defaults.
 */
 @layer base {
+
     *,
     ::after,
     ::before,
@@ -151,4 +144,5 @@ input[type='number'] {
     -moz-appearance: textfield;
     appearance: textfield;
 }
+
 /* End remove input[number] arrows */
